@@ -1,22 +1,22 @@
 +++
 date = 2017-01-01T00:00:00  # Schedule page publish date.
 
-title = "Example Talk"
+title = "Statistics: Side B"
 time_start = 2030-06-01T13:00:00
 time_end = 2030-06-01T15:00:00
-abstract = ""
+abstract = "A simple introduction to Bayesian Statistical Modeling and how it differs from Frequentist Statistical Inference"
 abstract_short = ""
-event = "Academic Theme Conference"
-event_url = "https://example.org"
-location = "London, United Kingdom"
+event = "College of Idaho Math and Physical Science Colloquium"
+event_url = ""
+location = "Caldwell, ID, USA"
 
 # Is this a selected talk? (true/false)
-selected = false
+selected = true
 
 # Projects (optional).
 #   Associate this talk with one or more of your projects.
 #   Simply enter the filename (excluding '.md') of your project file in `content/project/`.
-projects = ["deep-learning"]
+projects = ["bayesian"]
 
 # Links (optional).
 url_pdf = ""
@@ -25,10 +25,10 @@ url_video = ""
 url_code = ""
 
 # Does the content use math formatting?
-math = true
+math = false
 
 # Does the content use source code highlighting?
-highlight = true
+highlight = false
 
 # Featured image
 # Place your image in the `static/img/` folder and reference its filename below, e.g. `image = "example.jpg"`.
