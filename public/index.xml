@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Academic on Academic</title>
+    <title>Jason I. Preszler on Jason I. Preszler</title>
     <link>/</link>
-    <description>Recent content in Academic on Academic</description>
+    <description>Recent content in Jason I. Preszler on Jason I. Preszler</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2017 Jason Preszler</copyright>
@@ -23,7 +23,7 @@
     <item>
       <title>Statistics: Side B</title>
       <link>/talk/stat-b/</link>
-      <pubDate>Sun, 01 Jan 2017 00:00:00 -0700</pubDate>
+      <pubDate>Sun, 22 Oct 2017 00:00:00 -0600</pubDate>
       
       <guid>/talk/stat-b/</guid>
       <description>&lt;p&gt;Embed your slides or video here using &lt;a href=&#34;https://sourcethemes.com/academic/post/writing-markdown-latex/&#34; target=&#34;_blank&#34;&gt;shortcodes&lt;/a&gt;. Further details can easily be added using &lt;em&gt;Markdown&lt;/em&gt; and $\rm \LaTeX$ math code.&lt;/p&gt;
@@ -1107,15 +1107,6 @@ y &amp;amp;=&amp;amp; 1+1   \\\\\\
     </item>
     
     <item>
-      <title>An Infinite Family of Cubics with Emergent Reducibility at Depth 1</title>
-      <link>/publication/infinite-cubics/</link>
-      <pubDate>Sat, 01 Aug 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/publication/infinite-cubics/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>Hello R Markdown</title>
       <link>/post/2015-07-23-r-rmarkdown/</link>
       <pubDate>Thu, 23 Jul 2015 21:13:14 -0500</pubDate>
@@ -1161,6 +1152,24 @@ Figure 1: A fancy pie chart.
 &lt;/div&gt;
 &lt;/div&gt;
 </description>
+    </item>
+    
+    <item>
+      <title>An Infinite Family of Cubic Polynomials with Depth 1 Emergent Reducibility</title>
+      <link>/talk/jmm-2015/</link>
+      <pubDate>Sun, 11 Jan 2015 00:00:00 -0700</pubDate>
+      
+      <guid>/talk/jmm-2015/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>An Infinite Family of Cubics with Emergent Reducibility at Depth 1</title>
+      <link>/publication/infinite-cubics/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/publication/infinite-cubics/</guid>
+      <description></description>
     </item>
     
   </channel>

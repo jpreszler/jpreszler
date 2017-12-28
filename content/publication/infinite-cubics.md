@@ -1,6 +1,6 @@
 +++
 title = "An Infinite Family of Cubics with Emergent Reducibility at Depth 1"
-date = "2015-08-01"
+date = "2017"
 
 # Authors. Comma separated list, e.g. `["Bob Smith", "David Jones"]`.
 authors = ["Jason I Preszler"]
@@ -17,13 +17,12 @@ authors = ["Jason I Preszler"]
 publication_types = ["2"]
 
 # Publication name and optional abbreviated version.
-publication = "In *Questiones Mathematicae*"
+publication = "In *Questiones Mathematicae*, Vol. 40 Issue 1, 2017 (submitted March 2015)"
 publication_short = "In *Quest. Math.*"
 
 # Abstract and optional shortened version.
-abstract = "We present a mobile visual clothing search system whereby a smart phone user can either choose a social networking photo or take a new photo of a person wearing clothing of interest and search for similar clothing in a retail database. From the query image, the person is detected, clothing is segmented, and clothing features are extracted and quantized. The information is sent from the phone client to a server, where the feature vector of the query image is used to retrieve similar clothing products from online databases. The phone's GPS location is used to re-rank results by retail store location. State of the art work focuses primarily on the recognition of a diverse range of clothing offline and pays little attention to practical applications. Evaluated on a challenging dataset, the system is relatively fast and achieves promising results."
-abstract_short = "A mobile visual clothing search system is presented whereby a smart phone user can either choose a social networking image or capture a new photo of a person wearing clothing of interest and search for similar clothing in a large cloud-based ecommerce database. The phone's GPS location is used to re-rank results by retail store location, to inform the user of local stores where similar clothing items can be tried on."
-
+abstract = "A polynomial $f(x)$ has emergent reducibility at depth $n$ if $f^{\\circ k}(x)$ is irreducible for $0 \\leq k \\leq n − 1$ but $f^{\\circ n}(x)$ is reducible. In this paper we prove that there are infinitely many irreducible cubics $f \\in \\mathbb{Z}[x]$ with $f\\circ f$ reducible by exhibiting a one parameter family with this property."
+abstract_short = "A polynomial $f(x)$ has emergent reducibility at depth $n$ if $f^{\\circ k}(x)$ is irreducible for $0 \\leq k \\leq n − 1$ but $f^{\\circ n}(x)$ is reducible. In this paper we prove that there are infinitely many irreducible cubics $f \\in \\mathbb{Z}[x]$ with $f\\circ f$ reducible by exhibiting a one parameter family with this property."
 # Featured image thumbnail (optional)
 image_preview = ""
 
@@ -36,8 +35,9 @@ selected = true
 projects = ["emergent-reducibility"]
 
 # Links (optional).
-url_pdf = "http://eprints.soton.ac.uk/352095/1/Cushen-IMV2013.pdf"
-url_preprint = "http://eprints.soton.ac.uk/352095/1/Cushen-IMV2013.pdf"
+url_custom = [{name="Ques. Math. Link", url="http://www.tandfonline.com/doi/abs/10.2989/16073606.2016.1259187"}]
+url_pdf = "preszler-cubics-qa-rev.pdf"
+url_preprint = "https://arxiv.org/abs/1410.1800"
 
 # Custom links (optional).
 #   Uncomment line below to enable. For multiple links, use the form `[{...}, {...}, {...}]`.

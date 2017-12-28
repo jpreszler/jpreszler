@@ -1,5 +1,5 @@
 +++
-date = 2017-01-01T00:00:00  # Schedule page publish date.
+date = 2017-10-22T00:00:00  # Schedule page publish date.
 
 title = "Statistics: Side B"
 time_start = 2030-06-01T13:00:00
@@ -16,8 +16,9 @@ selected = true
 # Projects (optional).
 #   Associate this talk with one or more of your projects.
 #   Simply enter the filename (excluding '.md') of your project file in `content/project/`.
-projects = ["bayesian"]
+#projects = ["bayesian"]
 
+tags = ["bayesian","maps"]
 # Links (optional).
 url_pdf = ""
 url_slides = ""

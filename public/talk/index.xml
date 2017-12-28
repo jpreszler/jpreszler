@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Recent &amp; Upcoming Talks on Academic</title>
+    <title>Recent &amp; Upcoming Talks on Jason I. Preszler</title>
     <link>/talk/</link>
-    <description>Recent content in Recent &amp; Upcoming Talks on Academic</description>
+    <description>Recent content in Recent &amp; Upcoming Talks on Jason I. Preszler</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2017 Jason Preszler</copyright>
@@ -13,11 +13,20 @@
     <item>
       <title>Statistics: Side B</title>
       <link>/talk/stat-b/</link>
-      <pubDate>Sun, 01 Jan 2017 00:00:00 -0700</pubDate>
+      <pubDate>Sun, 22 Oct 2017 00:00:00 -0600</pubDate>
       
       <guid>/talk/stat-b/</guid>
       <description>&lt;p&gt;Embed your slides or video here using &lt;a href=&#34;https://sourcethemes.com/academic/post/writing-markdown-latex/&#34; target=&#34;_blank&#34;&gt;shortcodes&lt;/a&gt;. Further details can easily be added using &lt;em&gt;Markdown&lt;/em&gt; and $\rm \LaTeX$ math code.&lt;/p&gt;
 </description>
+    </item>
+    
+    <item>
+      <title>An Infinite Family of Cubic Polynomials with Depth 1 Emergent Reducibility</title>
+      <link>/talk/jmm-2015/</link>
+      <pubDate>Sun, 11 Jan 2015 00:00:00 -0700</pubDate>
+      
+      <guid>/talk/jmm-2015/</guid>
+      <description></description>
     </item>
     
   </channel>
