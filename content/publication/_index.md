@@ -12,7 +12,7 @@ highlight = false
 list_format = 3
 
 # Optional featured image (relative to `static/img/` folder).
-[header]
-image = ""
-caption = ""
+#[header]
+#image = ""
+#caption = ""
 +++

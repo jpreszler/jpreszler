@@ -32,7 +32,7 @@ defaultContentLanguageInSubdir = false
 [params]
   # Color theme.
   #   Choose from `default`, `ocean`, `forest`, `coffee`, `dark`, or `1950s`.
-  color_theme = "default"
+  color_theme = "coffee"
 
   # Font style.
   #   Choose from `default`, `classic`, or `playfair`.
@@ -51,7 +51,7 @@ defaultContentLanguageInSubdir = false
   email = "jpreszler@collegeofidaho.edu"
   address = "Boone 102E, The College of Idaho, Caldwell, ID. USA"
   office_hours = ""
-  phone = "208 459 "
+  phone = "208 459 5147"
   skype = ""
   telegram = ""
 
@@ -164,7 +164,7 @@ defaultContentLanguageInSubdir = false
   # Configuration of talk pages.
   [params.talks]
     # Show talk time?
-    time = true
+    time = false
 
   # Configuration of publication pages.
   [params.publications]
@@ -252,9 +252,14 @@ defaultContentLanguageInSubdir = false
   weight = 5
 
 [[menu.main]]
+  name = "Talks"
+  url = "#talks"
+  weight = 6
+  
+[[menu.main]]
   name = "Contact"
   url = "#contact"
-  weight = 6
+  weight = 7
 
 # Taxonomies.
 [taxonomies]

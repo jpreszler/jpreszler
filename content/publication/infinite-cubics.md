@@ -18,13 +18,13 @@ publication_types = ["2"]
 
 # Publication name and optional abbreviated version.
 publication = "In *Questiones Mathematicae*, Vol. 40 Issue 1, 2017 (submitted March 2015)"
-publication_short = "In *Quest. Math.*"
+publication_short = "In *Quest. Math.* Vol. 40, Issue 1, 2017"
 
 # Abstract and optional shortened version.
 abstract = "A polynomial $f(x)$ has emergent reducibility at depth $n$ if $f^{\\circ k}(x)$ is irreducible for $0 \\leq k \\leq n − 1$ but $f^{\\circ n}(x)$ is reducible. In this paper we prove that there are infinitely many irreducible cubics $f \\in \\mathbb{Z}[x]$ with $f\\circ f$ reducible by exhibiting a one parameter family with this property."
 abstract_short = "A polynomial $f(x)$ has emergent reducibility at depth $n$ if $f^{\\circ k}(x)$ is irreducible for $0 \\leq k \\leq n − 1$ but $f^{\\circ n}(x)$ is reducible. In this paper we prove that there are infinitely many irreducible cubics $f \\in \\mathbb{Z}[x]$ with $f\\circ f$ reducible by exhibiting a one parameter family with this property."
 # Featured image thumbnail (optional)
-image_preview = ""
+#image_preview = ""
 
 # Is this a selected publication? (true/false)
 selected = true
@@ -51,8 +51,8 @@ highlight = true
 
 # Featured image
 # Place your image in the `static/img/` folder and reference its filename below, e.g. `image = "example.jpg"`.
-[header]
-image = "headers/bubbles-wide.jpg"
-caption = "My caption :smile:"
+#[header]
+#image = "headers/bubbles-wide.jpg"
+#caption = "My caption :smile:"
 
 +++

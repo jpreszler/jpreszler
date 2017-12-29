@@ -9,7 +9,7 @@ title = "Emergent Reducibility"
 summary = "Work to understand why some irreducible polynomials will factor after being composed with themselves - this is a very rare phenomenon"
 
 # Optional image to display on homepage (relative to `static/img/` folder).
-image_preview = "bubbles.jpg"
+#image_preview = "bubbles.jpg"
 
 # Tags: can be used for filtering projects.
 # Example: `tags = ["machine-learning", "deep-learning"]`
@@ -22,9 +22,9 @@ external_link = ""
 math = true
 
 # Optional featured image (relative to `static/img/` folder).
-[header]
-image = "headers/bubbles-wide.jpg"
-caption = "My caption :smile:"
+#[header]
+#image = "headers/bubbles-wide.jpg"
+#caption = "My caption :smile:"
 
 +++
 

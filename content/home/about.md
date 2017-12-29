@@ -10,7 +10,7 @@ weight = 5
 # List your academic interests.
 [interests]
   interests = [
-  "Arithemtic Statistics",
+  "Arithmetic Statistics",
   "Arboreal Galois Representations",
   "Bayesian Data Analysis",
   "Machine Learning"
@@ -42,3 +42,5 @@ Currently, my main focus is on using machine learning to better understand why s
 
 I regularly teach a wide variety of courses including Introductory Statistics, Introductory Computer Science, Data Visualization, Machine Learning, Applied Databases, Geometry and Number Theory and have taught almost every undergraduate math course. I also enjoy working with students on independent study and research projects, so if you're interested in what I do or have a project that involves analyzing data please come see me.
 
+## CV
+{{% staticref "files/cv.pdf" %}}Download my CV{{% /staticref %}}
