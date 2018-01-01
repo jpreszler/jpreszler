@@ -16,7 +16,8 @@
       <pubDate>Mon, 01 Jan 2018 00:00:00 +0000</pubDate>
       
       <guid>/post/2018-01-01/</guid>
-      <description>&lt;div id=&#34;background&#34; class=&#34;section level1&#34;&gt;
+      <description>&lt;p&gt;Besides lots of family time and the creation of this blog/website, this is what I’ve been thinking about over the winter break.&lt;/p&gt;
+&lt;div id=&#34;background&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;Background&lt;/h1&gt;
 &lt;p&gt;As part of my research in &lt;em&gt;emergent reducibility&lt;/em&gt;, I’ve had to face a binary classification situation with severe class imbalance. Among brute-force searches, it seems that there’s roughly 1 case of emergent reducibility (what I’m looking for) for every 1 million irreducible cubic polynomials. It is known that there are infinitely many cubic polynomials with emergent reducibility.&lt;/p&gt;
 &lt;p&gt;One standard way of dealing with class imbalance is to artificially increase the incidence of positive cases in the training data, but I’ve seen very little about how to decide how much to adjust the ratio of the two classes - that’s what this post is about.&lt;/p&gt;
@@ -25,8 +26,8 @@
 &lt;h1&gt;Training Data&lt;/h1&gt;
 &lt;p&gt;To examine the relationship of class imbalance on several classifiers, I build 21 training sets each with the same 52 cases of emergent reducibility and between 500 and 2500 (by 100 increments) polynomials without emergent reducibility. Each training set was used to train a variety of logristic regression, random forest, naive Bayes, and k-nearest neighbor models via caret.&lt;/p&gt;
 &lt;/div&gt;
-&lt;div id=&#34;prediction-confusion-matrices&#34; class=&#34;section level1&#34;&gt;
-&lt;h1&gt;Prediction Confusion Matrices&lt;/h1&gt;
+&lt;div id=&#34;confusion-matrices&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Confusion Matrices&lt;/h1&gt;
 &lt;p&gt;Once the models were trained, they were all tested against the same data set with 23 cases of emergent reducibility (no overlap with training data) and 8000 cases without emergent reducibility. For each model and training set combination, a confusion “matrix” was build, this is in the file &lt;a href=&#34;../../static.post/confMats.csv&#34;&gt;confMats.csv&lt;/a&gt;. Let’s read that into R and add another variable, &lt;em&gt;mdlType&lt;/em&gt; that’s either &lt;em&gt;logistic&lt;/em&gt;, &lt;em&gt;RF&lt;/em&gt;, or &lt;em&gt;other&lt;/em&gt;. This is to facet some graphs later.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;confMats &amp;lt;- read.csv(&amp;quot;../../static/post/confMats.csv&amp;quot;, header=TRUE)
 
@@ -58,16 +59,11 @@ Figure 1: A Scatterplot.
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(gganimate)
 
 pathPlot &amp;lt;- ggplot(confMats,aes(x=FP/(FP+TN),y=TP/(TP+FN),col=mdl,frame=ner))+geom_path(aes(cumulative=TRUE, group=mdl))+facet_wrap(~mdlType)+scale_color_manual(values=cb11)+ggtitle(&amp;quot;Animated ROC Paths&amp;quot;)
-## Warning: Ignoring unknown aesthetics: cumulative
 
-gganimate(pathPlot)
-## geom_path: Each group consists of only one observation. Do you need to
-## adjust the group aesthetic?
-## geom_path: Each group consists of only one observation. Do you need to
-## adjust the group aesthetic?
-## geom_path: Each group consists of only one observation. Do you need to
-## adjust the group aesthetic?&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2018-01-01_files/figure-html/aniPath-1.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2018-01-01_files/figure-html/aniPath-2.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2018-01-01_files/figure-html/aniPath-3.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2018-01-01_files/figure-html/aniPath-4.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2018-01-01_files/figure-html/aniPath-5.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2018-01-01_files/figure-html/aniPath-6.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2018-01-01_files/figure-html/aniPath-7.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2018-01-01_files/figure-html/aniPath-8.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2018-01-01_files/figure-html/aniPath-9.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2018-01-01_files/figure-html/aniPath-10.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2018-01-01_files/figure-html/aniPath-11.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2018-01-01_files/figure-html/aniPath-12.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2018-01-01_files/figure-html/aniPath-13.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2018-01-01_files/figure-html/aniPath-14.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2018-01-01_files/figure-html/aniPath-15.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2018-01-01_files/figure-html/aniPath-16.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2018-01-01_files/figure-html/aniPath-17.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2018-01-01_files/figure-html/aniPath-18.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2018-01-01_files/figure-html/aniPath-19.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2018-01-01_files/figure-html/aniPath-20.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2018-01-01_files/figure-html/aniPath-21.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+gganimate(pathPlot)&lt;/code&gt;&lt;/pre&gt;
+&lt;video width=&#34;672&#34;  controls loop&gt;
+&lt;source src=&#34;/post/2018-01-01_files/figure-html/aniPath.webm&#34; /&gt;
+&lt;/video&gt;
 &lt;/div&gt;
 </description>
     </item>

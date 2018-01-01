@@ -268,7 +268,7 @@
   
   <span class="middot-divider"></span>
   <span class="article-reading-time">
-    3 min read
+    2 min read
   </span>
   
 
@@ -337,7 +337,8 @@
 
 
       <div class="article-style" itemprop="articleBody">
-        <div id="background" class="section level1">
+        <p>Besides lots of family time and the creation of this blog/website, this is what I’ve been thinking about over the winter break.</p>
+<div id="background" class="section level1">
 <h1>Background</h1>
 <p>As part of my research in <em>emergent reducibility</em>, I’ve had to face a binary classification situation with severe class imbalance. Among brute-force searches, it seems that there’s roughly 1 case of emergent reducibility (what I’m looking for) for every 1 million irreducible cubic polynomials. It is known that there are infinitely many cubic polynomials with emergent reducibility.</p>
 <p>One standard way of dealing with class imbalance is to artificially increase the incidence of positive cases in the training data, but I’ve seen very little about how to decide how much to adjust the ratio of the two classes - that’s what this post is about.</p>
@@ -346,8 +347,8 @@
 <h1>Training Data</h1>
 <p>To examine the relationship of class imbalance on several classifiers, I build 21 training sets each with the same 52 cases of emergent reducibility and between 500 and 2500 (by 100 increments) polynomials without emergent reducibility. Each training set was used to train a variety of logristic regression, random forest, naive Bayes, and k-nearest neighbor models via caret.</p>
 </div>
-<div id="prediction-confusion-matrices" class="section level1">
-<h1>Prediction Confusion Matrices</h1>
+<div id="confusion-matrices" class="section level1">
+<h1>Confusion Matrices</h1>
 <p>Once the models were trained, they were all tested against the same data set with 23 cases of emergent reducibility (no overlap with training data) and 8000 cases without emergent reducibility. For each model and training set combination, a confusion “matrix” was build, this is in the file <a href="../../static.post/confMats.csv">confMats.csv</a>. Let’s read that into R and add another variable, <em>mdlType</em> that’s either <em>logistic</em>, <em>RF</em>, or <em>other</em>. This is to facet some graphs later.</p>
 <pre class="r"><code>confMats &lt;- read.csv(&quot;../../static/post/confMats.csv&quot;, header=TRUE)
 
@@ -379,16 +380,11 @@ Figure 1: A Scatterplot.
 <pre class="r"><code>library(gganimate)
 
 pathPlot &lt;- ggplot(confMats,aes(x=FP/(FP+TN),y=TP/(TP+FN),col=mdl,frame=ner))+geom_path(aes(cumulative=TRUE, group=mdl))+facet_wrap(~mdlType)+scale_color_manual(values=cb11)+ggtitle(&quot;Animated ROC Paths&quot;)
-## Warning: Ignoring unknown aesthetics: cumulative
 
-gganimate(pathPlot)
-## geom_path: Each group consists of only one observation. Do you need to
-## adjust the group aesthetic?
-## geom_path: Each group consists of only one observation. Do you need to
-## adjust the group aesthetic?
-## geom_path: Each group consists of only one observation. Do you need to
-## adjust the group aesthetic?</code></pre>
-<p><img src="/post/2018-01-01_files/figure-html/aniPath-1.png" width="672" /><img src="/post/2018-01-01_files/figure-html/aniPath-2.png" width="672" /><img src="/post/2018-01-01_files/figure-html/aniPath-3.png" width="672" /><img src="/post/2018-01-01_files/figure-html/aniPath-4.png" width="672" /><img src="/post/2018-01-01_files/figure-html/aniPath-5.png" width="672" /><img src="/post/2018-01-01_files/figure-html/aniPath-6.png" width="672" /><img src="/post/2018-01-01_files/figure-html/aniPath-7.png" width="672" /><img src="/post/2018-01-01_files/figure-html/aniPath-8.png" width="672" /><img src="/post/2018-01-01_files/figure-html/aniPath-9.png" width="672" /><img src="/post/2018-01-01_files/figure-html/aniPath-10.png" width="672" /><img src="/post/2018-01-01_files/figure-html/aniPath-11.png" width="672" /><img src="/post/2018-01-01_files/figure-html/aniPath-12.png" width="672" /><img src="/post/2018-01-01_files/figure-html/aniPath-13.png" width="672" /><img src="/post/2018-01-01_files/figure-html/aniPath-14.png" width="672" /><img src="/post/2018-01-01_files/figure-html/aniPath-15.png" width="672" /><img src="/post/2018-01-01_files/figure-html/aniPath-16.png" width="672" /><img src="/post/2018-01-01_files/figure-html/aniPath-17.png" width="672" /><img src="/post/2018-01-01_files/figure-html/aniPath-18.png" width="672" /><img src="/post/2018-01-01_files/figure-html/aniPath-19.png" width="672" /><img src="/post/2018-01-01_files/figure-html/aniPath-20.png" width="672" /><img src="/post/2018-01-01_files/figure-html/aniPath-21.png" width="672" /></p>
+gganimate(pathPlot)</code></pre>
+<video width="672"  controls loop>
+<source src="/post/2018-01-01_files/figure-html/aniPath.webm" />
+</video>
 </div>
 
       </div>

@@ -39,9 +39,9 @@ confMats[!(1:length(confMats$mdl) %in% c(logLocations,rfLocations)),]$mdlType<-"
 
 # ROC Plots
 
-Now we'll plot our confusion matrices in ROC space. First, Figure \@ref(fig:scatter) for example:
+Now we'll plot our confusion matrices in ROC space, each point is a model and training set combo. I've facetted by model type for readability.
 
-```{r scatter, fig.cap='A Scatterplot.', tidy=FALSE}
+```{r scatter, tidy=FALSE}
 library(ggplot2)
 
 #11 distinct colors, courtesy of colorbrewer2.org
