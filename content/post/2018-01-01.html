@@ -45,10 +45,24 @@ ggplot(confMats,aes(x=FP/(FP+TN),y=TP/(TP+FN),col=mdl))+geom_point()+facet_wrap(
 <p>To see how varying the number of non-emergent reducibile polynomials impacts performs, I’ll throw in some animation:</p>
 <pre class="r"><code>library(gganimate)
 
-pathPlot &lt;- ggplot(confMats,aes(x=FP/(FP+TN),y=TP/(TP+FN),col=mdl,frame=ner))+geom_path(aes(cumulative=TRUE, group=mdl))+facet_wrap(~mdlType)+scale_color_manual(values=cb11)+ggtitle(&quot;Animated ROC Paths&quot;)+theme_classic()
+pathPlot &lt;- ggplot(confMats,aes(x=FP/(FP+TN),y=TP/(TP+FN),col=mdl,frame=ner))+geom_path(aes(cumulative=TRUE, group=mdl))+facet_wrap(~mdlType)+scale_color_manual(values=cb11)+ggtitle(&quot;Animated ROC Paths&quot;)
 
 gganimate(pathPlot)</code></pre>
 <video width="672"  controls loop>
 <source src="/post/2018-01-01_files/figure-html/aniPath.webm" />
+</video>
+<p>Test if gganimate example is pink also:</p>
+<pre class="r"><code>library(gapminder)
+library(ggplot2)
+theme_set(theme_bw())
+p &lt;- ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, color = continent, frame = year)) +
+  geom_point() +
+  scale_x_log10()
+
+library(gganimate)
+
+gganimate(p)</code></pre>
+<video width="672"  controls loop>
+<source src="/post/2018-01-01_files/figure-html/gganiEX.webm" />
 </video>
 </div>
