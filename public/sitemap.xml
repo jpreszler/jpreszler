@@ -41,6 +41,15 @@
     
     <url>
     
+      <loc>/publication/infinite-cubics/</loc>
+      <lastmod>2017-03-01T00:00:00-07:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/tags/academic/</loc>
       <lastmod>2017-01-01T00:00:00+00:00</lastmod>
     </url>
@@ -77,8 +86,7 @@
     
     <url>
     
-      <loc>/publication_types/2/</loc>
-      <priority>0</priority>
+      <loc>/post/2018-1-1-2/</loc>
     </url>
     
   
@@ -87,6 +95,16 @@
     <url>
     
       <loc>/publication/infinite-cubics/</loc>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/publication_types/2/</loc>
+      <lastmod>2017-03-01T00:00:00-07:00</lastmod>
+      <priority>0</priority>
     </url>
     
   
@@ -204,16 +222,7 @@
     <url>
     
       <loc>/publication_types/</loc>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/categories/r/</loc>
-      <lastmod>2018-01-01T00:00:00+00:00</lastmod>
+      <lastmod>2017-03-01T00:00:00-07:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -224,6 +233,16 @@
     
       <loc>/tags/r/</loc>
       <lastmod>2018-01-01T11:14:45-07:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/categories/r/</loc>
+      <lastmod>2018-01-01T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     

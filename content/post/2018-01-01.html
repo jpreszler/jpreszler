@@ -20,7 +20,7 @@ tags: ["R","machine-learning","emergent-reducibility"]
 </div>
 <div id="confusion-matrices" class="section level1">
 <h1>Confusion Matrices</h1>
-<p>Once the models were trained, they were all tested against the same data set with 23 cases of emergent reducibility (no overlap with training data) and 8000 cases without emergent reducibility. For each model and training set combination, a confusion “matrix” was build, this is in the file <a href="../../static.post/confMats.csv">confMats.csv</a>. Let’s read that into R and add another variable, <em>mdlType</em> that’s either <em>logistic</em>, <em>RF</em>, or <em>other</em>. This is to facet some graphs later.</p>
+<p>Once the models were trained, they were all tested against the same data set with 23 cases of emergent reducibility (no overlap with training data) and 8000 cases without emergent reducibility. For each model and training set combination, a confusion “matrix” was build, this is in the file {{%/* staticref “post/confMats.csv” “newtab”<em>/%}}confMats.csv{{%/</em> /staticref <em>/%}}. Let’s read that into R and add another variable, </em>mdlType* that’s either <em>logistic</em>, <em>RF</em>, or <em>other</em>. This is to facet some graphs later.</p>
 <pre class="r"><code>confMats &lt;- read.csv(&quot;../../static/post/confMats.csv&quot;, header=TRUE)
 
 logLocations &lt;- grep(&quot;lr&quot;, confMats$mdl)
@@ -47,22 +47,9 @@ ggplot(confMats,aes(x=FP/(FP+TN),y=TP/(TP+FN),col=mdl))+geom_point()+facet_wrap(
 
 pathPlot &lt;- ggplot(confMats,aes(x=FP/(FP+TN),y=TP/(TP+FN),col=mdl,frame=ner))+geom_path(aes(cumulative=TRUE, group=mdl))+facet_wrap(~mdlType)+scale_color_manual(values=cb11)+ggtitle(&quot;Animated ROC Paths&quot;)
 
-gganimate(pathPlot)</code></pre>
-<video width="672"  controls loop>
-<source src="/post/2018-01-01_files/figure-html/aniPath.webm" />
-</video>
-<p>Test if gganimate example is pink also:</p>
-<pre class="r"><code>library(gapminder)
-library(ggplot2)
-theme_set(theme_bw())
-p &lt;- ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, color = continent, frame = year)) +
-  geom_point() +
-  scale_x_log10()
-
-library(gganimate)
-
-gganimate(p)</code></pre>
-<video width="672"  controls loop>
-<source src="/post/2018-01-01_files/figure-html/gganiEX.webm" />
-</video>
+gganimate(pathPlot, &quot;pathPlot.gif&quot;)</code></pre>
+<div class="figure">
+<img src="pathPlot.gif" alt="pathplot gif" />
+<p class="caption">pathplot gif</p>
+</div>
 </div>

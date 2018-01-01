@@ -22,7 +22,7 @@ To examine the relationship of class imbalance on several classifiers, I build 2
 of emergent reducibility and between 500 and 2500 (by 100 increments) polynomials without emergent reducibility. Each training set was used to train a variety of logristic regression, random forest, naive Bayes, and k-nearest neighbor models via caret.
 
 # Confusion Matrices
-Once the models were trained, they were all tested against the same data set with 23 cases of emergent reducibility (no overlap with training data) and 8000 cases without emergent reducibility. For each model and training set combination, a confusion "matrix" was build, this is in the file <a href="../../static.post/confMats.csv">confMats.csv</a>. Let's read that into R and add another variable, *mdlType* that's either *logistic*, *RF*, or *other*. This is to facet some graphs later.
+Once the models were trained, they were all tested against the same data set with 23 cases of emergent reducibility (no overlap with training data) and 8000 cases without emergent reducibility. For each model and training set combination, a confusion "matrix" was build, this is in the file {{%/* staticref "post/confMats.csv" "newtab"*/%}}confMats.csv{{%/* /staticref */%}}. Let's read that into R and add another variable, *mdlType* that's either *logistic*, *RF*, or *other*. This is to facet some graphs later.
 
 ```{r loadCMS, echo=TRUE}
 confMats <- read.csv("../../static/post/confMats.csv", header=TRUE)
@@ -59,19 +59,6 @@ library(gganimate)
 
 pathPlot <- ggplot(confMats,aes(x=FP/(FP+TN),y=TP/(TP+FN),col=mdl,frame=ner))+geom_path(aes(cumulative=TRUE, group=mdl))+facet_wrap(~mdlType)+scale_color_manual(values=cb11)+ggtitle("Animated ROC Paths")
 
-gganimate(pathPlot)
+gganimate(pathPlot, "pathPlot.gif")
 ```
-
-Test if gganimate example is pink also:
-```{r gganiEX, fig.show='animate'}
-library(gapminder)
-library(ggplot2)
-theme_set(theme_bw())
-p <- ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, color = continent, frame = year)) +
-  geom_point() +
-  scale_x_log10()
-
-library(gganimate)
-
-gganimate(p)
-```
+![pathplot gif](pathPlot.gif)
