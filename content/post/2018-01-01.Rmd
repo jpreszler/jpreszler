@@ -62,4 +62,6 @@ pathPlot <- ggplot(confMats,aes(x=FP/(FP+TN),y=TP/(TP+FN),col=mdl,frame=ner))+ge
 gganimate(pathPlot, "../../static/post/pathPlot.gif")
 ```
 
+I'm saving the gif and then displaying it outside the code chunk. This is because animated graphs seem to be turned pink inside code chunks.
+
 ![pathPlot.gif](/post/pathPlot.gif)
