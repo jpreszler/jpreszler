@@ -363,18 +363,13 @@ confMats[!(1:length(confMats$mdl) %in% c(logLocations,rfLocations)),]$mdlType&lt
 </div>
 <div id="roc-plots" class="section level1">
 <h1>ROC Plots</h1>
-<p>Now we’ll plot our confusion matrices in ROC space. First, Figure <a href="#fig:scatter">1</a> for example:</p>
+<p>Now we’ll plot our confusion matrices in ROC space, each point is a model and training set combo. I’ve facetted by model type for readability.</p>
 <pre class="r"><code>library(ggplot2)
 
 #11 distinct colors, courtesy of colorbrewer2.org
 cb11&lt;-c(&#39;#a6cee3&#39;,&#39;#1f78b4&#39;,&#39;#b2df8a&#39;,&#39;#33a02c&#39;,&#39;#fb9a99&#39;,&#39;#e31a1c&#39;,&#39;#fdbf6f&#39;,&#39;#ff7f00&#39;,&#39;#cab2d6&#39;,&#39;#6a3d9a&#39;,&#39;#ffff99&#39;)
 ggplot(confMats,aes(x=FP/(FP+TN),y=TP/(TP+FN),col=mdl))+geom_point()+facet_wrap(~mdlType)+scale_color_manual(values=cb11)+ggtitle(&quot;ROC Plots of Models and Class Imbalance &quot;)</code></pre>
-<div class="figure"><span id="fig:scatter"></span>
-<img src="/post/2018-01-01_files/figure-html/scatter-1.png" alt="A Scatterplot." width="672" />
-<p class="caption">
-Figure 1: A Scatterplot.
-</p>
-</div>
+<p><img src="/post/2018-01-01_files/figure-html/scatter-1.png" width="672" /></p>
 <p>The model <em>max</em> seems to find the most, but this simply marks a polynomial as having emergent reducibility if any other model says it does. This indicates some models find cases that others miss (I have some nice heatmaps showing this also, for another day). The logistic regression models have much more irregular variation than I was expecting.</p>
 <p>To see how varying the number of non-emergent reducibile polynomials impacts performs, I’ll throw in some animation:</p>
 <pre class="r"><code>library(gganimate)

@@ -42,18 +42,13 @@ confMats[!(1:length(confMats$mdl) %in% c(logLocations,rfLocations)),]$mdlType&am
 &lt;/div&gt;
 &lt;div id=&#34;roc-plots&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;ROC Plots&lt;/h1&gt;
-&lt;p&gt;Now we’ll plot our confusion matrices in ROC space. First, Figure &lt;a href=&#34;#fig:scatter&#34;&gt;1&lt;/a&gt; for example:&lt;/p&gt;
+&lt;p&gt;Now we’ll plot our confusion matrices in ROC space, each point is a model and training set combo. I’ve facetted by model type for readability.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(ggplot2)
 
 #11 distinct colors, courtesy of colorbrewer2.org
 cb11&amp;lt;-c(&amp;#39;#a6cee3&amp;#39;,&amp;#39;#1f78b4&amp;#39;,&amp;#39;#b2df8a&amp;#39;,&amp;#39;#33a02c&amp;#39;,&amp;#39;#fb9a99&amp;#39;,&amp;#39;#e31a1c&amp;#39;,&amp;#39;#fdbf6f&amp;#39;,&amp;#39;#ff7f00&amp;#39;,&amp;#39;#cab2d6&amp;#39;,&amp;#39;#6a3d9a&amp;#39;,&amp;#39;#ffff99&amp;#39;)
 ggplot(confMats,aes(x=FP/(FP+TN),y=TP/(TP+FN),col=mdl))+geom_point()+facet_wrap(~mdlType)+scale_color_manual(values=cb11)+ggtitle(&amp;quot;ROC Plots of Models and Class Imbalance &amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;div class=&#34;figure&#34;&gt;&lt;span id=&#34;fig:scatter&#34;&gt;&lt;/span&gt;
-&lt;img src=&#34;/post/2018-01-01_files/figure-html/scatter-1.png&#34; alt=&#34;A Scatterplot.&#34; width=&#34;672&#34; /&gt;
-&lt;p class=&#34;caption&#34;&gt;
-Figure 1: A Scatterplot.
-&lt;/p&gt;
-&lt;/div&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-01-01_files/figure-html/scatter-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;The model &lt;em&gt;max&lt;/em&gt; seems to find the most, but this simply marks a polynomial as having emergent reducibility if any other model says it does. This indicates some models find cases that others miss (I have some nice heatmaps showing this also, for another day). The logistic regression models have much more irregular variation than I was expecting.&lt;/p&gt;
 &lt;p&gt;To see how varying the number of non-emergent reducibile polynomials impacts performs, I’ll throw in some animation:&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(gganimate)
