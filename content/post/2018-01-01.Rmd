@@ -1,0 +1,29 @@
+---
+title: "First Post: "
+author: "Jason Preszler"
+date: 2018-01-01
+categories: ["R"]
+tags: ["R Markdown", "plot", "regression"]
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE)
+```
+
+# R Markdown
+Below is R code:
+
+```{r cars}
+summary(cars)
+fit <- lm(dist ~ speed, data = cars)
+fit
+```
+
+# Including Plots
+
+You can also embed plots. See Figure \@ref(fig:scatter) for example:
+
+```{r scatter, fig.cap='A Scatterplot.', tidy=FALSE}
+library(ggplot2)
+
+```
