@@ -1,6 +1,5 @@
 +++
 title = "An Infinite Family of Cubics with Emergent Reducibility at Depth 1"
-date = "2017"
 
 # Authors. Comma separated list, e.g. `["Bob Smith", "David Jones"]`.
 authors = ["Jason I Preszler"]

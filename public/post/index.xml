@@ -7,8 +7,84 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2017 Jason Preszler</copyright>
-    <lastBuildDate>Mon, 01 Jan 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 01 Jan 2018 11:14:45 -0700</lastBuildDate>
     <atom:link href="/post/" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Severe Class Imbalance, md edition</title>
+      <link>/post/2018-1-1-2/</link>
+      <pubDate>Mon, 01 Jan 2018 11:14:45 -0700</pubDate>
+      
+      <guid>/post/2018-1-1-2/</guid>
+      <description>
+
+&lt;p&gt;Besides lots of family time and the creation of this blog/website, this is what I&amp;rsquo;ve been thinking about over the winter break.&lt;/p&gt;
+
+&lt;h1 id=&#34;background&#34;&gt;Background&lt;/h1&gt;
+
+&lt;p&gt;As part of my research in &lt;em&gt;emergent reducibility&lt;/em&gt;, I&amp;rsquo;ve had to face a binary classification situation with severe class imbalance. Among brute-force searches, it seems that there&amp;rsquo;s roughly 1 case of emergent reducibility (what I&amp;rsquo;m looking for) for every 1 million irreducible cubic polynomials. It is known that there are infinitely many cubic polynomials with emergent reducibility.&lt;/p&gt;
+
+&lt;p&gt;One standard way of dealing with class imbalance is to artificially increase the incidence of positive cases in the training data, but I&amp;rsquo;ve seen very little about how to decide how much to adjust the ratio of the two classes - that&amp;rsquo;s what this post is about.&lt;/p&gt;
+
+&lt;h1 id=&#34;training-data&#34;&gt;Training Data&lt;/h1&gt;
+
+&lt;p&gt;To examine the relationship of class imbalance on several classifiers, I build 21 training sets each with the same 52 cases
+of emergent reducibility and between 500 and 2500 (by 100 increments) polynomials without emergent reducibility. Each training set was used to train a variety of logristic regression, random forest, naive Bayes, and k-nearest neighbor models via caret.&lt;/p&gt;
+
+&lt;h1 id=&#34;confusion-matrices&#34;&gt;Confusion Matrices&lt;/h1&gt;
+
+&lt;p&gt;Once the models were trained, they were all tested against the same data set with 23 cases of emergent reducibility (no overlap with training data) and 8000 cases without emergent reducibility. For each model and training set combination, a confusion &amp;ldquo;matrix&amp;rdquo; was build, this is in the file &lt;a href=&#34;../../static.post/confMats.csv&#34;&gt;confMats.csv&lt;/a&gt;. Let&amp;rsquo;s read that into R and add another variable, &lt;em&gt;mdlType&lt;/em&gt; that&amp;rsquo;s either &lt;em&gt;logistic&lt;/em&gt;, &lt;em&gt;RF&lt;/em&gt;, or &lt;em&gt;other&lt;/em&gt;. This is to facet some graphs later.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;confMats &amp;lt;- read.csv(&amp;quot;../../static/post/confMats.csv&amp;quot;, header=TRUE)
+
+logLocations &amp;lt;- grep(&amp;quot;lr&amp;quot;, confMats$mdl)
+rfLocations &amp;lt;- grep(&amp;quot;rf&amp;quot;, confMats$mdl)
+
+confMats$mdlType &amp;lt;- vector(mode=&amp;quot;character&amp;quot;, length=length(confMats$mdl))
+
+confMats[logLocations,]$mdlType &amp;lt;- &amp;quot;Logistic&amp;quot;
+confMats[rfLocations,]$mdlType &amp;lt;- &amp;quot;RF&amp;quot;
+confMats[!(1:length(confMats$mdl) %in% c(logLocations,rfLocations)),]$mdlType&amp;lt;-&amp;quot;Other&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h1 id=&#34;roc-plots&#34;&gt;ROC Plots&lt;/h1&gt;
+
+&lt;p&gt;Now we&amp;rsquo;ll plot our confusion matrices in ROC space, each point is a model and training set combo. I&amp;rsquo;ve facetted by model type for readability.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;library(ggplot2)
+
+#11 distinct colors, courtesy of colorbrewer2.org
+cb11&amp;lt;-c(&#39;#a6cee3&#39;,&#39;#1f78b4&#39;,&#39;#b2df8a&#39;,&#39;#33a02c&#39;,&#39;#fb9a99&#39;,&#39;#e31a1c&#39;,&#39;#fdbf6f&#39;,&#39;#ff7f00&#39;,&#39;#cab2d6&#39;,&#39;#6a3d9a&#39;,&#39;#ffff99&#39;)
+ggplot(confMats,aes(x=FP/(FP+TN),y=TP/(TP+FN),col=mdl))+geom_point()+facet_wrap(~mdlType)+scale_color_manual(values=cb11)+ggtitle(&amp;quot;ROC Plots of Models and Class Imbalance &amp;quot;)
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The model &lt;em&gt;max&lt;/em&gt; seems to find the most, but this simply marks a polynomial as having emergent reducibility if any other model says it does. This indicates some models find cases that others miss (I have some nice heatmaps showing this also, for another day). The logistic regression models have much more irregular variation than I was expecting.&lt;/p&gt;
+
+&lt;p&gt;To see how varying the number of non-emergent reducibile polynomials impacts performs, I&amp;rsquo;ll throw in some animation:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;library(gganimate)
+
+pathPlot &amp;lt;- ggplot(confMats,aes(x=FP/(FP+TN),y=TP/(TP+FN),col=mdl,frame=ner))+geom_path(aes(cumulative=TRUE, group=mdl))+facet_wrap(~mdlType)+scale_color_manual(values=cb11)+ggtitle(&amp;quot;Animated ROC Paths&amp;quot;)
+
+gganimate(pathPlot)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Test if gganimate example is pink also:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;library(gapminder)
+library(ggplot2)
+theme_set(theme_bw())
+p &amp;lt;- ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, color = continent, frame = year)) +
+  geom_point() +
+  scale_x_log10()
+
+library(gganimate)
+
+gganimate(p)
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
     
     <item>
       <title>Thoughts on Severe Class Imbalance </title>
