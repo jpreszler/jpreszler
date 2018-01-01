@@ -2,7 +2,7 @@
 title: "Thoughts on Severe Class Imbalance "
 author: "Jason Preszler"
 date: 2018-01-01
-categories: ["R"]
+categories: ["emergent-reducibility"]
 tags: ["R","machine-learning","emergent-reducibility"]
 ---
 
@@ -20,7 +20,7 @@ tags: ["R","machine-learning","emergent-reducibility"]
 </div>
 <div id="confusion-matrices" class="section level1">
 <h1>Confusion Matrices</h1>
-<p>Once the models were trained, they were all tested against the same data set with 23 cases of emergent reducibility (no overlap with training data) and 8000 cases without emergent reducibility. For each model and training set combination, a confusion “matrix” was build, this is in the file {{%/* staticref “post/confMats.csv” “newtab”<em>/%}}confMats.csv{{%/</em> /staticref <em>/%}}. Let’s read that into R and add another variable, </em>mdlType* that’s either <em>logistic</em>, <em>RF</em>, or <em>other</em>. This is to facet some graphs later.</p>
+<p>Once the models were trained, they were all tested against the same data set with 23 cases of emergent reducibility (no overlap with training data) and 8000 cases without emergent reducibility. For each model and training set combination, a confusion “matrix” was build, this is in the file <a href="/post/confMats.csv">confMats.csv</a>. Let’s read that into R and add another variable, <em>mdlType</em> that’s either <em>logistic</em>, <em>RF</em>, or <em>other</em>. This is to facet some graphs later.</p>
 <pre class="r"><code>confMats &lt;- read.csv(&quot;../../static/post/confMats.csv&quot;, header=TRUE)
 
 logLocations &lt;- grep(&quot;lr&quot;, confMats$mdl)
@@ -47,9 +47,9 @@ ggplot(confMats,aes(x=FP/(FP+TN),y=TP/(TP+FN),col=mdl))+geom_point()+facet_wrap(
 
 pathPlot &lt;- ggplot(confMats,aes(x=FP/(FP+TN),y=TP/(TP+FN),col=mdl,frame=ner))+geom_path(aes(cumulative=TRUE, group=mdl))+facet_wrap(~mdlType)+scale_color_manual(values=cb11)+ggtitle(&quot;Animated ROC Paths&quot;)
 
-gganimate(pathPlot, &quot;pathPlot.gif&quot;)</code></pre>
+gganimate(pathPlot, &quot;../../static/post/pathPlot.gif&quot;)</code></pre>
 <div class="figure">
-<img src="pathPlot.gif" alt="pathplot gif" />
-<p class="caption">pathplot gif</p>
+<img src="/post/pathPlot.gif" alt="pathPlot.gif" />
+<p class="caption">pathPlot.gif</p>
 </div>
 </div>

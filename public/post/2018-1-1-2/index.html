@@ -345,7 +345,7 @@ of emergent reducibility and between 500 and 2500 (by 100 increments) polynomial
 
 <h1 id="confusion-matrices">Confusion Matrices</h1>
 
-<p>Once the models were trained, they were all tested against the same data set with 23 cases of emergent reducibility (no overlap with training data) and 8000 cases without emergent reducibility. For each model and training set combination, a confusion &ldquo;matrix&rdquo; was build, this is in the file {{% staticref &ldquo;post/confMats.csv&rdquo; &ldquo;newtab&rdquo;%}}confMats.csv{{% /staticref %}}. Let&rsquo;s read that into R and add another variable, <em>mdlType</em> that&rsquo;s either <em>logistic</em>, <em>RF</em>, or <em>other</em>. This is to facet some graphs later.</p>
+<p>Once the models were trained, they were all tested against the same data set with 23 cases of emergent reducibility (no overlap with training data) and 8000 cases without emergent reducibility. For each model and training set combination, a confusion &ldquo;matrix&rdquo; was build, this is in the file <a href="{{% staticref &quot;post/confMats.csv&quot; &quot;newtab&quot;%}}confMats.csv{{% /staticref %}}" target="_blank">confMats.csv</a>. Let&rsquo;s read that into R and add another variable, <em>mdlType</em> that&rsquo;s either <em>logistic</em>, <em>RF</em>, or <em>other</em>. This is to facet some graphs later.</p>
 
 <pre><code class="language-r">confMats &lt;- read.csv(&quot;../../static/post/confMats.csv&quot;, header=TRUE)
 
@@ -382,7 +382,7 @@ pathPlot &lt;- ggplot(confMats,aes(x=FP/(FP+TN),y=TP/(TP+FN),col=mdl,frame=ner))
 gganimate(pathPlot, &quot;pathPlot.gif&quot;)
 </code></pre>
 
-<p><img src="pathPlot.gif" alt="pathPlot-gif" /></p>
+<p><img src="/post/pathPlot.gif" alt="pathPlot-gif" /></p>
 
       </div>
 
