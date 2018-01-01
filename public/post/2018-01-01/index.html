@@ -76,7 +76,7 @@
   
   <meta property="og:site_name" content="Jason I. Preszler">
   <meta property="og:url" content="/post/2018-01-01/">
-  <meta property="og:title" content="First Post:  | Jason I. Preszler">
+  <meta property="og:title" content="Thoughts on Severe Class Imbalance  | Jason I. Preszler">
   <meta property="og:description" content="">
   <meta property="og:locale" content="en-us">
   
@@ -87,7 +87,7 @@
 
   
 
-  <title>First Post:  | Jason I. Preszler</title>
+  <title>Thoughts on Severe Class Imbalance  | Jason I. Preszler</title>
 
 </head>
 <body id="top" data-spy="scroll" data-target="#toc" data-offset="71" >
@@ -252,7 +252,7 @@
 
   <div class="article-container">
     <div class="article-inner">
-      <h1 itemprop="name">First Post: </h1>
+      <h1 itemprop="name">Thoughts on Severe Class Imbalance </h1>
 
       
 
@@ -268,7 +268,7 @@
   
   <span class="middot-divider"></span>
   <span class="article-reading-time">
-    1 min read
+    3 min read
   </span>
   
 
@@ -295,7 +295,7 @@
   <ul class="share">
     <li>
       <a class="twitter"
-         href="https://twitter.com/intent/tweet?text=First%20Post%3a%20&amp;url=%2fpost%2f2018-01-01%2f"
+         href="https://twitter.com/intent/tweet?text=Thoughts%20on%20Severe%20Class%20Imbalance%20&amp;url=%2fpost%2f2018-01-01%2f"
          target="_blank" rel="noopener">
         <i class="fa fa-twitter"></i>
       </a>
@@ -309,21 +309,21 @@
     </li>
     <li>
       <a class="linkedin"
-         href="https://www.linkedin.com/shareArticle?mini=true&amp;url=%2fpost%2f2018-01-01%2f&amp;title=First%20Post%3a%20"
+         href="https://www.linkedin.com/shareArticle?mini=true&amp;url=%2fpost%2f2018-01-01%2f&amp;title=Thoughts%20on%20Severe%20Class%20Imbalance%20"
          target="_blank" rel="noopener">
         <i class="fa fa-linkedin"></i>
       </a>
     </li>
     <li>
       <a class="weibo"
-         href="http://service.weibo.com/share/share.php?url=%2fpost%2f2018-01-01%2f&amp;title=First%20Post%3a%20"
+         href="http://service.weibo.com/share/share.php?url=%2fpost%2f2018-01-01%2f&amp;title=Thoughts%20on%20Severe%20Class%20Imbalance%20"
          target="_blank" rel="noopener">
         <i class="fa fa-weibo"></i>
       </a>
     </li>
     <li>
       <a class="email"
-         href="mailto:?subject=First%20Post%3a%20&amp;body=%2fpost%2f2018-01-01%2f">
+         href="mailto:?subject=Thoughts%20on%20Severe%20Class%20Imbalance%20&amp;body=%2fpost%2f2018-01-01%2f">
         <i class="fa fa-envelope"></i>
       </a>
     </li>
@@ -337,31 +337,58 @@
 
 
       <div class="article-style" itemprop="articleBody">
-        <div id="r-markdown" class="section level1">
-<h1>R Markdown</h1>
-<p>Below is R code:</p>
-<pre class="r"><code>summary(cars)
-##      speed           dist       
-##  Min.   : 4.0   Min.   :  2.00  
-##  1st Qu.:12.0   1st Qu.: 26.00  
-##  Median :15.0   Median : 36.00  
-##  Mean   :15.4   Mean   : 42.98  
-##  3rd Qu.:19.0   3rd Qu.: 56.00  
-##  Max.   :25.0   Max.   :120.00
-fit &lt;- lm(dist ~ speed, data = cars)
-fit
-## 
-## Call:
-## lm(formula = dist ~ speed, data = cars)
-## 
-## Coefficients:
-## (Intercept)        speed  
-##     -17.579        3.932</code></pre>
+        <div id="background" class="section level1">
+<h1>Background</h1>
+<p>As part of my research in <em>emergent reducibility</em>, I’ve had to face a binary classification situation with severe class imbalance. Among brute-force searches, it seems that there’s roughly 1 case of emergent reducibility (what I’m looking for) for every 1 million irreducible cubic polynomials. It is known that there are infinitely many cubic polynomials with emergent reducibility.</p>
+<p>One standard way of dealing with class imbalance is to artificially increase the incidence of positive cases in the training data, but I’ve seen very little about how to decide how much to adjust the ratio of the two classes - that’s what this post is about.</p>
 </div>
-<div id="including-plots" class="section level1">
-<h1>Including Plots</h1>
-<p>You can also embed plots. See Figure <a href="#fig:scatter"><strong>??</strong></a> for example:</p>
-<pre class="r"><code>library(ggplot2)</code></pre>
+<div id="training-data" class="section level1">
+<h1>Training Data</h1>
+<p>To examine the relationship of class imbalance on several classifiers, I build 21 training sets each with the same 52 cases of emergent reducibility and between 500 and 2500 (by 100 increments) polynomials without emergent reducibility. Each training set was used to train a variety of logristic regression, random forest, naive Bayes, and k-nearest neighbor models via caret.</p>
+</div>
+<div id="prediction-confusion-matrices" class="section level1">
+<h1>Prediction Confusion Matrices</h1>
+<p>Once the models were trained, they were all tested against the same data set with 23 cases of emergent reducibility (no overlap with training data) and 8000 cases without emergent reducibility. For each model and training set combination, a confusion “matrix” was build, this is in the file <a href="../../static.post/confMats.csv">confMats.csv</a>. Let’s read that into R and add another variable, <em>mdlType</em> that’s either <em>logistic</em>, <em>RF</em>, or <em>other</em>. This is to facet some graphs later.</p>
+<pre class="r"><code>confMats &lt;- read.csv(&quot;../../static/post/confMats.csv&quot;, header=TRUE)
+
+logLocations &lt;- grep(&quot;lr&quot;, confMats$mdl)
+rfLocations &lt;- grep(&quot;rf&quot;, confMats$mdl)
+
+confMats$mdlType &lt;- vector(mode=&quot;character&quot;, length=length(confMats$mdl))
+
+confMats[logLocations,]$mdlType &lt;- &quot;Logistic&quot;
+confMats[rfLocations,]$mdlType &lt;- &quot;RF&quot;
+confMats[!(1:length(confMats$mdl) %in% c(logLocations,rfLocations)),]$mdlType&lt;-&quot;Other&quot;</code></pre>
+</div>
+<div id="roc-plots" class="section level1">
+<h1>ROC Plots</h1>
+<p>Now we’ll plot our confusion matrices in ROC space. First, Figure <a href="#fig:scatter">1</a> for example:</p>
+<pre class="r"><code>library(ggplot2)
+
+#11 distinct colors, courtesy of colorbrewer2.org
+cb11&lt;-c(&#39;#a6cee3&#39;,&#39;#1f78b4&#39;,&#39;#b2df8a&#39;,&#39;#33a02c&#39;,&#39;#fb9a99&#39;,&#39;#e31a1c&#39;,&#39;#fdbf6f&#39;,&#39;#ff7f00&#39;,&#39;#cab2d6&#39;,&#39;#6a3d9a&#39;,&#39;#ffff99&#39;)
+ggplot(confMats,aes(x=FP/(FP+TN),y=TP/(TP+FN),col=mdl))+geom_point()+facet_wrap(~mdlType)+scale_color_manual(values=cb11)+ggtitle(&quot;ROC Plots of Models and Class Imbalance &quot;)</code></pre>
+<div class="figure"><span id="fig:scatter"></span>
+<img src="/post/2018-01-01_files/figure-html/scatter-1.png" alt="A Scatterplot." width="672" />
+<p class="caption">
+Figure 1: A Scatterplot.
+</p>
+</div>
+<p>The model <em>max</em> seems to find the most, but this simply marks a polynomial as having emergent reducibility if any other model says it does. This indicates some models find cases that others miss (I have some nice heatmaps showing this also, for another day). The logistic regression models have much more irregular variation than I was expecting.</p>
+<p>To see how varying the number of non-emergent reducibile polynomials impacts performs, I’ll through in some animation:</p>
+<pre class="r"><code>library(gganimate)
+
+pathPlot &lt;- ggplot(confMats,aes(x=FP/(FP+TN),y=TP/(TP+FN),col=mdl,frame=ner))+geom_path(aes(cumulative=TRUE, group=mdl))+facet_wrap(~mdlType)+scale_color_manual(values=cb11)+ggtitle(&quot;Animated ROC Paths&quot;)
+## Warning: Ignoring unknown aesthetics: cumulative
+
+gganimate(pathPlot)
+## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?
+## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?
+## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?</code></pre>
+<p><img src="/post/2018-01-01_files/figure-html/aniPath-1.png" width="672" /><img src="/post/2018-01-01_files/figure-html/aniPath-2.png" width="672" /><img src="/post/2018-01-01_files/figure-html/aniPath-3.png" width="672" /><img src="/post/2018-01-01_files/figure-html/aniPath-4.png" width="672" /><img src="/post/2018-01-01_files/figure-html/aniPath-5.png" width="672" /><img src="/post/2018-01-01_files/figure-html/aniPath-6.png" width="672" /><img src="/post/2018-01-01_files/figure-html/aniPath-7.png" width="672" /><img src="/post/2018-01-01_files/figure-html/aniPath-8.png" width="672" /><img src="/post/2018-01-01_files/figure-html/aniPath-9.png" width="672" /><img src="/post/2018-01-01_files/figure-html/aniPath-10.png" width="672" /><img src="/post/2018-01-01_files/figure-html/aniPath-11.png" width="672" /><img src="/post/2018-01-01_files/figure-html/aniPath-12.png" width="672" /><img src="/post/2018-01-01_files/figure-html/aniPath-13.png" width="672" /><img src="/post/2018-01-01_files/figure-html/aniPath-14.png" width="672" /><img src="/post/2018-01-01_files/figure-html/aniPath-15.png" width="672" /><img src="/post/2018-01-01_files/figure-html/aniPath-16.png" width="672" /><img src="/post/2018-01-01_files/figure-html/aniPath-17.png" width="672" /><img src="/post/2018-01-01_files/figure-html/aniPath-18.png" width="672" /><img src="/post/2018-01-01_files/figure-html/aniPath-19.png" width="672" /><img src="/post/2018-01-01_files/figure-html/aniPath-20.png" width="672" /><img src="/post/2018-01-01_files/figure-html/aniPath-21.png" width="672" /></p>
 </div>
 
       </div>
@@ -371,11 +398,11 @@ fit
 
 <div class="article-tags">
   
-  <a class="btn btn-primary btn-outline" href="/tags/r-markdown">R Markdown</a>
+  <a class="btn btn-primary btn-outline" href="/tags/r">R</a>
   
-  <a class="btn btn-primary btn-outline" href="/tags/plot">plot</a>
+  <a class="btn btn-primary btn-outline" href="/tags/machine-learning">machine-learning</a>
   
-  <a class="btn btn-primary btn-outline" href="/tags/regression">regression</a>
+  <a class="btn btn-primary btn-outline" href="/tags/emergent-reducibility">emergent-reducibility</a>
   
 </div>
 
@@ -387,6 +414,18 @@ fit
 </article>
 
 
+
+<div class="article-container article-widget">
+  <div class="hr-light"></div>
+  <h3>Related</h3>
+  <ul>
+    
+    <li><a href="/project/emergent-reducibility/">Emergent Reducibility</a></li>
+    
+    <li><a href="/talk/jmm-2015/">An Infinite Family of Cubic Polynomials with Depth 1 Emergent Reducibility</a></li>
+    
+  </ul>
+</div>
 
 
 
