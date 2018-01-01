@@ -54,11 +54,12 @@ The model *max* seems to find the most, but this simply marks a polynomial as ha
 
 To see how varying the number of non-emergent reducibile polynomials impacts performs, I'll throw in some animation:
 
-```{r aniPath, fig.show="animate", message=FALSE, warning=FALSE}
+```{r aniPath, message=FALSE, warning=FALSE}
 library(gganimate)
 
 pathPlot <- ggplot(confMats,aes(x=FP/(FP+TN),y=TP/(TP+FN),col=mdl,frame=ner))+geom_path(aes(cumulative=TRUE, group=mdl))+facet_wrap(~mdlType)+scale_color_manual(values=cb11)+ggtitle("Animated ROC Paths")
 
 gganimate(pathPlot, "pathPlot.gif")
 ```
+
 ![pathplot gif](pathPlot.gif)
