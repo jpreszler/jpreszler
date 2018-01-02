@@ -42,7 +42,7 @@ cb11&lt;-c(&#39;#a6cee3&#39;,&#39;#1f78b4&#39;,&#39;#b2df8a&#39;,&#39;#33a02c&#3
 ggplot(confMats,aes(x=FP/(FP+TN),y=TP/(TP+FN),col=mdl))+geom_point()+facet_wrap(~mdlType)+scale_color_manual(values=cb11)+ggtitle(&quot;ROC Plots of Models and Class Imbalance &quot;)</code></pre>
 <p><img src="/post/2018-01-01_files/figure-html/scatter-1.png" width="672" /></p>
 <p>The model <em>max</em> seems to find the most, but this simply marks a polynomial as having emergent reducibility if any other model says it does. This indicates some models find cases that others miss (I have some nice heatmaps showing this also, for another day). The logistic regression models have much more irregular variation than I was expecting.</p>
-<p>To see how varying the number of non-emergent reducibile polynomials impacts performs, I’ll throw in some animation:</p>
+<p>To see how varying the number of non-emergent reducibile polynomials impacts performance, I’ll throw in some animation:</p>
 <pre class="r"><code>library(gganimate)
 
 pathPlot &lt;- ggplot(confMats,aes(x=FP/(FP+TN),y=TP/(TP+FN),col=mdl,frame=ner))+geom_path(aes(cumulative=TRUE, group=mdl))+facet_wrap(~mdlType)+scale_color_manual(values=cb11)+ggtitle(&quot;Animated ROC Paths&quot;)
@@ -53,4 +53,375 @@ gganimate(pathPlot, &quot;../../static/post/pathPlot.gif&quot;)</code></pre>
 <img src="/post/pathPlot.gif" alt="pathPlot.gif" />
 <p class="caption">pathPlot.gif</p>
 </div>
+<p>The random forest and knn models seem pretty stable as the number of non-emergent reducible case changes. Looking at the number of true positives we see a gradual decline as <em>ner</em> increases:</p>
+<pre class="r"><code>library(knitr)
+nerRF.tab &lt;- xtabs(TP~ner+mdl, data=confMats[confMats$mdl %in% c(&quot;rfs&quot;,&quot;rfp&quot;,&quot;rfpp&quot;,&quot;rfsq&quot;,&quot;knn&quot;),], drop.unused.levels = TRUE)
+kable(nerRF.tab)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">knn</th>
+<th align="right">rfp</th>
+<th align="right">rfpp</th>
+<th align="right">rfs</th>
+<th align="right">rfsq</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">500</td>
+<td align="right">21</td>
+<td align="right">19</td>
+<td align="right">15</td>
+<td align="right">20</td>
+<td align="right">16</td>
+</tr>
+<tr class="even">
+<td align="left">600</td>
+<td align="right">21</td>
+<td align="right">17</td>
+<td align="right">13</td>
+<td align="right">19</td>
+<td align="right">15</td>
+</tr>
+<tr class="odd">
+<td align="left">700</td>
+<td align="right">20</td>
+<td align="right">20</td>
+<td align="right">13</td>
+<td align="right">18</td>
+<td align="right">17</td>
+</tr>
+<tr class="even">
+<td align="left">800</td>
+<td align="right">19</td>
+<td align="right">17</td>
+<td align="right">13</td>
+<td align="right">18</td>
+<td align="right">15</td>
+</tr>
+<tr class="odd">
+<td align="left">900</td>
+<td align="right">18</td>
+<td align="right">18</td>
+<td align="right">10</td>
+<td align="right">18</td>
+<td align="right">17</td>
+</tr>
+<tr class="even">
+<td align="left">1000</td>
+<td align="right">18</td>
+<td align="right">16</td>
+<td align="right">11</td>
+<td align="right">16</td>
+<td align="right">14</td>
+</tr>
+<tr class="odd">
+<td align="left">1100</td>
+<td align="right">17</td>
+<td align="right">17</td>
+<td align="right">12</td>
+<td align="right">16</td>
+<td align="right">14</td>
+</tr>
+<tr class="even">
+<td align="left">1200</td>
+<td align="right">17</td>
+<td align="right">17</td>
+<td align="right">12</td>
+<td align="right">18</td>
+<td align="right">16</td>
+</tr>
+<tr class="odd">
+<td align="left">1300</td>
+<td align="right">17</td>
+<td align="right">18</td>
+<td align="right">10</td>
+<td align="right">15</td>
+<td align="right">14</td>
+</tr>
+<tr class="even">
+<td align="left">1400</td>
+<td align="right">17</td>
+<td align="right">13</td>
+<td align="right">10</td>
+<td align="right">16</td>
+<td align="right">12</td>
+</tr>
+<tr class="odd">
+<td align="left">1500</td>
+<td align="right">14</td>
+<td align="right">13</td>
+<td align="right">11</td>
+<td align="right">14</td>
+<td align="right">10</td>
+</tr>
+<tr class="even">
+<td align="left">1600</td>
+<td align="right">15</td>
+<td align="right">15</td>
+<td align="right">10</td>
+<td align="right">15</td>
+<td align="right">13</td>
+</tr>
+<tr class="odd">
+<td align="left">1700</td>
+<td align="right">16</td>
+<td align="right">16</td>
+<td align="right">9</td>
+<td align="right">16</td>
+<td align="right">13</td>
+</tr>
+<tr class="even">
+<td align="left">1800</td>
+<td align="right">15</td>
+<td align="right">15</td>
+<td align="right">9</td>
+<td align="right">14</td>
+<td align="right">12</td>
+</tr>
+<tr class="odd">
+<td align="left">1900</td>
+<td align="right">16</td>
+<td align="right">13</td>
+<td align="right">9</td>
+<td align="right">14</td>
+<td align="right">13</td>
+</tr>
+<tr class="even">
+<td align="left">2000</td>
+<td align="right">14</td>
+<td align="right">10</td>
+<td align="right">8</td>
+<td align="right">14</td>
+<td align="right">10</td>
+</tr>
+<tr class="odd">
+<td align="left">2100</td>
+<td align="right">14</td>
+<td align="right">11</td>
+<td align="right">9</td>
+<td align="right">13</td>
+<td align="right">12</td>
+</tr>
+<tr class="even">
+<td align="left">2200</td>
+<td align="right">13</td>
+<td align="right">12</td>
+<td align="right">8</td>
+<td align="right">11</td>
+<td align="right">13</td>
+</tr>
+<tr class="odd">
+<td align="left">2300</td>
+<td align="right">16</td>
+<td align="right">11</td>
+<td align="right">9</td>
+<td align="right">13</td>
+<td align="right">9</td>
+</tr>
+<tr class="even">
+<td align="left">2400</td>
+<td align="right">13</td>
+<td align="right">11</td>
+<td align="right">7</td>
+<td align="right">11</td>
+<td align="right">9</td>
+</tr>
+<tr class="odd">
+<td align="left">2500</td>
+<td align="right">14</td>
+<td align="right">11</td>
+<td align="right">8</td>
+<td align="right">11</td>
+<td align="right">11</td>
+</tr>
+</tbody>
+</table>
+<p>What about the false negatives (missed cases of emergent reducibility):</p>
+<pre class="r"><code>FNnerRF.tab &lt;- xtabs(FN~ner+mdl, data=confMats[confMats$mdl %in% c(&quot;rfs&quot;,&quot;rfp&quot;,&quot;rfpp&quot;,&quot;rfsq&quot;,&quot;knn&quot;),], drop.unused.levels = TRUE)
+kable(FNnerRF.tab)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">knn</th>
+<th align="right">rfp</th>
+<th align="right">rfpp</th>
+<th align="right">rfs</th>
+<th align="right">rfsq</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">500</td>
+<td align="right">2</td>
+<td align="right">4</td>
+<td align="right">8</td>
+<td align="right">3</td>
+<td align="right">7</td>
+</tr>
+<tr class="even">
+<td align="left">600</td>
+<td align="right">2</td>
+<td align="right">6</td>
+<td align="right">10</td>
+<td align="right">4</td>
+<td align="right">8</td>
+</tr>
+<tr class="odd">
+<td align="left">700</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">10</td>
+<td align="right">5</td>
+<td align="right">6</td>
+</tr>
+<tr class="even">
+<td align="left">800</td>
+<td align="right">4</td>
+<td align="right">6</td>
+<td align="right">10</td>
+<td align="right">5</td>
+<td align="right">8</td>
+</tr>
+<tr class="odd">
+<td align="left">900</td>
+<td align="right">5</td>
+<td align="right">5</td>
+<td align="right">13</td>
+<td align="right">5</td>
+<td align="right">6</td>
+</tr>
+<tr class="even">
+<td align="left">1000</td>
+<td align="right">5</td>
+<td align="right">7</td>
+<td align="right">12</td>
+<td align="right">7</td>
+<td align="right">9</td>
+</tr>
+<tr class="odd">
+<td align="left">1100</td>
+<td align="right">6</td>
+<td align="right">6</td>
+<td align="right">11</td>
+<td align="right">7</td>
+<td align="right">9</td>
+</tr>
+<tr class="even">
+<td align="left">1200</td>
+<td align="right">6</td>
+<td align="right">6</td>
+<td align="right">11</td>
+<td align="right">5</td>
+<td align="right">7</td>
+</tr>
+<tr class="odd">
+<td align="left">1300</td>
+<td align="right">6</td>
+<td align="right">5</td>
+<td align="right">13</td>
+<td align="right">8</td>
+<td align="right">9</td>
+</tr>
+<tr class="even">
+<td align="left">1400</td>
+<td align="right">6</td>
+<td align="right">10</td>
+<td align="right">13</td>
+<td align="right">7</td>
+<td align="right">11</td>
+</tr>
+<tr class="odd">
+<td align="left">1500</td>
+<td align="right">9</td>
+<td align="right">10</td>
+<td align="right">12</td>
+<td align="right">9</td>
+<td align="right">13</td>
+</tr>
+<tr class="even">
+<td align="left">1600</td>
+<td align="right">8</td>
+<td align="right">8</td>
+<td align="right">13</td>
+<td align="right">8</td>
+<td align="right">10</td>
+</tr>
+<tr class="odd">
+<td align="left">1700</td>
+<td align="right">7</td>
+<td align="right">7</td>
+<td align="right">14</td>
+<td align="right">7</td>
+<td align="right">10</td>
+</tr>
+<tr class="even">
+<td align="left">1800</td>
+<td align="right">8</td>
+<td align="right">8</td>
+<td align="right">14</td>
+<td align="right">9</td>
+<td align="right">11</td>
+</tr>
+<tr class="odd">
+<td align="left">1900</td>
+<td align="right">7</td>
+<td align="right">10</td>
+<td align="right">14</td>
+<td align="right">9</td>
+<td align="right">10</td>
+</tr>
+<tr class="even">
+<td align="left">2000</td>
+<td align="right">9</td>
+<td align="right">13</td>
+<td align="right">15</td>
+<td align="right">9</td>
+<td align="right">13</td>
+</tr>
+<tr class="odd">
+<td align="left">2100</td>
+<td align="right">9</td>
+<td align="right">12</td>
+<td align="right">14</td>
+<td align="right">10</td>
+<td align="right">11</td>
+</tr>
+<tr class="even">
+<td align="left">2200</td>
+<td align="right">10</td>
+<td align="right">11</td>
+<td align="right">15</td>
+<td align="right">12</td>
+<td align="right">10</td>
+</tr>
+<tr class="odd">
+<td align="left">2300</td>
+<td align="right">7</td>
+<td align="right">12</td>
+<td align="right">14</td>
+<td align="right">10</td>
+<td align="right">14</td>
+</tr>
+<tr class="even">
+<td align="left">2400</td>
+<td align="right">10</td>
+<td align="right">12</td>
+<td align="right">16</td>
+<td align="right">12</td>
+<td align="right">14</td>
+</tr>
+<tr class="odd">
+<td align="left">2500</td>
+<td align="right">9</td>
+<td align="right">12</td>
+<td align="right">15</td>
+<td align="right">12</td>
+<td align="right">12</td>
+</tr>
+</tbody>
+</table>
 </div>

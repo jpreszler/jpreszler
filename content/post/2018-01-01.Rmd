@@ -52,7 +52,7 @@ ggplot(confMats,aes(x=FP/(FP+TN),y=TP/(TP+FN),col=mdl))+geom_point()+facet_wrap(
 
 The model *max* seems to find the most, but this simply marks a polynomial as having emergent reducibility if any other model says it does. This indicates some models find cases that others miss (I have some nice heatmaps showing this also, for another day). The logistic regression models have much more irregular variation than I was expecting. 
 
-To see how varying the number of non-emergent reducibile polynomials impacts performs, I'll throw in some animation:
+To see how varying the number of non-emergent reducibile polynomials impacts performance, I'll throw in some animation:
 
 ```{r aniPath, message=FALSE, warning=FALSE}
 library(gganimate)
@@ -65,3 +65,19 @@ gganimate(pathPlot, "../../static/post/pathPlot.gif")
 I'm saving the gif and then displaying it outside the code chunk. This is because animated graphs seem to be turned pink inside code chunks.
 
 ![pathPlot.gif](/post/pathPlot.gif)
+
+The random forest and knn models seem pretty stable as the number of non-emergent reducible case changes. Looking at the number of true positives we see a gradual decline as *ner* increases:
+
+```{r tpTable}
+library(knitr)
+nerRF.tab <- xtabs(TP~ner+mdl, data=confMats[confMats$mdl %in% c("rfs","rfp","rfpp","rfsq","knn"),], drop.unused.levels = TRUE)
+kable(nerRF.tab)
+```
+
+What about the false negatives (missed cases of emergent reducibility):
+```{r fnTable}
+FNnerRF.tab <- xtabs(FN~ner+mdl, data=confMats[confMats$mdl %in% c("rfs","rfp","rfpp","rfsq","knn"),], drop.unused.levels = TRUE)
+kable(FNnerRF.tab)
+```
+
+
