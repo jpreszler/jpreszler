@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="theme" content="hugo-academic">
+  <meta name="generator" content="Hugo 0.31.1" />
+  <meta name="author" content="Jason Preszler">
+  <meta name="description" content="Assistant Professor - Math, Statistics, and Computer Science">
+
+  
+  <link rel="alternate" hreflang="en-us" href="/post/2018-01-01.utf8/">
+
+  
+  
+
+
+  
+
+  
+  
+  
+  
+    
+  
+  
+    
+    
+      
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+      
+    
+  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha512-6MXa8B6uaO18Hid6blRMetEIoPqHf7Ux1tnyIQdpt9qI5OACx7C+O3IVTr98vwGnlcg0LOLa02i9Y1HpVhlfiw==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.1/css/academicons.min.css" integrity="sha512-NThgw3XKQ1absAahW6to7Ey42uycrVvfNfyjqcFNgCmOCQ5AR4AO0SiXrN+8ZtYeappp56lk1WtvjVmEa+VR6A==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha512-SfTiTlX6kk+qitfevl/7LibUOeJWlt9rbyDn92a1DqWOw9vWG2MFoays0sgObmWazO5BQPiFucnnEAjpAB+/Sw==" crossorigin="anonymous">
+  
+  
+  
+  
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Montserrat:400,700%7cRoboto:400,400italic,700%7cRoboto&#43;Mono">
+  
+  <link rel="stylesheet" href="/styles.css">
+  
+
+  
+    <script>
+      window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+      ga('create', 'UA-111748163-1', 'auto');
+      ga('require', 'eventTracker');
+      ga('require', 'outboundLinkTracker');
+      ga('require', 'urlChangeTracker');
+      ga('send', 'pageview');
+    </script>
+    <script async src="//www.google-analytics.com/analytics.js"></script>
+    
+    <script async src="https://cdnjs.cloudflare.com/ajax/libs/autotrack/2.4.1/autotrack.js" integrity="sha512-HUmooslVKj4m6OBu0OgzjXXr+QuFYy/k7eLI5jdeEy/F4RSgMn6XRWRGkFi5IFaFgy7uFTkegp3Z0XnJf3Jq+g==" crossorigin="anonymous"></script>
+    
+  
+
+  
+  <link rel="alternate" href="/index.xml" type="application/rss+xml" title="Jason I. Preszler">
+  <link rel="feed" href="/index.xml" type="application/rss+xml" title="Jason I. Preszler">
+  
+
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="/post/2018-01-01.utf8/">
+
+  <meta property="twitter:card" content="summary_large_image">
+  
+  <meta property="og:site_name" content="Jason I. Preszler">
+  <meta property="og:url" content="/post/2018-01-01.utf8/">
+  <meta property="og:title" content="Thoughts on Severe Class Imbalance  | Jason I. Preszler">
+  <meta property="og:description" content="">
+  <meta property="og:locale" content="en-us">
+  
+  <meta property="article:published_time" content="2018-01-01T00:00:00&#43;00:00">
+  
+  <meta property="article:modified_time" content="2018-01-01T00:00:00&#43;00:00">
+  
+
+  
+
+  <title>Thoughts on Severe Class Imbalance  | Jason I. Preszler</title>
+
+</head>
+<body id="top" data-spy="scroll" data-target="#toc" data-offset="71" >
+
+<nav class="navbar navbar-default navbar-fixed-top" id="navbar-main">
+  <div class="container">
+
+    
+    <div class="navbar-header">
+      
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+              data-target=".navbar-collapse" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      
+      <a class="navbar-brand" href="/">Jason I. Preszler</a>
+    </div>
+
+    
+    <div class="collapse navbar-collapse">
+
+      
+      
+      <ul class="nav navbar-nav navbar-right">
+        
+
+        
+
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#about">
+            
+            <span>Home</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#publications">
+            
+            <span>Publications</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#posts">
+            
+            <span>Posts</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#projects">
+            
+            <span>Projects</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#teaching">
+            
+            <span>Teaching</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#talks">
+            
+            <span>Talks</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#contact">
+            
+            <span>Contact</span>
+            
+          </a>
+        </li>
+
+        
+        
+      
+
+      
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+<article class="article" itemscope itemtype="http://schema.org/Article">
+
+  
+
+
+  <div class="article-container">
+    <div class="article-inner">
+      <h1 itemprop="name">Thoughts on Severe Class Imbalance </h1>
+
+      
+
+<div class="article-metadata">
+
+  <span class="article-date">
+    
+    <time datetime="2018-01-01 00:00:00 &#43;0000 UTC" itemprop="datePublished">
+      Jan 1, 2018
+    </time>
+  </span>
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    3 min read
+  </span>
+  
+
+  
+  
+
+  
+  
+  
+  <span class="middot-divider"></span>
+  <span class="article-categories">
+    <i class="fa fa-folder"></i>
+    
+    <a href="/categories/emergent-reducibility">emergent-reducibility</a
+    >
+    
+  </span>
+  
+  
+
+  
+  
+<div class="share-box" aria-hidden="true">
+  <ul class="share">
+    <li>
+      <a class="twitter"
+         href="https://twitter.com/intent/tweet?text=Thoughts%20on%20Severe%20Class%20Imbalance%20&amp;url=%2fpost%2f2018-01-01.utf8%2f"
+         target="_blank" rel="noopener">
+        <i class="fa fa-twitter"></i>
+      </a>
+    </li>
+    <li>
+      <a class="facebook"
+         href="https://www.facebook.com/sharer.php?u=%2fpost%2f2018-01-01.utf8%2f"
+         target="_blank" rel="noopener">
+        <i class="fa fa-facebook"></i>
+      </a>
+    </li>
+    <li>
+      <a class="linkedin"
+         href="https://www.linkedin.com/shareArticle?mini=true&amp;url=%2fpost%2f2018-01-01.utf8%2f&amp;title=Thoughts%20on%20Severe%20Class%20Imbalance%20"
+         target="_blank" rel="noopener">
+        <i class="fa fa-linkedin"></i>
+      </a>
+    </li>
+    <li>
+      <a class="weibo"
+         href="http://service.weibo.com/share/share.php?url=%2fpost%2f2018-01-01.utf8%2f&amp;title=Thoughts%20on%20Severe%20Class%20Imbalance%20"
+         target="_blank" rel="noopener">
+        <i class="fa fa-weibo"></i>
+      </a>
+    </li>
+    <li>
+      <a class="email"
+         href="mailto:?subject=Thoughts%20on%20Severe%20Class%20Imbalance%20&amp;body=%2fpost%2f2018-01-01.utf8%2f">
+        <i class="fa fa-envelope"></i>
+      </a>
+    </li>
+  </ul>
+</div>
+
+
+  
+
+</div>
+
+
+      <div class="article-style" itemprop="articleBody">
+        
+
+<p>Besides lots of family time and the creation of this blog/website, this is what I&rsquo;ve been thinking about over the winter break.</p>
+
+<h1 id="background">Background</h1>
+
+<p>As part of my research in <em>emergent reducibility</em>, I&rsquo;ve had to face a binary classification situation with severe class imbalance. Among brute-force searches, it seems that there&rsquo;s roughly 1 case of emergent reducibility (what I&rsquo;m looking for) for every 1 million irreducible cubic polynomials. It is known that there are infinitely many cubic polynomials with emergent reducibility.</p>
+
+<p>One standard way of dealing with class imbalance is to artificially increase the incidence of positive cases in the training data, but I&rsquo;ve seen very little about how to decide how much to adjust the ratio of the two classes - that&rsquo;s what this post is about.</p>
+
+<h1 id="training-data">Training Data</h1>
+
+<p>To examine the relationship of class imbalance on several classifiers, I build 21 training sets each with the same 52 cases
+of emergent reducibility and between 500 and 2500 (by 100 increments) polynomials without emergent reducibility. Each training set was used to train a variety of logristic regression, random forest, naive Bayes, and k-nearest neighbor models via caret.</p>
+
+<h1 id="confusion-matrices">Confusion Matrices</h1>
+
+<p>Once the models were trained, they were all tested against the same data set with 23 cases of emergent reducibility (no overlap with training data) and 8000 cases without emergent reducibility. For each model and training set combination, a confusion &ldquo;matrix&rdquo; was build, this is in the file <a href="/post/confMats.csv">confMats.csv</a>. Let&rsquo;s read that into R and add another variable, <em>mdlType</em> that&rsquo;s either <em>logistic</em>, <em>RF</em>, or <em>other</em>. This is to facet some graphs later.</p>
+
+<pre><code class="language-r">confMats &lt;- read.csv(&quot;../../static/post/confMats.csv&quot;, header=TRUE)
+
+logLocations &lt;- grep(&quot;lr&quot;, confMats$mdl)
+rfLocations &lt;- grep(&quot;rf&quot;, confMats$mdl)
+
+confMats$mdlType &lt;- vector(mode=&quot;character&quot;, length=length(confMats$mdl))
+
+confMats[logLocations,]$mdlType &lt;- &quot;Logistic&quot;
+confMats[rfLocations,]$mdlType &lt;- &quot;RF&quot;
+confMats[!(1:length(confMats$mdl) %in% c(logLocations,rfLocations)),]$mdlType&lt;-&quot;Other&quot;
+</code></pre>
+
+<h1 id="roc-plots">ROC Plots</h1>
+
+<p>Now we&rsquo;ll plot our confusion matrices in ROC space, each point is a model and training set combo. I&rsquo;ve facetted by model type for readability.</p>
+
+<pre><code class="language-r">library(ggplot2)
+
+#11 distinct colors, courtesy of colorbrewer2.org
+cb11&lt;-c('#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99')
+ggplot(confMats,aes(x=FP/(FP+TN),y=TP/(TP+FN),col=mdl))+geom_point()+facet_wrap(~mdlType)+scale_color_manual(values=cb11)+ggtitle(&quot;ROC Plots of Models and Class Imbalance &quot;)
+</code></pre>
+
+<p><img src="2018-01-01_files/figure-html/scatter-1.png" width="672" /></p>
+
+<p>The model <em>max</em> seems to find the most, but this simply marks a polynomial as having emergent reducibility if any other model says it does. This indicates some models find cases that others miss (I have some nice heatmaps showing this also, for another day). The logistic regression models have much more irregular variation than I was expecting.</p>
+
+<p>To see how varying the number of non-emergent reducibile polynomials impacts performs, I&rsquo;ll throw in some animation:</p>
+
+<pre><code class="language-r">library(gganimate)
+
+pathPlot &lt;- ggplot(confMats,aes(x=FP/(FP+TN),y=TP/(TP+FN),col=mdl,frame=ner))+geom_path(aes(cumulative=TRUE, group=mdl))+facet_wrap(~mdlType)+scale_color_manual(values=cb11)+ggtitle(&quot;Animated ROC Paths&quot;)
+
+gganimate(pathPlot, &quot;../../static/post/pathPlot.gif&quot;)
+</code></pre>
+
+<p>I&rsquo;m saving the gif and then displaying it outside the code chunk. This is because animated graphs seem to be turned pink inside code chunks.</p>
+
+<p><img src="../../static/post/pathPlot.gif" alt="pathPlot.gif" /></p>
+
+      </div>
+
+      
+
+
+<div class="article-tags">
+  
+  <a class="btn btn-primary btn-outline" href="/tags/r">R</a>
+  
+  <a class="btn btn-primary btn-outline" href="/tags/machine-learning">machine-learning</a>
+  
+  <a class="btn btn-primary btn-outline" href="/tags/emergent-reducibility">emergent-reducibility</a>
+  
+</div>
+
+
+
+    </div>
+  </div>
+
+</article>
+
+
+
+<div class="article-container article-widget">
+  <div class="hr-light"></div>
+  <h3>Related</h3>
+  <ul>
+    
+    <li><a href="/post/2018-01-01.knit/">Thoughts on Severe Class Imbalance </a></li>
+    
+    <li><a href="/post/2018-01-01/">Thoughts on Severe Class Imbalance </a></li>
+    
+    <li><a href="/project/emergent-reducibility/">Emergent Reducibility</a></li>
+    
+    <li><a href="/talk/jmm-2015/">An Infinite Family of Cubic Polynomials with Depth 1 Emergent Reducibility</a></li>
+    
+  </ul>
+</div>
+
+
+
+
+<div class="article-container">
+  
+
+</div>
+
+<footer class="site-footer">
+  <div class="container">
+    <p class="powered-by">
+
+      &copy; 2017 Jason Preszler &middot; 
+
+      Powered by the
+      <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+      <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+      <span class="pull-right" aria-hidden="true">
+        <a href="#" id="back_to_top">
+          <span class="button_icon">
+            <i class="fa fa-chevron-up fa-2x"></i>
+          </span>
+        </a>
+      </span>
+
+    </p>
+  </div>
+</footer>
+
+
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close btn-large" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Cite</h4>
+      </div>
+      <div>
+        <pre><code class="modal-body tex"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-primary btn-outline js-copy-cite" href="#" target="_blank">
+          <i class="fa fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-primary btn-outline js-download-cite" href="#" target="_blank">
+          <i class="fa fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+    
+
+    
+
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" integrity="sha512-3P8rXCuGJdNZOnUx/03c1jOTnMn3rP63nBip5gOP2qmUh5YAdVAvFZ1E+QLZZbC1rtMrQb+mah3AfYW11RUrWA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.3/imagesloaded.pkgd.min.js" integrity="sha512-umsR78NN0D23AzgoZ11K7raBD+R6hqKojyBZs1w8WvYlsI+QuKRGBx3LFCwhatzBunCjDuJpDHwxD13sLMbpRA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha512-iztkobsvnjKfAtTNdHkGVjAYTrrtlC7mGp/54c40wowO7LhURYl3gVzzcEqGl/qKXQltJ2HwMrdLcNUdo+N/RQ==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.4/isotope.pkgd.min.js" integrity="sha512-VDBOIlDbuC4VWxGJNmuFRQ0Li0SKkDpmGyuhAG5LTDLd/dJ/S0WMVxriR2Y+CyPL5gzjpN4f/6iqWVBJlht0tQ==" crossorigin="anonymous"></script>
+    
+    
+    <script src="/js/hugo-academic.js"></script>
+    
+
+    
+    
+      
+      
+      <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+      
+
+      
+      <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+      
+      <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/python.min.js"></script>
+      
+      <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/c.min.js"></script>
+      
+
+      
+
+      <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({ tex2jax: { inlineMath: [['$','$'], ['\\(','\\)']] } });
+    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_CHTML" integrity="sha512-tOav5w1OjvsSJzePRtt2uQPFwBoHt1VZcUq8l8nm5284LEKE9FSJBQryzMBzHxY5P0zRdNqEcpLIRVYFNgu1jw==" crossorigin="anonymous"></script>
+    
+    
+
+  </body>
+</html>
+
