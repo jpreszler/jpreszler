@@ -80,9 +80,9 @@
   <meta property="og:description" content="">
   <meta property="og:locale" content="en-us">
   
-  <meta property="article:published_time" content="2018-01-01T00:00:00&#43;00:00">
+  <meta property="article:published_time" content="2018-01-02T00:00:00&#43;00:00">
   
-  <meta property="article:modified_time" content="2018-01-01T00:00:00&#43;00:00">
+  <meta property="article:modified_time" content="2018-01-02T00:00:00&#43;00:00">
   
 
   
@@ -260,8 +260,8 @@
 
   <span class="article-date">
     
-    <time datetime="2018-01-01 00:00:00 &#43;0000 UTC" itemprop="datePublished">
-      Jan 1, 2018
+    <time datetime="2018-01-02 00:00:00 &#43;0000 UTC" itemprop="datePublished">
+      Jan 2, 2018
     </time>
   </span>
 
@@ -568,191 +568,155 @@ kable(nerRF.tab)</code></pre>
 </tr>
 </tbody>
 </table>
-<p>What about the false negatives (missed cases of emergent reducibility):</p>
-<pre class="r"><code>FNnerRF.tab &lt;- xtabs(FN~ner+mdl, data=confMats[confMats$mdl %in% c(&quot;rfs&quot;,&quot;rfp&quot;,&quot;rfpp&quot;,&quot;rfsq&quot;,&quot;knn&quot;),], drop.unused.levels = TRUE)
-kable(FNnerRF.tab)</code></pre>
+<p>The logistic regression models show the odd variation:</p>
+<pre class="r"><code>TPnerLR.tab &lt;- xtabs(TP~ner+mdl, data=confMats[confMats$mdlType == &quot;Logistic&quot;,], drop.unused.levels = TRUE)
+kable(TPnerLR.tab)</code></pre>
 <table>
 <thead>
 <tr class="header">
 <th align="left"></th>
-<th align="right">knn</th>
-<th align="right">rfp</th>
-<th align="right">rfpp</th>
-<th align="right">rfs</th>
-<th align="right">rfsq</th>
+<th align="right">lrp</th>
+<th align="right">lrs</th>
+<th align="right">lrsq</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td align="left">500</td>
-<td align="right">2</td>
-<td align="right">4</td>
+<td align="right">10</td>
 <td align="right">8</td>
-<td align="right">3</td>
-<td align="right">7</td>
+<td align="right">12</td>
 </tr>
 <tr class="even">
 <td align="left">600</td>
-<td align="right">2</td>
-<td align="right">6</td>
-<td align="right">10</td>
-<td align="right">4</td>
 <td align="right">8</td>
+<td align="right">2</td>
+<td align="right">13</td>
 </tr>
 <tr class="odd">
 <td align="left">700</td>
-<td align="right">3</td>
-<td align="right">3</td>
 <td align="right">10</td>
-<td align="right">5</td>
-<td align="right">6</td>
+<td align="right">0</td>
+<td align="right">4</td>
 </tr>
 <tr class="even">
 <td align="left">800</td>
-<td align="right">4</td>
+<td align="right">3</td>
+<td align="right">0</td>
 <td align="right">6</td>
-<td align="right">10</td>
-<td align="right">5</td>
-<td align="right">8</td>
 </tr>
 <tr class="odd">
 <td align="left">900</td>
-<td align="right">5</td>
-<td align="right">5</td>
-<td align="right">13</td>
-<td align="right">5</td>
-<td align="right">6</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">9</td>
 </tr>
 <tr class="even">
 <td align="left">1000</td>
-<td align="right">5</td>
-<td align="right">7</td>
-<td align="right">12</td>
-<td align="right">7</td>
-<td align="right">9</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">11</td>
 </tr>
 <tr class="odd">
 <td align="left">1100</td>
-<td align="right">6</td>
-<td align="right">6</td>
-<td align="right">11</td>
-<td align="right">7</td>
-<td align="right">9</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">3</td>
 </tr>
 <tr class="even">
 <td align="left">1200</td>
-<td align="right">6</td>
-<td align="right">6</td>
-<td align="right">11</td>
-<td align="right">5</td>
-<td align="right">7</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">10</td>
 </tr>
 <tr class="odd">
 <td align="left">1300</td>
-<td align="right">6</td>
-<td align="right">5</td>
-<td align="right">13</td>
-<td align="right">8</td>
-<td align="right">9</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
 </tr>
 <tr class="even">
 <td align="left">1400</td>
 <td align="right">6</td>
-<td align="right">10</td>
-<td align="right">13</td>
-<td align="right">7</td>
-<td align="right">11</td>
+<td align="right">0</td>
+<td align="right">0</td>
 </tr>
 <tr class="odd">
 <td align="left">1500</td>
-<td align="right">9</td>
-<td align="right">10</td>
 <td align="right">12</td>
-<td align="right">9</td>
-<td align="right">13</td>
+<td align="right">0</td>
+<td align="right">1</td>
 </tr>
 <tr class="even">
 <td align="left">1600</td>
-<td align="right">8</td>
-<td align="right">8</td>
-<td align="right">13</td>
-<td align="right">8</td>
-<td align="right">10</td>
+<td align="right">4</td>
+<td align="right">0</td>
+<td align="right">3</td>
 </tr>
 <tr class="odd">
 <td align="left">1700</td>
-<td align="right">7</td>
-<td align="right">7</td>
-<td align="right">14</td>
-<td align="right">7</td>
-<td align="right">10</td>
+<td align="right">12</td>
+<td align="right">0</td>
+<td align="right">1</td>
 </tr>
 <tr class="even">
 <td align="left">1800</td>
-<td align="right">8</td>
-<td align="right">8</td>
-<td align="right">14</td>
-<td align="right">9</td>
-<td align="right">11</td>
+<td align="right">7</td>
+<td align="right">0</td>
+<td align="right">17</td>
 </tr>
 <tr class="odd">
 <td align="left">1900</td>
-<td align="right">7</td>
-<td align="right">10</td>
-<td align="right">14</td>
-<td align="right">9</td>
-<td align="right">10</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">0</td>
 </tr>
 <tr class="even">
 <td align="left">2000</td>
-<td align="right">9</td>
-<td align="right">13</td>
-<td align="right">15</td>
-<td align="right">9</td>
-<td align="right">13</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
 </tr>
 <tr class="odd">
 <td align="left">2100</td>
-<td align="right">9</td>
-<td align="right">12</td>
-<td align="right">14</td>
-<td align="right">10</td>
-<td align="right">11</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
 </tr>
 <tr class="even">
 <td align="left">2200</td>
-<td align="right">10</td>
-<td align="right">11</td>
-<td align="right">15</td>
-<td align="right">12</td>
-<td align="right">10</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">2</td>
 </tr>
 <tr class="odd">
 <td align="left">2300</td>
-<td align="right">7</td>
-<td align="right">12</td>
-<td align="right">14</td>
-<td align="right">10</td>
-<td align="right">14</td>
+<td align="right">18</td>
+<td align="right">0</td>
+<td align="right">2</td>
 </tr>
 <tr class="even">
 <td align="left">2400</td>
-<td align="right">10</td>
-<td align="right">12</td>
-<td align="right">16</td>
-<td align="right">12</td>
-<td align="right">14</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">8</td>
 </tr>
 <tr class="odd">
 <td align="left">2500</td>
-<td align="right">9</td>
-<td align="right">12</td>
-<td align="right">15</td>
-<td align="right">12</td>
-<td align="right">12</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
 </tr>
 </tbody>
 </table>
+<p>The variation across elements of the confusion matrices is perhaps best seen in the following plot:</p>
+<pre class="r"><code>library(tidyr)
+library(dplyr)
+
+gather(confMats, key=Type, value=Count, -c(ner, mdl, mdlType)) %&gt;% ggplot(aes(x=ner, y=Count, col=mdl))+geom_line()+facet_wrap(~Type, scales = &quot;free_y&quot;)+ggtitle(&quot;Confusion Matrix Visual as Training Class Imbalance Changes&quot;)</code></pre>
+<p><img src="/post/2018-01-01_files/figure-html/CMplot-1.png" width="672" /></p>
+<p>Clearly, there’s something in the <em>ner</em> 1500,1700,1800, and 2300 training sets that really helps logistic models but not other model types. This is something to look into.</p>
+<p>However, I’m still left wondering <em>What is the best ratio of classes in a training set?</em></p>
 </div>
 
       </div>

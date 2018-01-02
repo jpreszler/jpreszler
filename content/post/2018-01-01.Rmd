@@ -1,7 +1,7 @@
 ---
 title: "Thoughts on Severe Class Imbalance "
 author: "Jason Preszler"
-date: 2018-01-01
+date: 2018-01-02
 categories: ["emergent-reducibility"]
 tags: ["R","machine-learning","emergent-reducibility"]
 ---
@@ -74,10 +74,20 @@ nerRF.tab <- xtabs(TP~ner+mdl, data=confMats[confMats$mdl %in% c("rfs","rfp","rf
 kable(nerRF.tab)
 ```
 
-What about the false negatives (missed cases of emergent reducibility):
-```{r fnTable}
-FNnerRF.tab <- xtabs(FN~ner+mdl, data=confMats[confMats$mdl %in% c("rfs","rfp","rfpp","rfsq","knn"),], drop.unused.levels = TRUE)
-kable(FNnerRF.tab)
+The logistic regression models show the odd variation:
+```{r lrTPTable}
+TPnerLR.tab <- xtabs(TP~ner+mdl, data=confMats[confMats$mdlType == "Logistic",], drop.unused.levels = TRUE)
+kable(TPnerLR.tab)
 ```
 
+The variation across elements of the confusion matrices is perhaps best seen in the following plot:
+```{r CMplot, message=FALSE, warning=FALSE}
+library(tidyr)
+library(dplyr)
 
+gather(confMats, key=Type, value=Count, -c(ner, mdl, mdlType)) %>% ggplot(aes(x=ner, y=Count, col=mdl))+geom_line()+facet_wrap(~Type, scales = "free_y")+ggtitle("Confusion Matrix Visual as Training Class Imbalance Changes")
+```
+
+Clearly, there's something in the *ner* 1500,1700,1800, and 2300 training sets that really helps logistic models but not other model types. This is something to look into.
+
+However, I'm still left wondering *What is the best ratio of classes in a training set?*
