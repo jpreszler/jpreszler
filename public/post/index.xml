@@ -39,26 +39,21 @@ rotateI &amp;lt;- function(x,y,rx,ry){return (x*ry+y*rx)}&lt;/code&gt;&lt;/pre&g
 &lt;div id=&#34;illustrating-the-transformations&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;Illustrating the transformations&lt;/h1&gt;
 &lt;p&gt;To clearly show a transformation, let’s start with a collection on points in the complex plane:&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;rectangle &amp;lt;- data.frame(x = c(rep(seq(from=0, to=2, by=.1),2), rep(0,11),rep(2,11)), y=c(rep(0,21),rep(1,21),rep(seq(0,1,by=.1),2)))
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;rectangle &amp;lt;- data.frame(x = c(rep(seq(from=0, to=2, by=.1),2), rep(0,11),rep(2,11)),
+                  y=c(rep(0,21),rep(1,21),rep(seq(0,1,by=.1),2)))
 rectangle$code &amp;lt;- &amp;quot;Original&amp;quot;
 
 library(ggplot2)
 ggplot(rectangle, aes(x=x,y=y))+geom_point(size=1)+xlim(c(-5,5))+ylim(c(-5,5))&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2018-01-06-ggplot-and-geometric-transformations_files/figure-html/makeSquare-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;Now let’s try a translation.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;trRectangle &amp;lt;- data.frame(x = translateR(rectangle$x, rectangle$y, -1,-2), y=translateI(rectangle$x, rectangle$y, -1,-2))
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;trRectangle &amp;lt;- data.frame(x = translateR(rectangle$x, rectangle$y, -1,-2), 
+                          y=translateI(rectangle$x, rectangle$y, -1,-2))
 trRectangle$code &amp;lt;- &amp;quot;Translate&amp;quot;
 
-library(dplyr)&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## 
-## Attaching package: &amp;#39;dplyr&amp;#39;&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## The following objects are masked from &amp;#39;package:stats&amp;#39;:
-## 
-##     filter, lag&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## The following objects are masked from &amp;#39;package:base&amp;#39;:
-## 
-##     intersect, setdiff, setequal, union&lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;rbind.data.frame(rectangle, trRectangle) %&amp;gt;%
+library(dplyr)
+
+rbind.data.frame(rectangle, trRectangle) %&amp;gt;%
   ggplot(aes(x=x,y=y,col=code))+geom_point(size=1)+
   xlim(c(-5,5))+ylim(c(-5,5))&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2018-01-06-ggplot-and-geometric-transformations_files/figure-html/applyTrans-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;

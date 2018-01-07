@@ -31,26 +31,21 @@ rotateI &lt;- function(x,y,rx,ry){return (x*ry+y*rx)}</code></pre>
 <div id="illustrating-the-transformations" class="section level1">
 <h1>Illustrating the transformations</h1>
 <p>To clearly show a transformation, let’s start with a collection on points in the complex plane:</p>
-<pre class="r"><code>rectangle &lt;- data.frame(x = c(rep(seq(from=0, to=2, by=.1),2), rep(0,11),rep(2,11)), y=c(rep(0,21),rep(1,21),rep(seq(0,1,by=.1),2)))
+<pre class="r"><code>rectangle &lt;- data.frame(x = c(rep(seq(from=0, to=2, by=.1),2), rep(0,11),rep(2,11)),
+                  y=c(rep(0,21),rep(1,21),rep(seq(0,1,by=.1),2)))
 rectangle$code &lt;- &quot;Original&quot;
 
 library(ggplot2)
 ggplot(rectangle, aes(x=x,y=y))+geom_point(size=1)+xlim(c(-5,5))+ylim(c(-5,5))</code></pre>
 <p><img src="/post/2018-01-06-ggplot-and-geometric-transformations_files/figure-html/makeSquare-1.png" width="672" /></p>
 <p>Now let’s try a translation.</p>
-<pre class="r"><code>trRectangle &lt;- data.frame(x = translateR(rectangle$x, rectangle$y, -1,-2), y=translateI(rectangle$x, rectangle$y, -1,-2))
+<pre class="r"><code>trRectangle &lt;- data.frame(x = translateR(rectangle$x, rectangle$y, -1,-2), 
+                          y=translateI(rectangle$x, rectangle$y, -1,-2))
 trRectangle$code &lt;- &quot;Translate&quot;
 
-library(dplyr)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;dplyr&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:stats&#39;:
-## 
-##     filter, lag</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
-##     intersect, setdiff, setequal, union</code></pre>
-<pre class="r"><code>rbind.data.frame(rectangle, trRectangle) %&gt;%
+library(dplyr)
+
+rbind.data.frame(rectangle, trRectangle) %&gt;%
   ggplot(aes(x=x,y=y,col=code))+geom_point(size=1)+
   xlim(c(-5,5))+ylim(c(-5,5))</code></pre>
 <p><img src="/post/2018-01-06-ggplot-and-geometric-transformations_files/figure-html/applyTrans-1.png" width="672" /></p>
