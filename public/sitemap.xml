@@ -134,7 +134,7 @@
     
     <url>
     
-      <loc>/categories/emergent-reducibility/</loc>
+      <loc>/tags/emergent-reducibility/</loc>
       <lastmod>2018-01-02T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
@@ -144,7 +144,7 @@
     
     <url>
     
-      <loc>/tags/emergent-reducibility/</loc>
+      <loc>/categories/emergent-reducibility/</loc>
       <lastmod>2018-01-02T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
@@ -234,8 +234,8 @@
     
     <url>
     
-      <loc>/categories/r/</loc>
-      <lastmod>2018-01-06T00:00:00+00:00</lastmod>
+      <loc>/tags/r/</loc>
+      <lastmod>2018-01-02T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -244,8 +244,8 @@
     
     <url>
     
-      <loc>/tags/r/</loc>
-      <lastmod>2018-01-02T00:00:00+00:00</lastmod>
+      <loc>/categories/r/</loc>
+      <lastmod>2018-01-06T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -264,7 +264,7 @@
     
     <url>
     
-      <loc>/categories/teaching/</loc>
+      <loc>/tags/teaching/</loc>
       <lastmod>2018-01-06T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
@@ -274,7 +274,7 @@
     
     <url>
     
-      <loc>/tags/teaching/</loc>
+      <loc>/categories/teaching/</loc>
       <lastmod>2018-01-06T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
