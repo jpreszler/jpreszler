@@ -1,0 +1,95 @@
+---
+title: "GGPlot and Geometric Transformations"
+author: "Jason Preszler"
+date: 2018-01-06
+categories: ["R", "teaching"]
+tags: ["ggplot", "teaching"]
+---
+
+
+
+<p>I’m currently teaching a Geometry course, and wished there was an easy way to illustrate geommetric transformations for my students. I’m sure they’ll agree I’m not a great artist.</p>
+<p>Since R is my preferred way to draw any picture, I thought “Let’s use GGPlot to show transformations!”</p>
+<p>For those not versed in geometry, we would like to easily visualize translations (shifts along a vector), rotations, and dilations of points (or collections of points) in the complex plane. Reflections can be acheived via a combination of rotation and translation. Another important transofrmation, inversion, will be done in the next post.</p>
+<div id="functions-for-the-transformations" class="section level1">
+<h1>Functions for the transformations</h1>
+<p>I’m going to write seperate functions for the real and imaginary parts of the result of each transformation, this is to make things easy to produce dataframes to send to ggplot. There are more efficient ways to do this, but I want all functions to have a consistent input/output structure so applying transformations and graphing the results is easy.</p>
+<div id="translations" class="section level2">
+<h2>Translations</h2>
+<p>Mathematically, a translation in the complex plane is a function that adds a fixed number to the input. The inputs tx and ty are the real and imaginary parts of the point we’re translating by.</p>
+<pre class="r"><code>translateR &lt;- function(x,y,tx,ty){return (x+tx)}
+translateI &lt;- function(x,y,tx,ty){return (y+ty)}</code></pre>
+</div>
+<div id="rotations-and-dilations" class="section level2">
+<h2>Rotations and Dilations</h2>
+<p>Mathematically, multiplying by a complex number rotates (about the origin) by it’s argument and dilates by it’s modulus. Similarly to above, rx and ry are the real and imaginary parts of the number we multiply by to achieve the rotation/dilation (ry=0 will be just a dilation).</p>
+<pre class="r"><code>rotateR &lt;- function(x,y,rx,ry){return (x*rx-y*ry)}
+rotateI &lt;- function(x,y,rx,ry){return (x*ry+y*rx)}</code></pre>
+<p>Rotations about a point other then the origin can be accomplished by applying a translation to the origin, rotation about the origin, and then translating back.</p>
+</div>
+<div id="inversions" class="section level2">
+<h2>Inversions</h2>
+</div>
+</div>
+<div id="illustrating-the-transformations" class="section level1">
+<h1>Illustrating the transformations</h1>
+<p>To clearly show a transformation, let’s start with a collection on points in the complex plane:</p>
+<pre class="r"><code>rectangle &lt;- data.frame(x = c(rep(seq(from=0, to=2, by=.1),2), rep(0,11),rep(2,11)), y=c(rep(0,21),rep(1,21),rep(seq(0,1,by=.1),2)))
+rectangle$code &lt;- &quot;Original&quot;
+
+library(ggplot2)
+ggplot(rectangle, aes(x=x,y=y))+geom_point(size=1)+xlim(c(-5,5))+ylim(c(-5,5))</code></pre>
+<p><img src="/post/2018-01-06-ggplot-and-geometric-transformations_files/figure-html/makeSquare-1.png" width="672" /></p>
+<p>Now let’s try a translation.</p>
+<pre class="r"><code>trRectangle &lt;- data.frame(x = translateR(rectangle$x, rectangle$y, -1,-2), y=translateI(rectangle$x, rectangle$y, -1,-2))
+trRectangle$code &lt;- &quot;Translate&quot;
+
+library(dplyr)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>rbind.data.frame(rectangle, trRectangle) %&gt;%
+  ggplot(aes(x=x,y=y,col=code))+geom_point(size=1)+
+  xlim(c(-5,5))+ylim(c(-5,5))</code></pre>
+<p><img src="/post/2018-01-06-ggplot-and-geometric-transformations_files/figure-html/applyTrans-1.png" width="672" /></p>
+<p>And a rotation with dilation:</p>
+<pre class="r"><code>rotRectangle &lt;- data.frame(x = rotateR(rectangle$x, rectangle$y, 2/sqrt(13),3/sqrt(13)), y=rotateI(rectangle$x, rectangle$y, 2/sqrt(13),3/sqrt(13)))
+rotRectangle$code &lt;- &quot;Rotation&quot;
+
+library(dplyr)
+
+rbind.data.frame(rectangle, rotRectangle) %&gt;%
+  ggplot(aes(x=x,y=y,col=code))+geom_point(size=1)+
+  xlim(c(-5,5))+ylim(c(-5,5))</code></pre>
+<p><img src="/post/2018-01-06-ggplot-and-geometric-transformations_files/figure-html/applyRot-1.png" width="672" /> We can also perform more complicated transformations. Let’s rotate about the original rectangle’s top right corner (2,1) by /4, and double the size. This means we first move (2,1) to the origin, rotate/dilate, then move back.</p>
+<pre class="r"><code>#translate to origin
+glRect &lt;- data.frame(x=translateR(rectangle$x, rectangle$y, -2,-1), y=translateI(rectangle$x, rectangle$y, -2,-1))
+
+
+#rotate and dilate by 2e^{i*pi/4} = sqrt(2)+isqrt(2)
+#
+#We&#39;re doing this in one line since both the real and imaginary
+#rotations change and use the original coordinates. Two lines 
+#would produce very different transformation.
+glRect[,1:2] &lt;- c(rotateR(glRect$x, glRect$y, sqrt(2), sqrt(2)) ,         rotateI(glRect$x, glRect$y, sqrt(2),sqrt(2)))
+
+#Now translate back 
+glRect$x &lt;- translateR(glRect$x, glRect$y, 2,1)
+glRect$y &lt;- translateI(glRect$x, glRect$y, 2,1)
+
+#add code for graph
+glRect$code &lt;-&quot;Transformed&quot;
+
+#and graph
+rbind.data.frame(rectangle, glRect) %&gt;%
+  ggplot(aes(x=x,y=y,col=code))+geom_point(size=1)+
+  xlim(c(-5,5))+ylim(c(-5,5))</code></pre>
+<p><img src="/post/2018-01-06-ggplot-and-geometric-transformations_files/figure-html/rotTrans-1.png" width="672" /></p>
+<p>The combination of rotation and translation can also produce a reflection about any line.</p>
+<p>Next up, inversions…</p>
+</div>
