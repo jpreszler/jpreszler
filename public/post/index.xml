@@ -11,6 +11,90 @@
     <atom:link href="/post/" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>GGPlot and Geometric Transformations II: Inversions</title>
+      <link>/post/2018-01-07-inversions/</link>
+      <pubDate>Sun, 07 Jan 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-01-07-inversions/</guid>
+      <description>&lt;p&gt;This is the second part of two posts about using ggplot to visualize geometric transformations in the complex plane.&lt;/p&gt;
+&lt;div id=&#34;inversions&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Inversions&lt;/h1&gt;
+&lt;p&gt;For this post we’ll focus on inversions, having already covered rotations, translations, and reflections. An inversion can be thought of as a reflection across a circle, the the inside of the circle gets flipped to fill the plane outside the circle and the outside is flipped into the circle. This is a more complicated transformation, both to visualize and to perform mathematically, but is essential to geometry.&lt;/p&gt;
+&lt;div id=&#34;the-math&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;The Math&lt;/h2&gt;
+&lt;p&gt;Since an inversion involves a circle, we’ll need a center &lt;span class=&#34;math inline&#34;&gt;\(z_0 = x_0+iy_0\)&lt;/span&gt; and a radius &lt;span class=&#34;math inline&#34;&gt;\(r\)&lt;/span&gt;. Any point &lt;span class=&#34;math inline&#34;&gt;\(z\)&lt;/span&gt; that’s within &lt;span class=&#34;math inline&#34;&gt;\(r\)&lt;/span&gt; of &lt;span class=&#34;math inline&#34;&gt;\(z_0\)&lt;/span&gt; must be moved to a point further than &lt;span class=&#34;math inline&#34;&gt;\(r\)&lt;/span&gt; from &lt;span class=&#34;math inline&#34;&gt;\(z_0\)&lt;/span&gt;, and should lie on a line connected &lt;span class=&#34;math inline&#34;&gt;\(z\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(z_0\)&lt;/span&gt;. This is accomplished via the formula: &lt;span class=&#34;math display&#34;&gt;\[
+inv(z) = \frac{r^2}{\overline{z-z_0}}+z_0
+\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Since dividing by a complex number is not really done, we can turn this formula into: &lt;span class=&#34;math display&#34;&gt;\[
+inv(z) = \frac{r^2(z-z_0)}{|z-z_0|^2}+z_0
+\]&lt;/span&gt; This may not look simpler, but it will be easier to write code for since it just multiples &lt;span class=&#34;math inline&#34;&gt;\(z-z_0\)&lt;/span&gt; by the square of the ratio of the radius to the distance from &lt;span class=&#34;math inline&#34;&gt;\(z\)&lt;/span&gt; to &lt;span class=&#34;math inline&#34;&gt;\(z_0\)&lt;/span&gt;, then translates by &lt;span class=&#34;math inline&#34;&gt;\(z_0\)&lt;/span&gt;. Since the ratio of distances is real, this means we’re just translating &lt;span class=&#34;math inline&#34;&gt;\(z_0\)&lt;/span&gt; to the origin, dilating by the square of distance ratio, then translating back to &lt;span class=&#34;math inline&#34;&gt;\(z_0\)&lt;/span&gt;. Do we really even need new code? Not really.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-code&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;The code&lt;/h2&gt;
+&lt;p&gt;We use the translation and rotation functions from the previous post:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;translateR &amp;lt;- function(x,y,tx,ty){return (x+tx)}
+translateI &amp;lt;- function(x,y,tx,ty){return (y+ty)}
+rotateR &amp;lt;- function(x,y,rx,ry){return (x*rx-y*ry)}
+rotateI &amp;lt;- function(x,y,rx,ry){return (x*ry+y*rx)}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Our inversion function will apply these, and work well when handed a data.frame of points.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;inversion &amp;lt;- function(x,y,x0,y0,r){
+  #set-up a data.frame to be returned
+  pt &amp;lt;- data.frame(x=x, y=y)
+  #translate z_0 to the origin
+  pt$x &amp;lt;-translateR(x,y,-x0,-y0)
+  pt$y &amp;lt;-translateI(x,y,-x0,-y0)
+  #dilate
+  distRatio &amp;lt;- r^2/((x-x0)^2+(y-y0)^2)
+  pt[,1:2] &amp;lt;- c(rotateR(pt$x,pt$y,distRatio,0),
+          rotateI(pt$x,pt$y,distRatio,0))
+  #translate back
+  pt[,1:2] &amp;lt;- c(translateR(pt$x,pt$y,x0,y0),
+          translateI(pt$x,pt$y,x0,y0))
+  return(pt)
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;graphs-of-inversion&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Graphs of Inversion&lt;/h1&gt;
+&lt;p&gt;Let’s start by re-using our rectangle from previously and doing an inversion across the circle centered at the origin with radius 2.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;rectangle &amp;lt;- data.frame(x = c(rep(seq(from=0, to=2, by=.1),2), rep(0,11),rep(2,11)),
+                  y=c(rep(0,21),rep(1,21),rep(seq(0,1,by=.1),2)))
+rectangle$code &amp;lt;- &amp;quot;Original&amp;quot;
+
+invRect &amp;lt;- data.frame(x=rectangle$x, y=rectangle$y)
+
+invRect[,1:2]&amp;lt;- inversion(rectangle$x, rectangle$y, 0,0,2)
+invRect$code &amp;lt;- &amp;quot;Inverted&amp;quot;
+
+library(ggplot2)
+library(dplyr, quietly = TRUE)
+
+rbind.data.frame(rectangle, invRect) %&amp;gt;% 
+  ggplot(aes(x=x,y=y, col=code)) + geom_point(size=1) + xlim(c(-2,12)) + ylim(c(-2,12))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-01-07-inversions_files/figure-html/makeSquare-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Notice how lines through the center of the circle remain lines. The lower right corner, which is on the circle, if fixed, but the center of the circle is sent to the outer reaches of the plane. The upper right corner, which was outside the circle, gets flipped inside the circle.&lt;/p&gt;
+&lt;p&gt;Let’s do another example, this time we’ll use a circle centered at &lt;span class=&#34;math inline&#34;&gt;\((-1,-1)\)&lt;/span&gt; with radius 4.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;invRect &amp;lt;- data.frame(x=rectangle$x, y=rectangle$y)
+
+invRect[,1:2]&amp;lt;- inversion(rectangle$x, rectangle$y, -1,-1,4)
+invRect$code &amp;lt;- &amp;quot;Inverted&amp;quot;
+
+rbind.data.frame(rectangle, invRect) %&amp;gt;% 
+  ggplot(aes(x=x,y=y, col=code)) + geom_point(size=1) + xlim(c(-2,12)) + ylim(c(-2,12))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-01-07-inversions_files/figure-html/secInv-1.png&#34; width=&#34;672&#34; /&gt; What if we take a rectangle outside of the circle and invert?&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;invRect &amp;lt;- data.frame(x=rectangle$x, y=rectangle$y)
+
+invRect[,1:2]&amp;lt;- inversion(rectangle$x, rectangle$y, 5,0,2)
+invRect$code &amp;lt;- &amp;quot;Inverted&amp;quot;
+
+rbind.data.frame(rectangle, invRect) %&amp;gt;% 
+  ggplot(aes(x=x,y=y, col=code)) + geom_point(size=1) + xlim(c(-2,7)) + ylim(c(-2,3))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-01-07-inversions_files/figure-html/thirdInv-1.png&#34; width=&#34;672&#34; /&gt; Inversions aren’t a simple to predict as rotations and translations. I encourage you to experiment a bit: try other shapes, lines, or just collections of points. Do inversions preserve anything geometrically meaningful?&lt;/p&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
       <title>GGPlot and Geometric Transformations</title>
       <link>/post/2018-01-06-ggplot-and-geometric-transformations/</link>
       <pubDate>Sat, 06 Jan 2018 00:00:00 +0000</pubDate>
