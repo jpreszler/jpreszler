@@ -32,9 +32,9 @@ filter_default = 0
   name = "Emergent Reducibility"
   tag = ".emergent-reducibility"
 
-[[filter]]
-  name = "Yellow Balls"
-  tag = ".yellow-balls"
+#[[filter]]
+#  name = "Yellow Balls"
+#  tag = ".yellow-balls"
 
 +++
 

@@ -3,8 +3,8 @@
 # This widget displays publications from `content/publication/` which have
 # `selected = true` in their `+++` front matter.
 widget = "publications_selected"
-active = false
-date = 2016-04-20
+active = true
+date = 2018-01-01
 
 title = "Selected Publications"
 subtitle = ""
@@ -17,7 +17,7 @@ weight = 10
 #   1 = Detailed
 #   2 = APA
 #   3 = MLA
-list_format = 0
+list_format = 1
 
 # Filter by publication type.
 # -1: Any

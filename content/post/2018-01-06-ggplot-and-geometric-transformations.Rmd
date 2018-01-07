@@ -33,8 +33,6 @@ rotateI <- function(x,y,rx,ry){return (x*ry+y*rx)}
 
 Rotations about a point other then the origin can be accomplished by applying a translation to the origin, rotation about the origin, and then translating back.
 
-##Inversions
-
 #Illustrating the transformations
 To clearly show a transformation, let's start with a collection on points in the complex plane:
 ```{r makeSquare, echo=TRUE}
@@ -58,7 +56,7 @@ rbind.data.frame(rectangle, trRectangle) %>%
 ```
 
 And a rotation with dilation:
-```{r applyRot, echo=TRUE}
+```{r applyRot, echo=TRUE, message=FALSE, warning=FALSE}
 rotRectangle <- data.frame(x = rotateR(rectangle$x, rectangle$y, 2/sqrt(13),3/sqrt(13)), y=rotateI(rectangle$x, rectangle$y, 2/sqrt(13),3/sqrt(13)))
 rotRectangle$code <- "Rotation"
 

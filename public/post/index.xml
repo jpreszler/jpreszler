@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Jason I. Preszler on Jason I. Preszler</title>
-    <link>/</link>
-    <description>Recent content in Jason I. Preszler on Jason I. Preszler</description>
+    <title>Recent Posts on Jason I. Preszler</title>
+    <link>/post/</link>
+    <description>Recent content in Recent Posts on Jason I. Preszler</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2017 Jason Preszler</copyright>
-    <lastBuildDate>Thu, 28 Dec 2017 00:00:00 +0000</lastBuildDate>
-    <atom:link href="/" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 06 Jan 2017 00:00:00 +0000</lastBuildDate>
+    <atom:link href="/post/" rel="self" type="application/rss+xml" />
     
     <item>
       <title>GGPlot and Geometric Transformations</title>
@@ -489,44 +489,6 @@ gather(confMats, key=Type, value=Count, -c(ner, mdl, mdlType)) %&amp;gt;% ggplot
 &lt;p&gt;However, I’m still left wondering &lt;em&gt;What is the best ratio of classes in a training set?&lt;/em&gt;&lt;/p&gt;
 &lt;/div&gt;
 </description>
-    </item>
-    
-    <item>
-      <title>Emergent Reducibility</title>
-      <link>/project/emergent-reducibility/</link>
-      <pubDate>Thu, 28 Dec 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/project/emergent-reducibility/</guid>
-      <description>&lt;p&gt;Project details&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Statistics: Side B</title>
-      <link>/talk/stat-b/</link>
-      <pubDate>Sun, 22 Oct 2017 00:00:00 -0600</pubDate>
-      
-      <guid>/talk/stat-b/</guid>
-      <description>&lt;p&gt;Embed your slides or video here using &lt;a href=&#34;https://sourcethemes.com/academic/post/writing-markdown-latex/&#34; target=&#34;_blank&#34;&gt;shortcodes&lt;/a&gt;. Further details can easily be added using &lt;em&gt;Markdown&lt;/em&gt; and $\rm \LaTeX$ math code.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>An Infinite Family of Cubics with Emergent Reducibility at Depth 1</title>
-      <link>/publication/infinite-cubics/</link>
-      <pubDate>Wed, 01 Mar 2017 00:00:00 -0700</pubDate>
-      
-      <guid>/publication/infinite-cubics/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>An Infinite Family of Cubic Polynomials with Depth 1 Emergent Reducibility</title>
-      <link>/talk/jmm-2015/</link>
-      <pubDate>Sun, 11 Jan 2015 00:00:00 -0700</pubDate>
-      
-      <guid>/talk/jmm-2015/</guid>
-      <description></description>
     </item>
     
   </channel>
