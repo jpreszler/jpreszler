@@ -44,7 +44,7 @@ library(ggplot2)
 ggplot(rectangle, aes(x=x,y=y))+geom_point(size=1)+xlim(c(-5,5))+ylim(c(-5,5))
 ```
 
-Now let's try a translation.
+Now let's try a translation by $-1-2i$.
 ```{r applyTrans, echo=TRUE, message=FALSE, warning=FALSE}
 trRectangle <- data.frame(x = translateR(rectangle$x, rectangle$y, -1,-2), 
                           y=translateI(rectangle$x, rectangle$y, -1,-2))
@@ -57,9 +57,10 @@ rbind.data.frame(rectangle, trRectangle) %>%
   xlim(c(-5,5))+ylim(c(-5,5))
 ```
 
-And a rotation with dilation:
+And a rotation by $\frac{2+3i}{\sqrt{13}}$ (why pick nice numbers?):
 ```{r applyRot, echo=TRUE, message=FALSE, warning=FALSE}
-rotRectangle <- data.frame(x = rotateR(rectangle$x, rectangle$y, 2/sqrt(13),3/sqrt(13)), y=rotateI(rectangle$x, rectangle$y, 2/sqrt(13),3/sqrt(13)))
+rotRectangle <- data.frame(x = rotateR(rectangle$x, rectangle$y, 2/sqrt(13),3/sqrt(13)), 
+                           y=rotateI(rectangle$x, rectangle$y, 2/sqrt(13),3/sqrt(13)))
 rotRectangle$code <- "Rotation"
 
 library(dplyr)
@@ -68,10 +69,11 @@ rbind.data.frame(rectangle, rotRectangle) %>%
   ggplot(aes(x=x,y=y,col=code))+geom_point(size=1)+
   xlim(c(-5,5))+ylim(c(-5,5))
 ```
-We can also perform more complicated transformations. Let's rotate about the original rectangle's top right corner (2,1) by \pi/4, and double the size. This means we first move (2,1) to the origin, rotate/dilate, then move back.
+We can also perform more complicated transformations. Let's rotate about the original rectangle's top right corner $2+i$ by $\frac{\pi}{4}$, and double the size. This means we first move $(2,1)$ to the origin, rotate/dilate, then move back.
 ```{r rotTrans, echo=TRUE}
 #translate to origin
-glRect <- data.frame(x=translateR(rectangle$x, rectangle$y, -2,-1), y=translateI(rectangle$x, rectangle$y, -2,-1))
+glRect <- data.frame(x=translateR(rectangle$x, rectangle$y, -2,-1), 
+                     y=translateI(rectangle$x, rectangle$y, -2,-1))
 
 
 #rotate and dilate by 2e^{i*pi/4} = sqrt(2)+isqrt(2)
@@ -79,7 +81,8 @@ glRect <- data.frame(x=translateR(rectangle$x, rectangle$y, -2,-1), y=translateI
 #We're doing this in one line since both the real and imaginary
 #rotations change and use the original coordinates. Two lines 
 #would produce very different transformation.
-glRect[,1:2] <- c(rotateR(glRect$x, glRect$y, sqrt(2), sqrt(2)) ,         rotateI(glRect$x, glRect$y, sqrt(2),sqrt(2)))
+glRect[,1:2] <- c(rotateR(glRect$x, glRect$y, sqrt(2), sqrt(2)) ,
+                  rotateI(glRect$x, glRect$y, sqrt(2),sqrt(2)))
 
 #Now translate back 
 glRect$x <- translateR(glRect$x, glRect$y, 2,1)

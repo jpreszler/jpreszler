@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="theme" content="hugo-academic">
-  <meta name="generator" content="Hugo 0.32.1" />
+  <meta name="generator" content="Hugo 0.32.2" />
   <meta name="author" content="Jason Preszler">
   <meta name="description" content="Assistant Professor - Math, Statistics, and Computer Science">
 
@@ -365,7 +365,7 @@ rectangle$code &lt;- &quot;Original&quot;
 library(ggplot2)
 ggplot(rectangle, aes(x=x,y=y))+geom_point(size=1)+xlim(c(-5,5))+ylim(c(-5,5))</code></pre>
 <p><img src="/post/2018-01-06-ggplot-and-geometric-transformations_files/figure-html/makeSquare-1.png" width="672" /></p>
-<p>Now let’s try a translation.</p>
+<p>Now let’s try a translation by <span class="math inline">\(-1-2i\)</span>.</p>
 <pre class="r"><code>trRectangle &lt;- data.frame(x = translateR(rectangle$x, rectangle$y, -1,-2), 
                           y=translateI(rectangle$x, rectangle$y, -1,-2))
 trRectangle$code &lt;- &quot;Translate&quot;
@@ -376,8 +376,9 @@ rbind.data.frame(rectangle, trRectangle) %&gt;%
   ggplot(aes(x=x,y=y,col=code))+geom_point(size=1)+
   xlim(c(-5,5))+ylim(c(-5,5))</code></pre>
 <p><img src="/post/2018-01-06-ggplot-and-geometric-transformations_files/figure-html/applyTrans-1.png" width="672" /></p>
-<p>And a rotation with dilation:</p>
-<pre class="r"><code>rotRectangle &lt;- data.frame(x = rotateR(rectangle$x, rectangle$y, 2/sqrt(13),3/sqrt(13)), y=rotateI(rectangle$x, rectangle$y, 2/sqrt(13),3/sqrt(13)))
+<p>And a rotation by <span class="math inline">\(\frac{2+3i}{\sqrt{13}}\)</span> (why pick nice numbers?):</p>
+<pre class="r"><code>rotRectangle &lt;- data.frame(x = rotateR(rectangle$x, rectangle$y, 2/sqrt(13),3/sqrt(13)), 
+                           y=rotateI(rectangle$x, rectangle$y, 2/sqrt(13),3/sqrt(13)))
 rotRectangle$code &lt;- &quot;Rotation&quot;
 
 library(dplyr)
@@ -385,9 +386,10 @@ library(dplyr)
 rbind.data.frame(rectangle, rotRectangle) %&gt;%
   ggplot(aes(x=x,y=y,col=code))+geom_point(size=1)+
   xlim(c(-5,5))+ylim(c(-5,5))</code></pre>
-<p><img src="/post/2018-01-06-ggplot-and-geometric-transformations_files/figure-html/applyRot-1.png" width="672" /> We can also perform more complicated transformations. Let’s rotate about the original rectangle’s top right corner (2,1) by /4, and double the size. This means we first move (2,1) to the origin, rotate/dilate, then move back.</p>
+<p><img src="/post/2018-01-06-ggplot-and-geometric-transformations_files/figure-html/applyRot-1.png" width="672" /> We can also perform more complicated transformations. Let’s rotate about the original rectangle’s top right corner <span class="math inline">\(2+i\)</span> by <span class="math inline">\(\frac{\pi}{4}\)</span>, and double the size. This means we first move <span class="math inline">\((2,1)\)</span> to the origin, rotate/dilate, then move back.</p>
 <pre class="r"><code>#translate to origin
-glRect &lt;- data.frame(x=translateR(rectangle$x, rectangle$y, -2,-1), y=translateI(rectangle$x, rectangle$y, -2,-1))
+glRect &lt;- data.frame(x=translateR(rectangle$x, rectangle$y, -2,-1), 
+                     y=translateI(rectangle$x, rectangle$y, -2,-1))
 
 
 #rotate and dilate by 2e^{i*pi/4} = sqrt(2)+isqrt(2)
@@ -395,7 +397,8 @@ glRect &lt;- data.frame(x=translateR(rectangle$x, rectangle$y, -2,-1), y=transla
 #We&#39;re doing this in one line since both the real and imaginary
 #rotations change and use the original coordinates. Two lines 
 #would produce very different transformation.
-glRect[,1:2] &lt;- c(rotateR(glRect$x, glRect$y, sqrt(2), sqrt(2)) ,         rotateI(glRect$x, glRect$y, sqrt(2),sqrt(2)))
+glRect[,1:2] &lt;- c(rotateR(glRect$x, glRect$y, sqrt(2), sqrt(2)) ,
+                  rotateI(glRect$x, glRect$y, sqrt(2),sqrt(2)))
 
 #Now translate back 
 glRect$x &lt;- translateR(glRect$x, glRect$y, 2,1)
