@@ -8,12 +8,12 @@ tags: ["ggplot", "teaching"]
 
 
 
-<p>I’m currently teaching a Geometry course, and wished there was an easy way to illustrate geommetric transformations for my students. I’m sure they’ll agree I’m not a great artist.</p>
+<p>I’m currently teaching a Geometry course, and wished there was an easy way to illustrate geometric transformations for my students. I’m sure they’ll agree I’m not a great artist.</p>
 <p>Since R is my preferred way to draw any picture, I thought “Let’s use GGPlot to show transformations!”</p>
-<p>For those not versed in geometry, we would like to easily visualize translations (shifts along a vector), rotations, and dilations of points (or collections of points) in the complex plane. Reflections can be acheived via a combination of rotation and translation. Another important transofrmation, inversion, will be done in the next post.</p>
+<p>For those not versed in geometry, we would like to easily visualize translations (shifts along a vector), rotations, and dilations of points (or collections of points) in the complex plane. Reflections can be achieved via a combination of rotation and translation. Another important transformation, inversion, will be done in the next post.</p>
 <div id="functions-for-the-transformations" class="section level1">
 <h1>Functions for the transformations</h1>
-<p>I’m going to write seperate functions for the real and imaginary parts of the result of each transformation, this is to make things easy to produce dataframes to send to ggplot. There are more efficient ways to do this, but I want all functions to have a consistent input/output structure so applying transformations and graphing the results is easy.</p>
+<p>I’m going to write separate functions for the real and imaginary parts of the result of each transformation, this is to make things easy to produce dataframes to send to ggplot. There are more efficient ways to do this, but I want all functions to have a consistent input/output structure so applying transformations and graphing the results is easy.</p>
 <div id="translations" class="section level2">
 <h2>Translations</h2>
 <p>Mathematically, a translation in the complex plane is a function that adds a fixed number to the input. The inputs tx and ty are the real and imaginary parts of the point we’re translating by.</p>
