@@ -42,11 +42,13 @@ jnj_all <- read_csv("../../static/files/jnj-week.csv",
 library(dplyr)
 
 #Get 2017 (and early 2018) data
-jnj17 <- jnj_all %>% select(Date, Close, High, Low) %>% filter(Date> as.Date("2017-01-01")) %>% arrange(Date)
+jnj17 <- jnj_all %>% select(Date, Close, High, Low) %>%
+  filter(Date> as.Date("2017-01-01")) %>% arrange(Date)
 
 #plot
 library(ggplot2)
-ggplot(jnj17, aes(x=Date,y=Close))+geom_line()+ggtitle("JNJ Stock Price since 1/1/2017")
+ggplot(jnj17, aes(x=Date,y=Close)) + geom_line() + 
+  ggtitle("JNJ Stock Price since 1/1/2017")
 ```
 
 ##Single Random Walk
@@ -88,7 +90,7 @@ randWalk <- function(typeName, len, obsData){
     rw <- rnorm(len, mean = obsData$Close[n], sd = mean(obsData$High - obsData$Close))
 
     #build new data.frame
-    rwData <- data.frame(idx=(n+1):(n+len), Close=rw, type =                         rep(typeName,len))
+    rwData <- data.frame(idx=(n+1):(n+len), Close=rw, type = rep(typeName,len))
     return(rwData)
 }
 
@@ -101,7 +103,9 @@ jnjPred <- rbind.data.frame(select(jnj17,idx,Close,type), rwDF)
 #store colorblind palette
 cbbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 
-ggplot(jnjPred, aes(x=idx,y=Close,col=type)) + geom_line() +            ggtitle("JNJ Predictions with Multiple Random Walks") +          scale_color_manual(values=cbbPalette)
+ggplot(jnjPred, aes(x=idx,y=Close,col=type)) + 
+  geom_line() + ggtitle("JNJ Predictions with Multiple Random Walks") + 
+  scale_color_manual(values=cbbPalette)
 
 ```
 
@@ -109,8 +113,14 @@ The collection of random walks are a random sample of all JNJ stock price predic
 
 ```{r combRW}
 
-rwDFreduced <- group_by(rwDF, idx) %>% summarise(meanPred=mean(Close), high = max(Close), low=min(Close)) %>% mutate(Close = meanPred, type="Prediction")
+rwDFreduced <- group_by(rwDF, idx) %>% 
+  summarise(meanPred=mean(Close), high = max(Close), low=min(Close)) %>% 
+  mutate(Close = meanPred, type="Prediction")
 
-ggplot(jnj17, aes(x=idx,y=Close,col=type)) + geom_line() + geom_ribbon(data=rwDFreduced, aes(x=idx,ymin=low,ymax=high), fill="grey70", inherit.aes = FALSE) + geom_line(data=rwDFreduced, aes(x=idx,y=Close, col=type))
+ggplot(jnj17, aes(x=idx,y=Close,col=type)) + geom_line() +
+  geom_ribbon(data=rwDFreduced, aes(x=idx,ymin=low,ymax=high), fill="grey70", inherit.aes = FALSE) + 
+  geom_line(data=rwDFreduced, aes(x=idx,y=Close, col=type))
 
 ```
+
+Due to the lack of any economic theory, I wouldn't put much weight in this prediction but it would be easy to incorporate that into the random walk and the Monte Carlo simulation won't change.

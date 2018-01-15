@@ -45,11 +45,13 @@ jnj_all &amp;lt;- read_csv(&amp;quot;../../static/files/jnj-week.csv&amp;quot;,
 library(dplyr)
 
 #Get 2017 (and early 2018) data
-jnj17 &amp;lt;- jnj_all %&amp;gt;% select(Date, Close, High, Low) %&amp;gt;% filter(Date&amp;gt; as.Date(&amp;quot;2017-01-01&amp;quot;)) %&amp;gt;% arrange(Date)
+jnj17 &amp;lt;- jnj_all %&amp;gt;% select(Date, Close, High, Low) %&amp;gt;%
+  filter(Date&amp;gt; as.Date(&amp;quot;2017-01-01&amp;quot;)) %&amp;gt;% arrange(Date)
 
 #plot
 library(ggplot2)
-ggplot(jnj17, aes(x=Date,y=Close))+geom_line()+ggtitle(&amp;quot;JNJ Stock Price since 1/1/2017&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+ggplot(jnj17, aes(x=Date,y=Close)) + geom_line() + 
+  ggtitle(&amp;quot;JNJ Stock Price since 1/1/2017&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2018-01-15-stock-rw_files/figure-html/jnjData-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;single-random-walk&#34; class=&#34;section level2&#34;&gt;
@@ -79,127 +81,127 @@ kable(rwData)&lt;/code&gt;&lt;/pre&gt;
 &lt;tbody&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;56&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;146.0361&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;144.9589&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;even&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;57&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;147.5614&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;146.4037&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;58&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;143.9302&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;144.7398&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;even&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;59&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;145.6738&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;146.4126&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;60&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;145.8676&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;145.4661&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;even&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;61&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;142.5326&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;145.4278&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;62&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;146.7087&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;145.1706&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;even&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;63&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;146.5412&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;145.6626&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;64&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;147.6478&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;143.3145&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;even&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;65&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;142.4567&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;143.1096&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;66&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;144.2971&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;146.5636&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;even&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;67&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;145.5310&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;147.4824&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;68&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;146.8651&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;147.2071&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;even&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;69&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;147.5096&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;142.9839&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;70&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;144.1421&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;147.8653&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;even&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;71&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;145.0720&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;147.3084&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;72&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;145.3246&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;148.1323&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;even&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;73&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;146.7344&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;145.2955&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;74&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;145.5901&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;147.7899&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;even&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;75&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;147.9866&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;142.0594&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;76&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;143.4219&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;144.4368&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;even&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;77&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;146.0271&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;144.9331&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;78&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;146.2871&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;144.1674&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;even&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;79&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;143.2749&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;144.9990&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;80&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;145.4866&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;146.5048&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
@@ -219,7 +221,7 @@ rbind.data.frame(select(jnj17, idx,Close,type), rwData) %&amp;gt;%
     rw &amp;lt;- rnorm(len, mean = obsData$Close[n], sd = mean(obsData$High - obsData$Close))
 
     #build new data.frame
-    rwData &amp;lt;- data.frame(idx=(n+1):(n+len), Close=rw, type =                         rep(typeName,len))
+    rwData &amp;lt;- data.frame(idx=(n+1):(n+len), Close=rw, type = rep(typeName,len))
     return(rwData)
 }
 
@@ -232,13 +234,20 @@ jnjPred &amp;lt;- rbind.data.frame(select(jnj17,idx,Close,type), rwDF)
 #store colorblind palette
 cbbPalette &amp;lt;- c(&amp;quot;#000000&amp;quot;, &amp;quot;#E69F00&amp;quot;, &amp;quot;#56B4E9&amp;quot;, &amp;quot;#009E73&amp;quot;, &amp;quot;#F0E442&amp;quot;, &amp;quot;#0072B2&amp;quot;, &amp;quot;#D55E00&amp;quot;, &amp;quot;#CC79A7&amp;quot;)
 
-ggplot(jnjPred, aes(x=idx,y=Close,col=type)) + geom_line() +            ggtitle(&amp;quot;JNJ Predictions with Multiple Random Walks&amp;quot;) +          scale_color_manual(values=cbbPalette)&lt;/code&gt;&lt;/pre&gt;
+ggplot(jnjPred, aes(x=idx,y=Close,col=type)) + 
+  geom_line() + ggtitle(&amp;quot;JNJ Predictions with Multiple Random Walks&amp;quot;) + 
+  scale_color_manual(values=cbbPalette)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2018-01-15-stock-rw_files/figure-html/MCRW-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;The collection of random walks are a random sample of all JNJ stock price predictions for the next 25 weeks. Because of how we build our predictions, we clearly see oscilation about the most recent actual close. By using a more informative prediction process, we may see more informative predictions but this would just alter our randWalk function. We can use this to clean up the graph a bit, we can plot the mean of the random walks and their range at each index.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;rwDFreduced &amp;lt;- group_by(rwDF, idx) %&amp;gt;% summarise(meanPred=mean(Close), high = max(Close), low=min(Close)) %&amp;gt;% mutate(Close = meanPred, type=&amp;quot;Prediction&amp;quot;)
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;rwDFreduced &amp;lt;- group_by(rwDF, idx) %&amp;gt;% 
+  summarise(meanPred=mean(Close), high = max(Close), low=min(Close)) %&amp;gt;% 
+  mutate(Close = meanPred, type=&amp;quot;Prediction&amp;quot;)
 
-ggplot(jnj17, aes(x=idx,y=Close,col=type)) + geom_line() + geom_ribbon(data=rwDFreduced, aes(x=idx,ymin=low,ymax=high), fill=&amp;quot;grey70&amp;quot;, inherit.aes = FALSE) + geom_line(data=rwDFreduced, aes(x=idx,y=Close, col=type))&lt;/code&gt;&lt;/pre&gt;
+ggplot(jnj17, aes(x=idx,y=Close,col=type)) + geom_line() +
+  geom_ribbon(data=rwDFreduced, aes(x=idx,ymin=low,ymax=high), fill=&amp;quot;grey70&amp;quot;, inherit.aes = FALSE) + 
+  geom_line(data=rwDFreduced, aes(x=idx,y=Close, col=type))&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2018-01-15-stock-rw_files/figure-html/combRW-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Due to the lack of any economic theory, I wouldn’t put much weight in this prediction but it would be easy to incorporate that into the random walk and the Monte Carlo simulation won’t change.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 </description>
