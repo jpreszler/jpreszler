@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="theme" content="hugo-academic">
+  <meta name="generator" content="Hugo 0.32.2" />
+  <meta name="author" content="Jason Preszler">
+  <meta name="description" content="Assistant Professor - Math, Statistics, and Computer Science">
+
+  
+  <link rel="alternate" hreflang="en-us" href="/post/2018-01-15-stock-rw/">
+
+  
+  
+
+
+  
+
+  
+  
+  
+  
+    
+  
+  
+    
+    
+      
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+      
+    
+  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha512-6MXa8B6uaO18Hid6blRMetEIoPqHf7Ux1tnyIQdpt9qI5OACx7C+O3IVTr98vwGnlcg0LOLa02i9Y1HpVhlfiw==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.1/css/academicons.min.css" integrity="sha512-NThgw3XKQ1absAahW6to7Ey42uycrVvfNfyjqcFNgCmOCQ5AR4AO0SiXrN+8ZtYeappp56lk1WtvjVmEa+VR6A==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha512-SfTiTlX6kk+qitfevl/7LibUOeJWlt9rbyDn92a1DqWOw9vWG2MFoays0sgObmWazO5BQPiFucnnEAjpAB+/Sw==" crossorigin="anonymous">
+  
+  
+  
+  
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Montserrat:400,700%7cRoboto:400,400italic,700%7cRoboto&#43;Mono">
+  
+  <link rel="stylesheet" href="/styles.css">
+  
+
+  
+    <script>
+      window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+      ga('create', 'UA-111748163-1', 'auto');
+      ga('require', 'eventTracker');
+      ga('require', 'outboundLinkTracker');
+      ga('require', 'urlChangeTracker');
+      ga('send', 'pageview');
+    </script>
+    <script async src="//www.google-analytics.com/analytics.js"></script>
+    
+    <script async src="https://cdnjs.cloudflare.com/ajax/libs/autotrack/2.4.1/autotrack.js" integrity="sha512-HUmooslVKj4m6OBu0OgzjXXr+QuFYy/k7eLI5jdeEy/F4RSgMn6XRWRGkFi5IFaFgy7uFTkegp3Z0XnJf3Jq+g==" crossorigin="anonymous"></script>
+    
+  
+
+  
+  <link rel="alternate" href="/index.xml" type="application/rss+xml" title="Jason I. Preszler">
+  <link rel="feed" href="/index.xml" type="application/rss+xml" title="Jason I. Preszler">
+  
+
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="/post/2018-01-15-stock-rw/">
+
+  <meta property="twitter:card" content="summary_large_image">
+  
+  <meta property="og:site_name" content="Jason I. Preszler">
+  <meta property="og:url" content="/post/2018-01-15-stock-rw/">
+  <meta property="og:title" content="Stock Random Walks | Jason I. Preszler">
+  <meta property="og:description" content="">
+  <meta property="og:locale" content="en-us">
+  
+  <meta property="article:published_time" content="2018-01-15T00:00:00&#43;00:00">
+  
+  <meta property="article:modified_time" content="2018-01-15T00:00:00&#43;00:00">
+  
+
+  
+
+  <title>Stock Random Walks | Jason I. Preszler</title>
+
+</head>
+<body id="top" data-spy="scroll" data-target="#toc" data-offset="71" >
+
+<nav class="navbar navbar-default navbar-fixed-top" id="navbar-main">
+  <div class="container">
+
+    
+    <div class="navbar-header">
+      
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+              data-target=".navbar-collapse" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      
+      <a class="navbar-brand" href="/">Jason I. Preszler</a>
+    </div>
+
+    
+    <div class="collapse navbar-collapse">
+
+      
+      
+      <ul class="nav navbar-nav navbar-right">
+        
+
+        
+
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#about">
+            
+            <span>Home</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#publications">
+            
+            <span>Publications</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#posts">
+            
+            <span>Posts</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#projects">
+            
+            <span>Projects</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#teaching">
+            
+            <span>Teaching</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#talks">
+            
+            <span>Talks</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#contact">
+            
+            <span>Contact</span>
+            
+          </a>
+        </li>
+
+        
+        
+      
+
+      
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+<article class="article" itemscope itemtype="http://schema.org/Article">
+
+  
+
+
+  <div class="article-container">
+    <div class="article-inner">
+      <h1 itemprop="name">Stock Random Walks</h1>
+
+      
+
+<div class="article-metadata">
+
+  <span class="article-date">
+    
+    <time datetime="2018-01-15 00:00:00 &#43;0000 UTC" itemprop="datePublished">
+      Jan 15, 2018
+    </time>
+  </span>
+
+  
+
+  
+  
+
+  
+
+  
+  
+<div class="share-box" aria-hidden="true">
+  <ul class="share">
+    <li>
+      <a class="twitter"
+         href="https://twitter.com/intent/tweet?text=Stock%20Random%20Walks&amp;url=%2fpost%2f2018-01-15-stock-rw%2f"
+         target="_blank" rel="noopener">
+        <i class="fa fa-twitter"></i>
+      </a>
+    </li>
+    <li>
+      <a class="facebook"
+         href="https://www.facebook.com/sharer.php?u=%2fpost%2f2018-01-15-stock-rw%2f"
+         target="_blank" rel="noopener">
+        <i class="fa fa-facebook"></i>
+      </a>
+    </li>
+    <li>
+      <a class="linkedin"
+         href="https://www.linkedin.com/shareArticle?mini=true&amp;url=%2fpost%2f2018-01-15-stock-rw%2f&amp;title=Stock%20Random%20Walks"
+         target="_blank" rel="noopener">
+        <i class="fa fa-linkedin"></i>
+      </a>
+    </li>
+    <li>
+      <a class="weibo"
+         href="http://service.weibo.com/share/share.php?url=%2fpost%2f2018-01-15-stock-rw%2f&amp;title=Stock%20Random%20Walks"
+         target="_blank" rel="noopener">
+        <i class="fa fa-weibo"></i>
+      </a>
+    </li>
+    <li>
+      <a class="email"
+         href="mailto:?subject=Stock%20Random%20Walks&amp;body=%2fpost%2f2018-01-15-stock-rw%2f">
+        <i class="fa fa-envelope"></i>
+      </a>
+    </li>
+  </ul>
+</div>
+
+
+  
+
+</div>
+
+
+      <div class="article-style" itemprop="articleBody">
+        <div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>Recently a student in another course came to my office looking for someone “who could explain the Monte Carlo simulation” to her. I was caught a bit off-guard since (a) it was 10 minutes before my geometry class and (b) there is no single Monte Carlo simulation.</p>
+<p>After a brief discussion, I found out she wanted to predict stock prices using Monte Carlo simulation, but she thought that the Monte Carlo simulation provided the prediction - she couldn’t say how the actual predictions were being made which is the crucial part.</p>
+<div id="aside-on-monte-carlo" class="section level2">
+<h2>Aside on Monte Carlo</h2>
+<p>If you are familiar with Monte Carlo simulations, skip this, but if not it may be worth reading.</p>
+<p>A Monte Carlo simulation is a process of using the outcomes of a random process to better understand the probability distribution of the process. The method of creating the outcomes if dependent on the situation (although it should utilize some type of random sampling).</p>
+<p>In my Computer Science classes, I have students use a Monte Carlo simulation to calculate <span class="math inline">\(\pi\)</span> (I usually do this Intro Stats too). This involves choosing <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> values between <span class="math inline">\(-1\)</span> and <span class="math inline">\(1\)</span> (uniform distribution) and seeing how many <span class="math inline">\((x,y)\)</span> pairs are inside the unit circle. For a sufficiently large number of points, the ratio of the number inside to the total should be the same as the ratio of area of the unit circle to the area of the surrounding square (where all possible points lie).</p>
+<p>In Bayesian modelling, Markov Chain Monte Carlo simulations are run to get a sufficient understanding of the posterior probability distribution. This distribution is usually multivariate and except in particular circumstances doesn’t have a nice analytic definition.</p>
+</div>
+</div>
+<div id="random-walks" class="section level1">
+<h1>Random Walks</h1>
+<p>One way that we could use a Monte Carlo simulation to predict stock prices is to use a random walk to generate the predicted stock prices. There are many ways we could do this, some using lots of economics sophistication, but we’ll focus on the simpliest case to make the general process clear.</p>
+<p>A random walk is a random process that describes movement from a starting point over a number of steps through a space. For stocks, if we use the current price as the starting point then selecting normally distributed random numbers with mean of the start point, then the random numbers form a type of random walk (oscillating about the current price over time). More complex models could add (a) trends, (b) seasonality, (c) other distribution structures or combinations of the above.</p>
+<p>We’ll do the simple case <span class="math display">\[new~price = \mathrm{norm}(\mu=start~price, \sigma=?)\]</span> and we’ll use stock data from Johnson and Johnson (NYSE:JNJ).</p>
+</div>
+<div id="jnj-prediction" class="section level1">
+<h1>JNJ Prediction</h1>
+<div id="the-data" class="section level2">
+<h2>The Data</h2>
+<p>I downloaded weekly <a href="/post/jnj-week.csv">data</a> for Johnson and Johnson from Yahoo finance. First, we’ll get rid of a couple coloumns and reduce the date range to 2017 and the start of 2018.</p>
+<pre class="r"><code>library(readr)
+jnj_all &lt;- read_csv(&quot;../../static/files/jnj-week.csv&quot;, 
+    col_types = cols(Date = col_date(format = &quot;%Y-%m-%d&quot;)))
+library(dplyr)
+
+#Get 2017 (and early 2018) data
+jnj17 &lt;- jnj_all %&gt;% select(Date, Close, High, Low) %&gt;% filter(Date&gt; as.Date(&quot;2017-01-01&quot;)) %&gt;% arrange(Date)
+
+#plot
+library(ggplot2)
+ggplot(jnj17, aes(x=Date,y=Close))+geom_line()+ggtitle(&quot;JNJ Stock Price since 1/1/2017&quot;)</code></pre>
+<p><img src="/post/2018-01-15-stock-rw_files/figure-html/jnjData-1.png" width="672" /></p>
+</div>
+<div id="single-random-walk" class="section level2">
+<h2>Single Random Walk</h2>
+<p>First, we’ll build a single random walk. A Monte Carlo simulation will need lots of random walks, but if we can do one, lots should be easy.</p>
+<p>Do simplify things, I’m going to add an “index” variable instead of working explicitly with dates.</p>
+<pre class="r"><code>jnj17$idx &lt;- 1:length(jnj17$Close)
+jnj17$type &lt;- &quot;Actual&quot;</code></pre>
+<p>Now, let’s make a random walk to predict the next 25 weeks of stock closing values. We’ll assume that the prices should be normally distributed around the most recent price and that the standard deviation will be the average of the weekly ranges over the last year(ish). This last bit is pretty arbitrary, we could use a standard deviation <span class="math inline">\(1\)</span>, or something else justified by economics.</p>
+<pre class="r"><code>n&lt;- length(jnj17$Close)
+rw &lt;- rnorm(25, mean = jnj17$Close[n], sd=mean(jnj17$High-jnj17$Close))
+
+#build new data.frame
+rwData &lt;- data.frame(idx=(n+1):(n+25), Close=rw, type=rep(&quot;RW&quot;,25))
+
+#table
+library(knitr)
+kable(rwData)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">idx</th>
+<th align="right">Close</th>
+<th align="left">type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">56</td>
+<td align="right">146.1546</td>
+<td align="left">RW</td>
+</tr>
+<tr class="even">
+<td align="right">57</td>
+<td align="right">145.6307</td>
+<td align="left">RW</td>
+</tr>
+<tr class="odd">
+<td align="right">58</td>
+<td align="right">146.8759</td>
+<td align="left">RW</td>
+</tr>
+<tr class="even">
+<td align="right">59</td>
+<td align="right">144.2193</td>
+<td align="left">RW</td>
+</tr>
+<tr class="odd">
+<td align="right">60</td>
+<td align="right">144.1649</td>
+<td align="left">RW</td>
+</tr>
+<tr class="even">
+<td align="right">61</td>
+<td align="right">145.4912</td>
+<td align="left">RW</td>
+</tr>
+<tr class="odd">
+<td align="right">62</td>
+<td align="right">143.1149</td>
+<td align="left">RW</td>
+</tr>
+<tr class="even">
+<td align="right">63</td>
+<td align="right">145.6459</td>
+<td align="left">RW</td>
+</tr>
+<tr class="odd">
+<td align="right">64</td>
+<td align="right">143.9866</td>
+<td align="left">RW</td>
+</tr>
+<tr class="even">
+<td align="right">65</td>
+<td align="right">144.3844</td>
+<td align="left">RW</td>
+</tr>
+<tr class="odd">
+<td align="right">66</td>
+<td align="right">146.4504</td>
+<td align="left">RW</td>
+</tr>
+<tr class="even">
+<td align="right">67</td>
+<td align="right">144.9267</td>
+<td align="left">RW</td>
+</tr>
+<tr class="odd">
+<td align="right">68</td>
+<td align="right">145.9113</td>
+<td align="left">RW</td>
+</tr>
+<tr class="even">
+<td align="right">69</td>
+<td align="right">144.2581</td>
+<td align="left">RW</td>
+</tr>
+<tr class="odd">
+<td align="right">70</td>
+<td align="right">145.7517</td>
+<td align="left">RW</td>
+</tr>
+<tr class="even">
+<td align="right">71</td>
+<td align="right">145.6574</td>
+<td align="left">RW</td>
+</tr>
+<tr class="odd">
+<td align="right">72</td>
+<td align="right">145.4053</td>
+<td align="left">RW</td>
+</tr>
+<tr class="even">
+<td align="right">73</td>
+<td align="right">146.5685</td>
+<td align="left">RW</td>
+</tr>
+<tr class="odd">
+<td align="right">74</td>
+<td align="right">144.5791</td>
+<td align="left">RW</td>
+</tr>
+<tr class="even">
+<td align="right">75</td>
+<td align="right">147.0694</td>
+<td align="left">RW</td>
+</tr>
+<tr class="odd">
+<td align="right">76</td>
+<td align="right">145.6478</td>
+<td align="left">RW</td>
+</tr>
+<tr class="even">
+<td align="right">77</td>
+<td align="right">148.3393</td>
+<td align="left">RW</td>
+</tr>
+<tr class="odd">
+<td align="right">78</td>
+<td align="right">144.8798</td>
+<td align="left">RW</td>
+</tr>
+<tr class="even">
+<td align="right">79</td>
+<td align="right">144.9232</td>
+<td align="left">RW</td>
+</tr>
+<tr class="odd">
+<td align="right">80</td>
+<td align="right">147.5887</td>
+<td align="left">RW</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>#plot
+rbind.data.frame(select(jnj17, idx,Close,type), rwData) %&gt;%
+  ggplot(aes(x=idx,y=Close, col=type))+geom_line()+
+  ggtitle(&quot;JNJ Actual and Predicted Price&quot;)</code></pre>
+<p><img src="/post/2018-01-15-stock-rw_files/figure-html/firstRW-1.png" width="672" /></p>
+<p>This is likely a bad prediction. The hope is that lots of similarly constructed predictions will give insight into the probability distribution of the future JNJ stock prices. This means we’ll need lots of random walks.</p>
+</div>
+<div id="multiple-random-walks" class="section level2">
+<h2>Multiple Random Walks</h2>
+<p>We just need to replicate what we did previously for an arbitrary number of times. To automate this, we’ll make a function to give a data frame with our random walk data, this will work with any similarly structured data (other stock data from Yahoo finance).</p>
+<pre class="r"><code>randWalk &lt;- function(typeName, len, obsData){
+    n&lt;- length(obsData$Close)
+    rw &lt;- rnorm(len, mean = obsData$Close[n], sd = mean(obsData$High - obsData$Close))
+
+    #build new data.frame
+    rwData &lt;- data.frame(idx=(n+1):(n+len), Close=rw, type =                         rep(typeName,len))
+    return(rwData)
+}
+
+#doing 7 random walks because of the colorblind palette
+rwList &lt;- lapply(1:7, function(x) {randWalk(paste(&quot;RW&quot;,x,sep=&quot;&quot;),25,jnj17)})
+
+rwDF &lt;- as.data.frame(bind_rows(rwList))
+jnjPred &lt;- rbind.data.frame(select(jnj17,idx,Close,type), rwDF)
+
+#store colorblind palette
+cbbPalette &lt;- c(&quot;#000000&quot;, &quot;#E69F00&quot;, &quot;#56B4E9&quot;, &quot;#009E73&quot;, &quot;#F0E442&quot;, &quot;#0072B2&quot;, &quot;#D55E00&quot;, &quot;#CC79A7&quot;)
+
+ggplot(jnjPred, aes(x=idx,y=Close,col=type))+geom_line()+ggtitle(&quot;JNJ Predictions with Multiple Random Walks&quot;)</code></pre>
+<p><img src="/post/2018-01-15-stock-rw_files/figure-html/MCRW-1.png" width="672" /></p>
+<p>The collection of random walks are a random sample of all JNJ stock price predictions for the next 25 weeks. Because of how we build our predictions, we clearly see oscilation about the most recent actual close. By using a more informative prediction process, we may see more informative predictions but this would just alter our randWalk function.</p>
+</div>
+</div>
+
+      </div>
+
+      
+
+
+<div class="article-tags">
+  
+  <a class="btn btn-primary btn-outline" href="/tags/r">R</a>
+  
+  <a class="btn btn-primary btn-outline" href="/tags/forecast">forecast</a>
+  
+</div>
+
+
+
+    </div>
+  </div>
+
+</article>
+
+
+
+<div class="article-container article-widget">
+  <div class="hr-light"></div>
+  <h3>Related</h3>
+  <ul>
+    
+    <li><a href="/post/2018-01-01/">Thoughts on Severe Class Imbalance </a></li>
+    
+  </ul>
+</div>
+
+
+
+
+<div class="article-container">
+  
+
+</div>
+
+<footer class="site-footer">
+  <div class="container">
+    <p class="powered-by">
+
+      &copy; 2017 Jason Preszler &middot; 
+
+      Powered by the
+      <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+      <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+      <span class="pull-right" aria-hidden="true">
+        <a href="#" id="back_to_top">
+          <span class="button_icon">
+            <i class="fa fa-chevron-up fa-2x"></i>
+          </span>
+        </a>
+      </span>
+
+    </p>
+  </div>
+</footer>
+
+
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close btn-large" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Cite</h4>
+      </div>
+      <div>
+        <pre><code class="modal-body tex"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-primary btn-outline js-copy-cite" href="#" target="_blank">
+          <i class="fa fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-primary btn-outline js-download-cite" href="#" target="_blank">
+          <i class="fa fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+    
+
+    
+
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" integrity="sha512-3P8rXCuGJdNZOnUx/03c1jOTnMn3rP63nBip5gOP2qmUh5YAdVAvFZ1E+QLZZbC1rtMrQb+mah3AfYW11RUrWA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.3/imagesloaded.pkgd.min.js" integrity="sha512-umsR78NN0D23AzgoZ11K7raBD+R6hqKojyBZs1w8WvYlsI+QuKRGBx3LFCwhatzBunCjDuJpDHwxD13sLMbpRA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha512-iztkobsvnjKfAtTNdHkGVjAYTrrtlC7mGp/54c40wowO7LhURYl3gVzzcEqGl/qKXQltJ2HwMrdLcNUdo+N/RQ==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.4/isotope.pkgd.min.js" integrity="sha512-VDBOIlDbuC4VWxGJNmuFRQ0Li0SKkDpmGyuhAG5LTDLd/dJ/S0WMVxriR2Y+CyPL5gzjpN4f/6iqWVBJlht0tQ==" crossorigin="anonymous"></script>
+    
+    
+    <script src="/js/hugo-academic.js"></script>
+    
+
+    
+    
+      
+      
+      <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+      
+
+      
+      <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+      
+      <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/python.min.js"></script>
+      
+      <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/c.min.js"></script>
+      
+
+      
+
+      <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({ tex2jax: { inlineMath: [['$','$'], ['\\(','\\)']] } });
+    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_CHTML" integrity="sha512-tOav5w1OjvsSJzePRtt2uQPFwBoHt1VZcUq8l8nm5284LEKE9FSJBQryzMBzHxY5P0zRdNqEcpLIRVYFNgu1jw==" crossorigin="anonymous"></script>
+    
+    
+
+  </body>
+</html>
+

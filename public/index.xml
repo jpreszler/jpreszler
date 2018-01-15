@@ -11,6 +11,236 @@
     <atom:link href="/" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Stock Random Walks</title>
+      <link>/post/2018-01-15-stock-rw/</link>
+      <pubDate>Mon, 15 Jan 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-01-15-stock-rw/</guid>
+      <description>&lt;div id=&#34;introduction&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Introduction&lt;/h1&gt;
+&lt;p&gt;Recently a student in another course came to my office looking for someone “who could explain the Monte Carlo simulation” to her. I was caught a bit off-guard since (a) it was 10 minutes before my geometry class and (b) there is no single Monte Carlo simulation.&lt;/p&gt;
+&lt;p&gt;After a brief discussion, I found out she wanted to predict stock prices using Monte Carlo simulation, but she thought that the Monte Carlo simulation provided the prediction - she couldn’t say how the actual predictions were being made which is the crucial part.&lt;/p&gt;
+&lt;div id=&#34;aside-on-monte-carlo&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Aside on Monte Carlo&lt;/h2&gt;
+&lt;p&gt;If you are familiar with Monte Carlo simulations, skip this, but if not it may be worth reading.&lt;/p&gt;
+&lt;p&gt;A Monte Carlo simulation is a process of using the outcomes of a random process to better understand the probability distribution of the process. The method of creating the outcomes if dependent on the situation (although it should utilize some type of random sampling).&lt;/p&gt;
+&lt;p&gt;In my Computer Science classes, I have students use a Monte Carlo simulation to calculate &lt;span class=&#34;math inline&#34;&gt;\(\pi\)&lt;/span&gt; (I usually do this Intro Stats too). This involves choosing &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; values between &lt;span class=&#34;math inline&#34;&gt;\(-1\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt; (uniform distribution) and seeing how many &lt;span class=&#34;math inline&#34;&gt;\((x,y)\)&lt;/span&gt; pairs are inside the unit circle. For a sufficiently large number of points, the ratio of the number inside to the total should be the same as the ratio of area of the unit circle to the area of the surrounding square (where all possible points lie).&lt;/p&gt;
+&lt;p&gt;In Bayesian modelling, Markov Chain Monte Carlo simulations are run to get a sufficient understanding of the posterior probability distribution. This distribution is usually multivariate and except in particular circumstances doesn’t have a nice analytic definition.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;random-walks&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Random Walks&lt;/h1&gt;
+&lt;p&gt;One way that we could use a Monte Carlo simulation to predict stock prices is to use a random walk to generate the predicted stock prices. There are many ways we could do this, some using lots of economics sophistication, but we’ll focus on the simpliest case to make the general process clear.&lt;/p&gt;
+&lt;p&gt;A random walk is a random process that describes movement from a starting point over a number of steps through a space. For stocks, if we use the current price as the starting point then selecting normally distributed random numbers with mean of the start point, then the random numbers form a type of random walk (oscillating about the current price over time). More complex models could add (a) trends, (b) seasonality, (c) other distribution structures or combinations of the above.&lt;/p&gt;
+&lt;p&gt;We’ll do the simple case &lt;span class=&#34;math display&#34;&gt;\[new~price = \mathrm{norm}(\mu=start~price, \sigma=?)\]&lt;/span&gt; and we’ll use stock data from Johnson and Johnson (NYSE:JNJ).&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;jnj-prediction&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;JNJ Prediction&lt;/h1&gt;
+&lt;div id=&#34;the-data&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;The Data&lt;/h2&gt;
+&lt;p&gt;I downloaded weekly &lt;a href=&#34;/post/jnj-week.csv&#34;&gt;data&lt;/a&gt; for Johnson and Johnson from Yahoo finance. First, we’ll get rid of a couple coloumns and reduce the date range to 2017 and the start of 2018.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(readr)
+jnj_all &amp;lt;- read_csv(&amp;quot;../../static/files/jnj-week.csv&amp;quot;, 
+    col_types = cols(Date = col_date(format = &amp;quot;%Y-%m-%d&amp;quot;)))
+library(dplyr)
+
+#Get 2017 (and early 2018) data
+jnj17 &amp;lt;- jnj_all %&amp;gt;% select(Date, Close, High, Low) %&amp;gt;% filter(Date&amp;gt; as.Date(&amp;quot;2017-01-01&amp;quot;)) %&amp;gt;% arrange(Date)
+
+#plot
+library(ggplot2)
+ggplot(jnj17, aes(x=Date,y=Close))+geom_line()+ggtitle(&amp;quot;JNJ Stock Price since 1/1/2017&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-01-15-stock-rw_files/figure-html/jnjData-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;single-random-walk&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Single Random Walk&lt;/h2&gt;
+&lt;p&gt;First, we’ll build a single random walk. A Monte Carlo simulation will need lots of random walks, but if we can do one, lots should be easy.&lt;/p&gt;
+&lt;p&gt;Do simplify things, I’m going to add an “index” variable instead of working explicitly with dates.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;jnj17$idx &amp;lt;- 1:length(jnj17$Close)
+jnj17$type &amp;lt;- &amp;quot;Actual&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now, let’s make a random walk to predict the next 25 weeks of stock closing values. We’ll assume that the prices should be normally distributed around the most recent price and that the standard deviation will be the average of the weekly ranges over the last year(ish). This last bit is pretty arbitrary, we could use a standard deviation &lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt;, or something else justified by economics.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;n&amp;lt;- length(jnj17$Close)
+rw &amp;lt;- rnorm(25, mean = jnj17$Close[n], sd=mean(jnj17$High-jnj17$Close))
+
+#build new data.frame
+rwData &amp;lt;- data.frame(idx=(n+1):(n+25), Close=rw, type=rep(&amp;quot;RW&amp;quot;,25))
+
+#table
+library(knitr)
+kable(rwData)&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;right&#34;&gt;idx&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;Close&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;type&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;56&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;146.1546&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;57&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;145.6307&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;58&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;146.8759&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;59&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;144.2193&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;60&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;144.1649&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;61&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;145.4912&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;62&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;143.1149&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;63&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;145.6459&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;64&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;143.9866&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;65&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;144.3844&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;66&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;146.4504&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;67&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;144.9267&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;68&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;145.9113&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;69&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;144.2581&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;70&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;145.7517&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;71&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;145.6574&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;72&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;145.4053&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;73&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;146.5685&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;74&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;144.5791&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;75&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;147.0694&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;76&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;145.6478&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;77&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;148.3393&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;78&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;144.8798&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;79&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;144.9232&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;80&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;147.5887&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;#plot
+rbind.data.frame(select(jnj17, idx,Close,type), rwData) %&amp;gt;%
+  ggplot(aes(x=idx,y=Close, col=type))+geom_line()+
+  ggtitle(&amp;quot;JNJ Actual and Predicted Price&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-01-15-stock-rw_files/figure-html/firstRW-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;This is likely a bad prediction. The hope is that lots of similarly constructed predictions will give insight into the probability distribution of the future JNJ stock prices. This means we’ll need lots of random walks.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;multiple-random-walks&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Multiple Random Walks&lt;/h2&gt;
+&lt;p&gt;We just need to replicate what we did previously for an arbitrary number of times. To automate this, we’ll make a function to give a data frame with our random walk data, this will work with any similarly structured data (other stock data from Yahoo finance).&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;randWalk &amp;lt;- function(typeName, len, obsData){
+    n&amp;lt;- length(obsData$Close)
+    rw &amp;lt;- rnorm(len, mean = obsData$Close[n], sd = mean(obsData$High - obsData$Close))
+
+    #build new data.frame
+    rwData &amp;lt;- data.frame(idx=(n+1):(n+len), Close=rw, type =                         rep(typeName,len))
+    return(rwData)
+}
+
+#doing 7 random walks because of the colorblind palette
+rwList &amp;lt;- lapply(1:7, function(x) {randWalk(paste(&amp;quot;RW&amp;quot;,x,sep=&amp;quot;&amp;quot;),25,jnj17)})
+
+rwDF &amp;lt;- as.data.frame(bind_rows(rwList))
+jnjPred &amp;lt;- rbind.data.frame(select(jnj17,idx,Close,type), rwDF)
+
+#store colorblind palette
+cbbPalette &amp;lt;- c(&amp;quot;#000000&amp;quot;, &amp;quot;#E69F00&amp;quot;, &amp;quot;#56B4E9&amp;quot;, &amp;quot;#009E73&amp;quot;, &amp;quot;#F0E442&amp;quot;, &amp;quot;#0072B2&amp;quot;, &amp;quot;#D55E00&amp;quot;, &amp;quot;#CC79A7&amp;quot;)
+
+ggplot(jnjPred, aes(x=idx,y=Close,col=type))+geom_line()+ggtitle(&amp;quot;JNJ Predictions with Multiple Random Walks&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-01-15-stock-rw_files/figure-html/MCRW-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;The collection of random walks are a random sample of all JNJ stock price predictions for the next 25 weeks. Because of how we build our predictions, we clearly see oscilation about the most recent actual close. By using a more informative prediction process, we may see more informative predictions but this would just alter our randWalk function.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
       <title>GGPlot and Geometric Transformations II: Inversions</title>
       <link>/post/2018-01-07-inversions/</link>
       <pubDate>Sun, 07 Jan 2018 00:00:00 +0000</pubDate>
