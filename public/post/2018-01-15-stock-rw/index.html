@@ -383,127 +383,127 @@ kable(rwData)</code></pre>
 <tbody>
 <tr class="odd">
 <td align="right">56</td>
-<td align="right">146.1546</td>
+<td align="right">146.0361</td>
 <td align="left">RW</td>
 </tr>
 <tr class="even">
 <td align="right">57</td>
-<td align="right">145.6307</td>
+<td align="right">147.5614</td>
 <td align="left">RW</td>
 </tr>
 <tr class="odd">
 <td align="right">58</td>
-<td align="right">146.8759</td>
+<td align="right">143.9302</td>
 <td align="left">RW</td>
 </tr>
 <tr class="even">
 <td align="right">59</td>
-<td align="right">144.2193</td>
+<td align="right">145.6738</td>
 <td align="left">RW</td>
 </tr>
 <tr class="odd">
 <td align="right">60</td>
-<td align="right">144.1649</td>
+<td align="right">145.8676</td>
 <td align="left">RW</td>
 </tr>
 <tr class="even">
 <td align="right">61</td>
-<td align="right">145.4912</td>
+<td align="right">142.5326</td>
 <td align="left">RW</td>
 </tr>
 <tr class="odd">
 <td align="right">62</td>
-<td align="right">143.1149</td>
+<td align="right">146.7087</td>
 <td align="left">RW</td>
 </tr>
 <tr class="even">
 <td align="right">63</td>
-<td align="right">145.6459</td>
+<td align="right">146.5412</td>
 <td align="left">RW</td>
 </tr>
 <tr class="odd">
 <td align="right">64</td>
-<td align="right">143.9866</td>
+<td align="right">147.6478</td>
 <td align="left">RW</td>
 </tr>
 <tr class="even">
 <td align="right">65</td>
-<td align="right">144.3844</td>
+<td align="right">142.4567</td>
 <td align="left">RW</td>
 </tr>
 <tr class="odd">
 <td align="right">66</td>
-<td align="right">146.4504</td>
+<td align="right">144.2971</td>
 <td align="left">RW</td>
 </tr>
 <tr class="even">
 <td align="right">67</td>
-<td align="right">144.9267</td>
+<td align="right">145.5310</td>
 <td align="left">RW</td>
 </tr>
 <tr class="odd">
 <td align="right">68</td>
-<td align="right">145.9113</td>
+<td align="right">146.8651</td>
 <td align="left">RW</td>
 </tr>
 <tr class="even">
 <td align="right">69</td>
-<td align="right">144.2581</td>
+<td align="right">147.5096</td>
 <td align="left">RW</td>
 </tr>
 <tr class="odd">
 <td align="right">70</td>
-<td align="right">145.7517</td>
+<td align="right">144.1421</td>
 <td align="left">RW</td>
 </tr>
 <tr class="even">
 <td align="right">71</td>
-<td align="right">145.6574</td>
+<td align="right">145.0720</td>
 <td align="left">RW</td>
 </tr>
 <tr class="odd">
 <td align="right">72</td>
-<td align="right">145.4053</td>
+<td align="right">145.3246</td>
 <td align="left">RW</td>
 </tr>
 <tr class="even">
 <td align="right">73</td>
-<td align="right">146.5685</td>
+<td align="right">146.7344</td>
 <td align="left">RW</td>
 </tr>
 <tr class="odd">
 <td align="right">74</td>
-<td align="right">144.5791</td>
+<td align="right">145.5901</td>
 <td align="left">RW</td>
 </tr>
 <tr class="even">
 <td align="right">75</td>
-<td align="right">147.0694</td>
+<td align="right">147.9866</td>
 <td align="left">RW</td>
 </tr>
 <tr class="odd">
 <td align="right">76</td>
-<td align="right">145.6478</td>
+<td align="right">143.4219</td>
 <td align="left">RW</td>
 </tr>
 <tr class="even">
 <td align="right">77</td>
-<td align="right">148.3393</td>
+<td align="right">146.0271</td>
 <td align="left">RW</td>
 </tr>
 <tr class="odd">
 <td align="right">78</td>
-<td align="right">144.8798</td>
+<td align="right">146.2871</td>
 <td align="left">RW</td>
 </tr>
 <tr class="even">
 <td align="right">79</td>
-<td align="right">144.9232</td>
+<td align="right">143.2749</td>
 <td align="left">RW</td>
 </tr>
 <tr class="odd">
 <td align="right">80</td>
-<td align="right">147.5887</td>
+<td align="right">145.4866</td>
 <td align="left">RW</td>
 </tr>
 </tbody>
@@ -513,7 +513,7 @@ rbind.data.frame(select(jnj17, idx,Close,type), rwData) %&gt;%
   ggplot(aes(x=idx,y=Close, col=type))+geom_line()+
   ggtitle(&quot;JNJ Actual and Predicted Price&quot;)</code></pre>
 <p><img src="/post/2018-01-15-stock-rw_files/figure-html/firstRW-1.png" width="672" /></p>
-<p>This is likely a bad prediction. The hope is that lots of similarly constructed predictions will give insight into the probability distribution of the future JNJ stock prices. This means we’ll need lots of random walks.</p>
+<p>This is likely a bad prediction at any given index. The hope is that lots of similarly constructed predictions will give insight into the probability distribution of the future JNJ stock prices. This means we’ll need lots of random walks.</p>
 </div>
 <div id="multiple-random-walks" class="section level2">
 <h2>Multiple Random Walks</h2>
@@ -536,9 +536,13 @@ jnjPred &lt;- rbind.data.frame(select(jnj17,idx,Close,type), rwDF)
 #store colorblind palette
 cbbPalette &lt;- c(&quot;#000000&quot;, &quot;#E69F00&quot;, &quot;#56B4E9&quot;, &quot;#009E73&quot;, &quot;#F0E442&quot;, &quot;#0072B2&quot;, &quot;#D55E00&quot;, &quot;#CC79A7&quot;)
 
-ggplot(jnjPred, aes(x=idx,y=Close,col=type))+geom_line()+ggtitle(&quot;JNJ Predictions with Multiple Random Walks&quot;)</code></pre>
+ggplot(jnjPred, aes(x=idx,y=Close,col=type)) + geom_line() +            ggtitle(&quot;JNJ Predictions with Multiple Random Walks&quot;) +          scale_color_manual(values=cbbPalette)</code></pre>
 <p><img src="/post/2018-01-15-stock-rw_files/figure-html/MCRW-1.png" width="672" /></p>
-<p>The collection of random walks are a random sample of all JNJ stock price predictions for the next 25 weeks. Because of how we build our predictions, we clearly see oscilation about the most recent actual close. By using a more informative prediction process, we may see more informative predictions but this would just alter our randWalk function.</p>
+<p>The collection of random walks are a random sample of all JNJ stock price predictions for the next 25 weeks. Because of how we build our predictions, we clearly see oscilation about the most recent actual close. By using a more informative prediction process, we may see more informative predictions but this would just alter our randWalk function. We can use this to clean up the graph a bit, we can plot the mean of the random walks and their range at each index.</p>
+<pre class="r"><code>rwDFreduced &lt;- group_by(rwDF, idx) %&gt;% summarise(meanPred=mean(Close), high = max(Close), low=min(Close)) %&gt;% mutate(Close = meanPred, type=&quot;Prediction&quot;)
+
+ggplot(jnj17, aes(x=idx,y=Close,col=type)) + geom_line() + geom_ribbon(data=rwDFreduced, aes(x=idx,ymin=low,ymax=high), fill=&quot;grey70&quot;, inherit.aes = FALSE) + geom_line(data=rwDFreduced, aes(x=idx,y=Close, col=type))</code></pre>
+<p><img src="/post/2018-01-15-stock-rw_files/figure-html/combRW-1.png" width="672" /></p>
 </div>
 </div>
 

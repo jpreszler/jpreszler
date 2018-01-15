@@ -77,7 +77,7 @@ rbind.data.frame(select(jnj17, idx,Close,type), rwData) %>%
   ggtitle("JNJ Actual and Predicted Price")
 ```
 
-This is likely a bad prediction. The hope is that lots of similarly constructed predictions will give insight into the probability distribution of the future JNJ stock prices. This means we'll need lots of random walks.
+This is likely a bad prediction at any given index. The hope is that lots of similarly constructed predictions will give insight into the probability distribution of the future JNJ stock prices. This means we'll need lots of random walks.
 
 ##Multiple Random Walks
 We just need to replicate what we did previously for an arbitrary number of times. To automate this, we'll make a function to give a data frame with our random walk data, this will work with any similarly structured data (other stock data from Yahoo finance).
@@ -101,8 +101,16 @@ jnjPred <- rbind.data.frame(select(jnj17,idx,Close,type), rwDF)
 #store colorblind palette
 cbbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 
-ggplot(jnjPred, aes(x=idx,y=Close,col=type))+geom_line()+ggtitle("JNJ Predictions with Multiple Random Walks")
+ggplot(jnjPred, aes(x=idx,y=Close,col=type)) + geom_line() +            ggtitle("JNJ Predictions with Multiple Random Walks") +          scale_color_manual(values=cbbPalette)
 
 ```
 
-The collection of random walks are a random sample of all JNJ stock price predictions for the next 25 weeks. Because of how we build our predictions, we clearly see oscilation about the most recent actual close. By using a more informative prediction process, we may see more informative predictions but this would just alter our randWalk function.
+The collection of random walks are a random sample of all JNJ stock price predictions for the next 25 weeks. Because of how we build our predictions, we clearly see oscilation about the most recent actual close. By using a more informative prediction process, we may see more informative predictions but this would just alter our randWalk function. We can use this to clean up the graph a bit, we can plot the mean of the random walks and their range at each index.
+
+```{r combRW}
+
+rwDFreduced <- group_by(rwDF, idx) %>% summarise(meanPred=mean(Close), high = max(Close), low=min(Close)) %>% mutate(Close = meanPred, type="Prediction")
+
+ggplot(jnj17, aes(x=idx,y=Close,col=type)) + geom_line() + geom_ribbon(data=rwDFreduced, aes(x=idx,ymin=low,ymax=high), fill="grey70", inherit.aes = FALSE) + geom_line(data=rwDFreduced, aes(x=idx,y=Close, col=type))
+
+```
