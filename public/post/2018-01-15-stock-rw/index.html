@@ -335,8 +335,8 @@
 <div id="random-walks" class="section level1">
 <h1>Random Walks</h1>
 <p>One way that we could use a Monte Carlo simulation to predict stock prices is to use a random walk to generate the predicted stock prices. There are many ways we could do this, some using lots of economics sophistication, but we’ll focus on the simpliest case to make the general process clear.</p>
-<p>A random walk is a random process that describes movement from a starting point over a number of steps through a space. For stocks, if we use the current price as the starting point then selecting normally distributed random numbers with mean of the start point, then the random numbers form a type of random walk (oscillating about the current price over time). More complex models could add (a) trends, (b) seasonality, (c) other distribution structures or combinations of the above.</p>
-<p>We’ll do the simple case <span class="math display">\[new~price = \mathrm{norm}(\mu=start~price, \sigma=?)\]</span> and we’ll use stock data from Johnson and Johnson (NYSE:JNJ).</p>
+<p>A random walk is a random process that describes movement from a starting point over a number of steps through a space. For stocks, if we use the current price as the starting point then selecting normally distributed random numbers with mean <span class="math inline">\(0\)</span>, then cumulatively sum the random numbers and add to the base price, we form a random walk. More complex models could add (a) trends, (b) seasonality, (c) other distribution structures or combinations of the above.</p>
+<p>We’ll do the simple case <span class="math display">\[new~price = base~price + \mathrm{norm}(\mu=0, \sigma=?)\]</span> and we’ll use stock data from Johnson and Johnson (NYSE:JNJ).</p>
 </div>
 <div id="jnj-prediction" class="section level1">
 <h1>JNJ Prediction</h1>
@@ -364,9 +364,9 @@ ggplot(jnj17, aes(x=Date,y=Close)) + geom_line() +
 <p>Do simplify things, I’m going to add an “index” variable instead of working explicitly with dates.</p>
 <pre class="r"><code>jnj17$idx &lt;- 1:length(jnj17$Close)
 jnj17$type &lt;- &quot;Actual&quot;</code></pre>
-<p>Now, let’s make a random walk to predict the next 25 weeks of stock closing values. We’ll assume that the prices should be normally distributed around the most recent price and that the standard deviation will be the average of the weekly ranges over the last year(ish). This last bit is pretty arbitrary, we could use a standard deviation <span class="math inline">\(1\)</span>, or something else justified by economics.</p>
+<p>Now, let’s make a random walk to predict the next 25 weeks of stock closing values. We’ll assume that the prices should have normally distributed changes around the most recent price and that the standard deviation will be half the average of the weekly ranges over the last year(ish). This last bit is pretty arbitrary, we could use a standard deviation <span class="math inline">\(1\)</span>, or something else justified by economics.</p>
 <pre class="r"><code>n&lt;- length(jnj17$Close)
-rw &lt;- rnorm(25, mean = jnj17$Close[n], sd=mean(jnj17$High-jnj17$Close))
+rw &lt;- jnj17$Close[n]+cumsum(rnorm(25, mean = 0, sd = 0.5*mean(jnj17$High - jnj17$Low)))
 
 #build new data.frame
 rwData &lt;- data.frame(idx=(n+1):(n+25), Close=rw, type=rep(&quot;RW&quot;,25))
@@ -385,127 +385,127 @@ kable(rwData)</code></pre>
 <tbody>
 <tr class="odd">
 <td align="right">56</td>
-<td align="right">144.9589</td>
+<td align="right">145.3131</td>
 <td align="left">RW</td>
 </tr>
 <tr class="even">
 <td align="right">57</td>
-<td align="right">146.4037</td>
+<td align="right">145.6472</td>
 <td align="left">RW</td>
 </tr>
 <tr class="odd">
 <td align="right">58</td>
-<td align="right">144.7398</td>
+<td align="right">146.0329</td>
 <td align="left">RW</td>
 </tr>
 <tr class="even">
 <td align="right">59</td>
-<td align="right">146.4126</td>
+<td align="right">147.8883</td>
 <td align="left">RW</td>
 </tr>
 <tr class="odd">
 <td align="right">60</td>
-<td align="right">145.4661</td>
+<td align="right">148.2151</td>
 <td align="left">RW</td>
 </tr>
 <tr class="even">
 <td align="right">61</td>
-<td align="right">145.4278</td>
+<td align="right">146.1759</td>
 <td align="left">RW</td>
 </tr>
 <tr class="odd">
 <td align="right">62</td>
-<td align="right">145.1706</td>
+<td align="right">144.1522</td>
 <td align="left">RW</td>
 </tr>
 <tr class="even">
 <td align="right">63</td>
-<td align="right">145.6626</td>
+<td align="right">142.9488</td>
 <td align="left">RW</td>
 </tr>
 <tr class="odd">
 <td align="right">64</td>
-<td align="right">143.3145</td>
+<td align="right">142.9115</td>
 <td align="left">RW</td>
 </tr>
 <tr class="even">
 <td align="right">65</td>
-<td align="right">143.1096</td>
+<td align="right">142.9297</td>
 <td align="left">RW</td>
 </tr>
 <tr class="odd">
 <td align="right">66</td>
-<td align="right">146.5636</td>
+<td align="right">142.0030</td>
 <td align="left">RW</td>
 </tr>
 <tr class="even">
 <td align="right">67</td>
-<td align="right">147.4824</td>
+<td align="right">143.1376</td>
 <td align="left">RW</td>
 </tr>
 <tr class="odd">
 <td align="right">68</td>
-<td align="right">147.2071</td>
+<td align="right">142.7798</td>
 <td align="left">RW</td>
 </tr>
 <tr class="even">
 <td align="right">69</td>
-<td align="right">142.9839</td>
+<td align="right">142.6317</td>
 <td align="left">RW</td>
 </tr>
 <tr class="odd">
 <td align="right">70</td>
-<td align="right">147.8653</td>
+<td align="right">143.6388</td>
 <td align="left">RW</td>
 </tr>
 <tr class="even">
 <td align="right">71</td>
-<td align="right">147.3084</td>
+<td align="right">144.5837</td>
 <td align="left">RW</td>
 </tr>
 <tr class="odd">
 <td align="right">72</td>
-<td align="right">148.1323</td>
+<td align="right">142.7561</td>
 <td align="left">RW</td>
 </tr>
 <tr class="even">
 <td align="right">73</td>
-<td align="right">145.2955</td>
+<td align="right">147.3837</td>
 <td align="left">RW</td>
 </tr>
 <tr class="odd">
 <td align="right">74</td>
-<td align="right">147.7899</td>
+<td align="right">147.1940</td>
 <td align="left">RW</td>
 </tr>
 <tr class="even">
 <td align="right">75</td>
-<td align="right">142.0594</td>
+<td align="right">147.4910</td>
 <td align="left">RW</td>
 </tr>
 <tr class="odd">
 <td align="right">76</td>
-<td align="right">144.4368</td>
+<td align="right">147.6970</td>
 <td align="left">RW</td>
 </tr>
 <tr class="even">
 <td align="right">77</td>
-<td align="right">144.9331</td>
+<td align="right">149.3861</td>
 <td align="left">RW</td>
 </tr>
 <tr class="odd">
 <td align="right">78</td>
-<td align="right">144.1674</td>
+<td align="right">149.6879</td>
 <td align="left">RW</td>
 </tr>
 <tr class="even">
 <td align="right">79</td>
-<td align="right">144.9990</td>
+<td align="right">150.1591</td>
 <td align="left">RW</td>
 </tr>
 <tr class="odd">
 <td align="right">80</td>
-<td align="right">146.5048</td>
+<td align="right">151.0356</td>
 <td align="left">RW</td>
 </tr>
 </tbody>
@@ -522,7 +522,7 @@ rbind.data.frame(select(jnj17, idx,Close,type), rwData) %&gt;%
 <p>We just need to replicate what we did previously for an arbitrary number of times. To automate this, we’ll make a function to give a data frame with our random walk data, this will work with any similarly structured data (other stock data from Yahoo finance).</p>
 <pre class="r"><code>randWalk &lt;- function(typeName, len, obsData){
     n&lt;- length(obsData$Close)
-    rw &lt;- rnorm(len, mean = obsData$Close[n], sd = mean(obsData$High - obsData$Close))
+    rw &lt;- obsData$Close[n]+cumsum(rnorm(len, mean = 0, sd = 0.5*mean(obsData$High - obsData$Low)))
 
     #build new data.frame
     rwData &lt;- data.frame(idx=(n+1):(n+len), Close=rw, type = rep(typeName,len))
@@ -549,9 +549,23 @@ ggplot(jnjPred, aes(x=idx,y=Close,col=type)) +
 
 ggplot(jnj17, aes(x=idx,y=Close,col=type)) + geom_line() +
   geom_ribbon(data=rwDFreduced, aes(x=idx,ymin=low,ymax=high), fill=&quot;grey70&quot;, inherit.aes = FALSE) + 
-  geom_line(data=rwDFreduced, aes(x=idx,y=Close, col=type))</code></pre>
+  geom_line(data=rwDFreduced, aes(x=idx,y=Close, col=type)) + 
+  ggtitle(&quot;JNJ 7 Random Walks Prediction Ribbon&quot;)</code></pre>
 <p><img src="/post/2018-01-15-stock-rw_files/figure-html/combRW-1.png" width="672" /></p>
-<p>Due to the lack of any economic theory, I wouldn’t put much weight in this prediction but it would be easy to incorporate that into the random walk and the Monte Carlo simulation won’t change.</p>
+<p>Due to the lack of any economic theory, I wouldn’t put much weight in this prediction but it would be easy to incorporate that into the random walk and the Monte Carlo simulation won’t change. Additionally, each time this code is re-run, the above ribbon can change noticeably.</p>
+<p>With the ribbon, there’s no need to limit ourselves to 7 random walks. Let’s do more for a real Monte Carlo simulation (and maybe a better, or at least more stable, prediction).</p>
+<pre class="r"><code>rwList &lt;- lapply(1:100, function(x) {randWalk(paste(&quot;RW&quot;,x,sep=&quot;&quot;),25,jnj17)})
+
+rwDF &lt;- as.data.frame(bind_rows(rwList))
+rwDFreduced &lt;- group_by(rwDF, idx) %&gt;% 
+  summarise(meanPred=mean(Close), high = max(Close), low=min(Close)) %&gt;% 
+  mutate(Close = meanPred, type=&quot;Prediction&quot;)
+
+ggplot(jnj17, aes(x=idx,y=Close,col=type)) + geom_line() +
+  geom_ribbon(data=rwDFreduced, aes(x=idx,ymin=low,ymax=high), fill=&quot;grey70&quot;, inherit.aes = FALSE) + 
+  geom_line(data=rwDFreduced, aes(x=idx,y=Close, col=type)) + 
+  ggtitle(&quot;JNJ 100 Random Walks Prediction Ribbon&quot;)</code></pre>
+<p><img src="/post/2018-01-15-stock-rw_files/figure-html/bigrw-1.png" width="672" /> With so many random walks, it’s no surprise the prediction line (the mean of the random walks) is nearly flat, this is the Central Limit Theorem in action.</p>
 </div>
 </div>
 
@@ -563,6 +577,8 @@ ggplot(jnj17, aes(x=idx,y=Close,col=type)) + geom_line() +
 <div class="article-tags">
   
   <a class="btn btn-primary btn-outline" href="/tags/r">R</a>
+  
+  <a class="btn btn-primary btn-outline" href="/tags/ggplot">ggplot</a>
   
   <a class="btn btn-primary btn-outline" href="/tags/forecast">forecast</a>
   
@@ -581,6 +597,10 @@ ggplot(jnj17, aes(x=idx,y=Close,col=type)) + geom_line() +
   <div class="hr-light"></div>
   <h3>Related</h3>
   <ul>
+    
+    <li><a href="/post/2018-01-07-inversions/">GGPlot and Geometric Transformations II: Inversions</a></li>
+    
+    <li><a href="/post/2018-01-06-ggplot-and-geometric-transformations/">GGPlot and Geometric Transformations</a></li>
     
     <li><a href="/post/2018-01-01/">Thoughts on Severe Class Imbalance </a></li>
     

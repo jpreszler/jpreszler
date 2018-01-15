@@ -31,8 +31,8 @@
 &lt;div id=&#34;random-walks&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;Random Walks&lt;/h1&gt;
 &lt;p&gt;One way that we could use a Monte Carlo simulation to predict stock prices is to use a random walk to generate the predicted stock prices. There are many ways we could do this, some using lots of economics sophistication, but we’ll focus on the simpliest case to make the general process clear.&lt;/p&gt;
-&lt;p&gt;A random walk is a random process that describes movement from a starting point over a number of steps through a space. For stocks, if we use the current price as the starting point then selecting normally distributed random numbers with mean of the start point, then the random numbers form a type of random walk (oscillating about the current price over time). More complex models could add (a) trends, (b) seasonality, (c) other distribution structures or combinations of the above.&lt;/p&gt;
-&lt;p&gt;We’ll do the simple case &lt;span class=&#34;math display&#34;&gt;\[new~price = \mathrm{norm}(\mu=start~price, \sigma=?)\]&lt;/span&gt; and we’ll use stock data from Johnson and Johnson (NYSE:JNJ).&lt;/p&gt;
+&lt;p&gt;A random walk is a random process that describes movement from a starting point over a number of steps through a space. For stocks, if we use the current price as the starting point then selecting normally distributed random numbers with mean &lt;span class=&#34;math inline&#34;&gt;\(0\)&lt;/span&gt;, then cumulatively sum the random numbers and add to the base price, we form a random walk. More complex models could add (a) trends, (b) seasonality, (c) other distribution structures or combinations of the above.&lt;/p&gt;
+&lt;p&gt;We’ll do the simple case &lt;span class=&#34;math display&#34;&gt;\[new~price = base~price + \mathrm{norm}(\mu=0, \sigma=?)\]&lt;/span&gt; and we’ll use stock data from Johnson and Johnson (NYSE:JNJ).&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;jnj-prediction&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;JNJ Prediction&lt;/h1&gt;
@@ -60,9 +60,9 @@ ggplot(jnj17, aes(x=Date,y=Close)) + geom_line() +
 &lt;p&gt;Do simplify things, I’m going to add an “index” variable instead of working explicitly with dates.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;jnj17$idx &amp;lt;- 1:length(jnj17$Close)
 jnj17$type &amp;lt;- &amp;quot;Actual&amp;quot;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Now, let’s make a random walk to predict the next 25 weeks of stock closing values. We’ll assume that the prices should be normally distributed around the most recent price and that the standard deviation will be the average of the weekly ranges over the last year(ish). This last bit is pretty arbitrary, we could use a standard deviation &lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt;, or something else justified by economics.&lt;/p&gt;
+&lt;p&gt;Now, let’s make a random walk to predict the next 25 weeks of stock closing values. We’ll assume that the prices should have normally distributed changes around the most recent price and that the standard deviation will be half the average of the weekly ranges over the last year(ish). This last bit is pretty arbitrary, we could use a standard deviation &lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt;, or something else justified by economics.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;n&amp;lt;- length(jnj17$Close)
-rw &amp;lt;- rnorm(25, mean = jnj17$Close[n], sd=mean(jnj17$High-jnj17$Close))
+rw &amp;lt;- jnj17$Close[n]+cumsum(rnorm(25, mean = 0, sd = 0.5*mean(jnj17$High - jnj17$Low)))
 
 #build new data.frame
 rwData &amp;lt;- data.frame(idx=(n+1):(n+25), Close=rw, type=rep(&amp;quot;RW&amp;quot;,25))
@@ -81,127 +81,127 @@ kable(rwData)&lt;/code&gt;&lt;/pre&gt;
 &lt;tbody&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;56&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;144.9589&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;145.3131&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;even&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;57&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;146.4037&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;145.6472&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;58&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;144.7398&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;146.0329&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;even&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;59&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;146.4126&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;147.8883&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;60&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;145.4661&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;148.2151&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;even&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;61&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;145.4278&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;146.1759&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;62&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;145.1706&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;144.1522&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;even&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;63&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;145.6626&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;142.9488&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;64&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;143.3145&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;142.9115&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;even&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;65&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;143.1096&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;142.9297&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;66&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;146.5636&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;142.0030&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;even&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;67&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;147.4824&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;143.1376&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;68&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;147.2071&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;142.7798&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;even&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;69&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;142.9839&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;142.6317&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;70&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;147.8653&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;143.6388&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;even&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;71&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;147.3084&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;144.5837&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;72&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;148.1323&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;142.7561&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;even&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;73&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;145.2955&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;147.3837&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;74&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;147.7899&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;147.1940&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;even&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;75&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;142.0594&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;147.4910&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;76&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;144.4368&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;147.6970&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;even&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;77&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;144.9331&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;149.3861&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;78&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;144.1674&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;149.6879&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;even&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;79&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;144.9990&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;150.1591&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;80&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;146.5048&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;151.0356&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
@@ -218,7 +218,7 @@ rbind.data.frame(select(jnj17, idx,Close,type), rwData) %&amp;gt;%
 &lt;p&gt;We just need to replicate what we did previously for an arbitrary number of times. To automate this, we’ll make a function to give a data frame with our random walk data, this will work with any similarly structured data (other stock data from Yahoo finance).&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;randWalk &amp;lt;- function(typeName, len, obsData){
     n&amp;lt;- length(obsData$Close)
-    rw &amp;lt;- rnorm(len, mean = obsData$Close[n], sd = mean(obsData$High - obsData$Close))
+    rw &amp;lt;- obsData$Close[n]+cumsum(rnorm(len, mean = 0, sd = 0.5*mean(obsData$High - obsData$Low)))
 
     #build new data.frame
     rwData &amp;lt;- data.frame(idx=(n+1):(n+len), Close=rw, type = rep(typeName,len))
@@ -245,9 +245,23 @@ ggplot(jnjPred, aes(x=idx,y=Close,col=type)) +
 
 ggplot(jnj17, aes(x=idx,y=Close,col=type)) + geom_line() +
   geom_ribbon(data=rwDFreduced, aes(x=idx,ymin=low,ymax=high), fill=&amp;quot;grey70&amp;quot;, inherit.aes = FALSE) + 
-  geom_line(data=rwDFreduced, aes(x=idx,y=Close, col=type))&lt;/code&gt;&lt;/pre&gt;
+  geom_line(data=rwDFreduced, aes(x=idx,y=Close, col=type)) + 
+  ggtitle(&amp;quot;JNJ 7 Random Walks Prediction Ribbon&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2018-01-15-stock-rw_files/figure-html/combRW-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;p&gt;Due to the lack of any economic theory, I wouldn’t put much weight in this prediction but it would be easy to incorporate that into the random walk and the Monte Carlo simulation won’t change.&lt;/p&gt;
+&lt;p&gt;Due to the lack of any economic theory, I wouldn’t put much weight in this prediction but it would be easy to incorporate that into the random walk and the Monte Carlo simulation won’t change. Additionally, each time this code is re-run, the above ribbon can change noticeably.&lt;/p&gt;
+&lt;p&gt;With the ribbon, there’s no need to limit ourselves to 7 random walks. Let’s do more for a real Monte Carlo simulation (and maybe a better, or at least more stable, prediction).&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;rwList &amp;lt;- lapply(1:100, function(x) {randWalk(paste(&amp;quot;RW&amp;quot;,x,sep=&amp;quot;&amp;quot;),25,jnj17)})
+
+rwDF &amp;lt;- as.data.frame(bind_rows(rwList))
+rwDFreduced &amp;lt;- group_by(rwDF, idx) %&amp;gt;% 
+  summarise(meanPred=mean(Close), high = max(Close), low=min(Close)) %&amp;gt;% 
+  mutate(Close = meanPred, type=&amp;quot;Prediction&amp;quot;)
+
+ggplot(jnj17, aes(x=idx,y=Close,col=type)) + geom_line() +
+  geom_ribbon(data=rwDFreduced, aes(x=idx,ymin=low,ymax=high), fill=&amp;quot;grey70&amp;quot;, inherit.aes = FALSE) + 
+  geom_line(data=rwDFreduced, aes(x=idx,y=Close, col=type)) + 
+  ggtitle(&amp;quot;JNJ 100 Random Walks Prediction Ribbon&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-01-15-stock-rw_files/figure-html/bigrw-1.png&#34; width=&#34;672&#34; /&gt; With so many random walks, it’s no surprise the prediction line (the mean of the random walks) is nearly flat, this is the Central Limit Theorem in action.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 </description>
