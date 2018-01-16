@@ -29,7 +29,7 @@ One way that we could use a Monte Carlo simulation to predict stock prices is to
 
 A random walk is a random process that describes movement from a starting point over a number of steps through a space. For stocks, if we use the current price as the starting point then selecting normally distributed random numbers with mean $0$, then cumulatively sum the random numbers and add to the base price, we form a random walk. More complex models could add (a) trends, (b) seasonality, (c) other distribution structures or combinations of the above.
 
-We'll do the simple case $$new~price = base~price + \mathrm{norm}(\mu=0, \sigma=?)$$ and we'll use stock data from Johnson and Johnson (NYSE:JNJ).
+We'll do the simple case $$price~at~step~t = base~price + \sum_{k=1}^{t} \mathrm{rnorm}(n,\mu=0, \sigma=?)$$ where $n$ is the length of the forecast and we'll use stock data from Johnson and Johnson (NYSE:JNJ).
 
 #JNJ Prediction
 ##The Data
