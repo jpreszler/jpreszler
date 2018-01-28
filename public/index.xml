@@ -50,7 +50,9 @@ county &amp;lt;- readOGR(dsn=&amp;quot;../../static/files/shape/&amp;quot;, laye
 &lt;h1&gt;American Community Survey&lt;/h1&gt;
 &lt;p&gt;A great source of demographic data is the American Community Survey from the US Census Bureau. I already had the county and &lt;a href=&#34;/files/acs2015_census_tract_data.csv&#34;&gt;census tract ACS 2015 data&lt;/a&gt; from &lt;a href=&#34;http://www.kaggle.com&#34;&gt;Kaggle&lt;/a&gt;. When loading the data, change the &lt;em&gt;CensusTract&lt;/em&gt; variable to a character because of the encoding of the Kaggle version, otherwise there will be &lt;em&gt;NA&lt;/em&gt; for all of Idaho’s census tracts!&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(readr)
-IDacs2015 &amp;lt;- read_csv(&amp;quot;../../static/files/acs2015_census_tract_data.csv&amp;quot;, col_types = cols(CensusTract = col_character())) %&amp;gt;% filter(State == &amp;quot;Idaho&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+IDacs2015 &amp;lt;- read_csv(&amp;quot;../../static/files/acs2015_census_tract_data.csv&amp;quot;, 
+                      col_types = cols(CensusTract = col_character())) %&amp;gt;% 
+  filter(State == &amp;quot;Idaho&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 &lt;div id=&#34;mapping-the-data&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;Mapping the Data&lt;/h1&gt;
@@ -62,7 +64,8 @@ IDacs2015 &amp;lt;- read_csv(&amp;quot;../../static/files/acs2015_census_tract_d
 IDacsM &amp;lt;- transmute(IDacs2015, id=CensusTract, pctMen = Men/TotalPop) 
 MplotData &amp;lt;- left_join(tract, IDacsM)
 
-ggplot() + geom_polygon(data = MplotData, aes(x = long, y = lat, group = id,
+ggplot() + 
+  geom_polygon(data = MplotData, aes(x = long, y = lat, group = id,
         fill = pctMen)) +
     geom_polygon(data = county, aes(x = long, y = lat, group = id),
         fill = NA, color = &amp;quot;black&amp;quot;, size = 0.25) +
@@ -71,15 +74,11 @@ ggplot() + geom_polygon(data = MplotData, aes(x = long, y = lat, group = id,
 &lt;p&gt;&lt;img src=&#34;/post/2018-01-27-ACS-map_files/figure-html/acsM-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;Notice that white chuck in south Ada county (where the capitol Boise is located). Is this a data anonmaly or is something else going on? Let’s investigate a bit.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;whiteSpot &amp;lt;-MplotData[MplotData$pctMen &amp;gt; .70,]
-wsMap &amp;lt;- get_map(location = c(left = min(whiteSpot$long),bottom = min(whiteSpot$lat), right = max(whiteSpot$long), top = max(whiteSpot$lat)), maptype = &amp;quot;satellite&amp;quot;, zoom=11)&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Warning: bounding box given to google - spatial extent only approximate.&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## converting bounding box to center/zoom specification. (experimental)&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Map from URL : http://maps.googleapis.com/maps/api/staticmap?center=43.322119,-116.314803&amp;amp;zoom=11&amp;amp;size=640x640&amp;amp;scale=2&amp;amp;maptype=satellite&amp;amp;language=en-EN&amp;amp;sensor=false&lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggmap(wsMap)&lt;/code&gt;&lt;/pre&gt;
+wsMap &amp;lt;- get_map(location = c(left = min(whiteSpot$long),bottom = min(whiteSpot$lat), right = max(whiteSpot$long), top = max(whiteSpot$lat)), maptype = &amp;quot;satellite&amp;quot;, zoom=11)
+ggmap(wsMap)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2018-01-27-ACS-map_files/figure-html/allMen-1.png&#34; width=&#34;672&#34; /&gt; The empty expense is part of the &lt;em&gt;Morley Nelson Snake River Birds of Prey National Conservation Area&lt;/em&gt; which doesn’t have any people living in it. Let’s zoom in on the top right area of the census tract, longitude -116.2 and latitude 43.5.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;wsMapZoom &amp;lt;- get_map(location = c(lon = -116.23, lat = 43.48), maptype = &amp;quot;hybrid&amp;quot;, zoom = 13)&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Map from URL : http://maps.googleapis.com/maps/api/staticmap?center=43.48,-116.23&amp;amp;zoom=13&amp;amp;size=640x640&amp;amp;scale=2&amp;amp;maptype=hybrid&amp;amp;language=en-EN&amp;amp;sensor=false&lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggmap(wsMapZoom)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;wsMapZoom &amp;lt;- get_map(location = c(lon = -116.23, lat = 43.48), maptype = &amp;quot;hybrid&amp;quot;, zoom = 13)
+ggmap(wsMapZoom)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2018-01-27-ACS-map_files/figure-html/allMenZoom-1.png&#34; width=&#34;672&#34; /&gt; The buildings at &lt;span class=&#34;math inline&#34;&gt;\((-116.225, 43.48)\)&lt;/span&gt; are several correctional facilities and the smaller one on the other side of Pleasant Valley road is the state Women’s correctional facility.&lt;/p&gt;
 &lt;p&gt;The white chunck isn’t a data anomally. The includsion of a wildlife refuge and a mostly rural area make the census tract large. The presence of several men’s prisons dramatically skew the population.&lt;/p&gt;
 &lt;/div&gt;

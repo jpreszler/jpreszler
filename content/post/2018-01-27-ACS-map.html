@@ -42,7 +42,9 @@ county &lt;- readOGR(dsn=&quot;../../static/files/shape/&quot;, layer=&quot;cb_2
 <h1>American Community Survey</h1>
 <p>A great source of demographic data is the American Community Survey from the US Census Bureau. I already had the county and <a href="/files/acs2015_census_tract_data.csv">census tract ACS 2015 data</a> from <a href="http://www.kaggle.com">Kaggle</a>. When loading the data, change the <em>CensusTract</em> variable to a character because of the encoding of the Kaggle version, otherwise there will be <em>NA</em> for all of Idaho’s census tracts!</p>
 <pre class="r"><code>library(readr)
-IDacs2015 &lt;- read_csv(&quot;../../static/files/acs2015_census_tract_data.csv&quot;, col_types = cols(CensusTract = col_character())) %&gt;% filter(State == &quot;Idaho&quot;)</code></pre>
+IDacs2015 &lt;- read_csv(&quot;../../static/files/acs2015_census_tract_data.csv&quot;, 
+                      col_types = cols(CensusTract = col_character())) %&gt;% 
+  filter(State == &quot;Idaho&quot;)</code></pre>
 </div>
 <div id="mapping-the-data" class="section level1">
 <h1>Mapping the Data</h1>
@@ -54,7 +56,8 @@ IDacs2015 &lt;- read_csv(&quot;../../static/files/acs2015_census_tract_data.csv&
 IDacsM &lt;- transmute(IDacs2015, id=CensusTract, pctMen = Men/TotalPop) 
 MplotData &lt;- left_join(tract, IDacsM)
 
-ggplot() + geom_polygon(data = MplotData, aes(x = long, y = lat, group = id,
+ggplot() + 
+  geom_polygon(data = MplotData, aes(x = long, y = lat, group = id,
         fill = pctMen)) +
     geom_polygon(data = county, aes(x = long, y = lat, group = id),
         fill = NA, color = &quot;black&quot;, size = 0.25) +
@@ -63,15 +66,11 @@ ggplot() + geom_polygon(data = MplotData, aes(x = long, y = lat, group = id,
 <p><img src="/post/2018-01-27-ACS-map_files/figure-html/acsM-1.png" width="672" /></p>
 <p>Notice that white chuck in south Ada county (where the capitol Boise is located). Is this a data anonmaly or is something else going on? Let’s investigate a bit.</p>
 <pre class="r"><code>whiteSpot &lt;-MplotData[MplotData$pctMen &gt; .70,]
-wsMap &lt;- get_map(location = c(left = min(whiteSpot$long),bottom = min(whiteSpot$lat), right = max(whiteSpot$long), top = max(whiteSpot$lat)), maptype = &quot;satellite&quot;, zoom=11)</code></pre>
-<pre><code>## Warning: bounding box given to google - spatial extent only approximate.</code></pre>
-<pre><code>## converting bounding box to center/zoom specification. (experimental)</code></pre>
-<pre><code>## Map from URL : http://maps.googleapis.com/maps/api/staticmap?center=43.322119,-116.314803&amp;zoom=11&amp;size=640x640&amp;scale=2&amp;maptype=satellite&amp;language=en-EN&amp;sensor=false</code></pre>
-<pre class="r"><code>ggmap(wsMap)</code></pre>
+wsMap &lt;- get_map(location = c(left = min(whiteSpot$long),bottom = min(whiteSpot$lat), right = max(whiteSpot$long), top = max(whiteSpot$lat)), maptype = &quot;satellite&quot;, zoom=11)
+ggmap(wsMap)</code></pre>
 <p><img src="/post/2018-01-27-ACS-map_files/figure-html/allMen-1.png" width="672" /> The empty expense is part of the <em>Morley Nelson Snake River Birds of Prey National Conservation Area</em> which doesn’t have any people living in it. Let’s zoom in on the top right area of the census tract, longitude -116.2 and latitude 43.5.</p>
-<pre class="r"><code>wsMapZoom &lt;- get_map(location = c(lon = -116.23, lat = 43.48), maptype = &quot;hybrid&quot;, zoom = 13)</code></pre>
-<pre><code>## Map from URL : http://maps.googleapis.com/maps/api/staticmap?center=43.48,-116.23&amp;zoom=13&amp;size=640x640&amp;scale=2&amp;maptype=hybrid&amp;language=en-EN&amp;sensor=false</code></pre>
-<pre class="r"><code>ggmap(wsMapZoom)</code></pre>
+<pre class="r"><code>wsMapZoom &lt;- get_map(location = c(lon = -116.23, lat = 43.48), maptype = &quot;hybrid&quot;, zoom = 13)
+ggmap(wsMapZoom)</code></pre>
 <p><img src="/post/2018-01-27-ACS-map_files/figure-html/allMenZoom-1.png" width="672" /> The buildings at <span class="math inline">\((-116.225, 43.48)\)</span> are several correctional facilities and the smaller one on the other side of Pleasant Valley road is the state Women’s correctional facility.</p>
 <p>The white chunck isn’t a data anomally. The includsion of a wildlife refuge and a mostly rural area make the census tract large. The presence of several men’s prisons dramatically skew the population.</p>
 </div>

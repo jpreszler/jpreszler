@@ -14,7 +14,7 @@ Recently some diversity stats have been circulated around the College of Idaho, 
 
 # Shapefiles
 
-First, we need shapefiles for both the Idaho country boundaries and census tracts, which will give finer detail for data. These can be downloaded from the [US Census Bureau] (https://www.census.gov/geo/maps-data/data/tiger-cart-boundary.html). Under the "State-Based" files, get census tracts and country subdivisions, these will give you zip files for the state you're interested in: [census shape zip](/files/shape/cb_2016_16_tract_500k.zip) and [census country](/files/shape/cb_2016_cousub_500k.zip). 
+First, we need shapefiles for both the Idaho country boundaries and census tracts, which will give finer detail for data. These can be downloaded from the [US Census Bureau]  (https://www.census.gov/geo/maps-data/data/tiger-cart-boundary.html). Under the "State-Based" files, get census tracts and country subdivisions, these will give you zip files for the state you're interested in: [census shape zip](/files/shape/cb_2016_16_tract_500k.zip) and [census country](/files/shape/cb_2016_cousub_500k.zip). 
 
 The zip files need to be extracted, and then we can load the data into R and prep it for ggplot. The *fortify* commands produce a dataframe from the shapefile data the we can use with GGPlot2.
 
@@ -41,7 +41,9 @@ A great source of demographic data is the American Community Survey from the US 
 
 ```{r acsData, message=FALSE, warning=FALSE}
 library(readr)
-IDacs2015 <- read_csv("../../static/files/acs2015_census_tract_data.csv", col_types = cols(CensusTract = col_character())) %>% filter(State == "Idaho")
+IDacs2015 <- read_csv("../../static/files/acs2015_census_tract_data.csv", 
+                      col_types = cols(CensusTract = col_character())) %>% 
+  filter(State == "Idaho")
 
 ```
 
@@ -57,7 +59,8 @@ Let's build a map of Idaho with each census tract colored according to the perce
 IDacsM <- transmute(IDacs2015, id=CensusTract, pctMen = Men/TotalPop) 
 MplotData <- left_join(tract, IDacsM)
 
-ggplot() + geom_polygon(data = MplotData, aes(x = long, y = lat, group = id,
+ggplot() + 
+  geom_polygon(data = MplotData, aes(x = long, y = lat, group = id,
         fill = pctMen)) +
     geom_polygon(data = county, aes(x = long, y = lat, group = id),
         fill = NA, color = "black", size = 0.25) +
@@ -69,14 +72,14 @@ ggplot() + geom_polygon(data = MplotData, aes(x = long, y = lat, group = id,
 
 Notice that white chuck in south Ada county (where the capitol Boise is located). Is this a data anonmaly or is something else going on? Let's investigate a bit.
 
-```{r allMen}
+```{r allMen, message=FALSE, warning=FALSE}
 whiteSpot <-MplotData[MplotData$pctMen > .70,]
 wsMap <- get_map(location = c(left = min(whiteSpot$long),bottom = min(whiteSpot$lat), right = max(whiteSpot$long), top = max(whiteSpot$lat)), maptype = "satellite", zoom=11)
 ggmap(wsMap)
 ```
 The empty expense is part of the *Morley Nelson Snake River Birds of Prey National Conservation Area* which doesn't have any people living in it. Let's zoom in on the top right area of the census tract, longitude -116.2 and latitude 43.5.
 
-```{r allMenZoom}
+```{r allMenZoom, message=FALSE, warning=FALSE}
 wsMapZoom <- get_map(location = c(lon = -116.23, lat = 43.48), maptype = "hybrid", zoom = 13)
 ggmap(wsMapZoom)
 ```
