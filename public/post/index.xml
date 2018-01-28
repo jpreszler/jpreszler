@@ -29,21 +29,11 @@ library(ggmap)
 library(scales)
 
 #load and prep shapefiles
-tract &amp;lt;- readOGR(dsn=&amp;quot;../../static/files/shape/&amp;quot;, layer=&amp;quot;cb_2016_16_tract_500k&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## OGR data source with driver: ESRI Shapefile 
-## Source: &amp;quot;../../static/files/shape/&amp;quot;, layer: &amp;quot;cb_2016_16_tract_500k&amp;quot;
-## with 298 features
-## It has 9 fields
-## Integer64 fields read as strings:  ALAND AWATER&lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;tract &amp;lt;- fortify(tract, region = &amp;quot;GEOID&amp;quot;)
+tract &amp;lt;- readOGR(dsn=&amp;quot;../../static/files/shape/&amp;quot;, layer=&amp;quot;cb_2016_16_tract_500k&amp;quot;, verbose = FALSE)
+tract &amp;lt;- fortify(tract, region = &amp;quot;GEOID&amp;quot;)
 
-county &amp;lt;- readOGR(dsn=&amp;quot;../../static/files/shape/&amp;quot;, layer=&amp;quot;cb_2016_16_cousub_500k&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## OGR data source with driver: ESRI Shapefile 
-## Source: &amp;quot;../../static/files/shape/&amp;quot;, layer: &amp;quot;cb_2016_16_cousub_500k&amp;quot;
-## with 170 features
-## It has 10 fields
-## Integer64 fields read as strings:  ALAND AWATER&lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;county &amp;lt;- fortify(county, region = &amp;quot;COUNTYFP&amp;quot;) #using GEOID gives census tract division&lt;/code&gt;&lt;/pre&gt;
+county &amp;lt;- readOGR(dsn=&amp;quot;../../static/files/shape/&amp;quot;, layer=&amp;quot;cb_2016_16_cousub_500k&amp;quot;, verbose = FALSE)
+county &amp;lt;- fortify(county, region = &amp;quot;COUNTYFP&amp;quot;) #using GEOID gives census tract division&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;Now we’ve got our shapefile data, we need some demographic data to produce more than just empty maps.&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;american-community-survey&#34; class=&#34;section level1&#34;&gt;

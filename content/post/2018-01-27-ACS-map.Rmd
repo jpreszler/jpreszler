@@ -27,10 +27,10 @@ library(ggmap)
 library(scales)
 
 #load and prep shapefiles
-tract <- readOGR(dsn="../../static/files/shape/", layer="cb_2016_16_tract_500k")
+tract <- readOGR(dsn="../../static/files/shape/", layer="cb_2016_16_tract_500k", verbose = FALSE)
 tract <- fortify(tract, region = "GEOID")
 
-county <- readOGR(dsn="../../static/files/shape/", layer="cb_2016_16_cousub_500k")
+county <- readOGR(dsn="../../static/files/shape/", layer="cb_2016_16_cousub_500k", verbose = FALSE)
 county <- fortify(county, region = "COUNTYFP") #using GEOID gives census tract division
 ```
 
