@@ -36,7 +36,7 @@ projects = ["emergent-reducibility"]
 
 # Links (optional).
 url_custom = [{name="Ques. Math. Link", url="http://www.tandfonline.com/doi/abs/10.2989/16073606.2016.1259187"}]
-url_pdf = "preszler-cubics-qa-rev.pdf"
+url_pdf = "static/files/preszler-cubics-qa-rev.pdf"
 url_preprint = "https://arxiv.org/abs/1410.1800"
 
 # Custom links (optional).

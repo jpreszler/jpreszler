@@ -5,6 +5,15 @@
     
     <url>
     
+      <loc>/talk/maps-312018/</loc>
+      <lastmod>2018-03-01T08:24:06-07:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/post/2018-01-27-acs-map/</loc>
       <lastmod>2018-01-27T00:00:00+00:00</lastmod>
     </url>
@@ -161,7 +170,7 @@
     
     <url>
     
-      <loc>/categories/emergent-reducibility/</loc>
+      <loc>/tags/emergent-reducibility/</loc>
       <lastmod>2018-01-02T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
@@ -171,7 +180,7 @@
     
     <url>
     
-      <loc>/tags/emergent-reducibility/</loc>
+      <loc>/categories/emergent-reducibility/</loc>
       <lastmod>2018-01-02T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
@@ -291,8 +300,8 @@
     
     <url>
     
-      <loc>/categories/r/</loc>
-      <lastmod>2018-01-06T00:00:00+00:00</lastmod>
+      <loc>/tags/r/</loc>
+      <lastmod>2018-01-27T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -301,8 +310,8 @@
     
     <url>
     
-      <loc>/tags/r/</loc>
-      <lastmod>2018-01-27T00:00:00+00:00</lastmod>
+      <loc>/categories/r/</loc>
+      <lastmod>2018-01-06T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -321,6 +330,16 @@
     
     <url>
     
+      <loc>/tags/teaching/</loc>
+      <lastmod>2018-01-07T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/categories/teaching/</loc>
       <lastmod>2018-01-06T00:00:00+00:00</lastmod>
       <priority>0</priority>
@@ -331,9 +350,7 @@
     
     <url>
     
-      <loc>/tags/teaching/</loc>
-      <lastmod>2018-01-07T00:00:00+00:00</lastmod>
-      <priority>0</priority>
+      <loc>/talk/maps-312018/</loc>
     </url>
     
   
