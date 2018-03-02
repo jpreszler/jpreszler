@@ -20,7 +20,7 @@ selected = true
 
 tags = ["bayesian","maps"]
 # Links (optional).
-url_pdf = "/talk/statb.pdf"
+url_pdf = "statb.pdf"
 url_slides = "/talk/statb.pdf"
 url_video = ""
 url_code = ""
@@ -31,12 +31,5 @@ math = false
 # Does the content use source code highlighting?
 highlight = false
 
-# Featured image
-# Place your image in the `static/img/` folder and reference its filename below, e.g. `image = "example.jpg"`.
-[header]
-image = "headers/bubbles-wide.jpg"
-caption = "My caption :smile:"
-
 +++
 
-Embed your slides or video here using [shortcodes](https://sourcethemes.com/academic/post/writing-markdown-latex/). Further details can easily be added using *Markdown* and $\rm \LaTeX$ math code.
