@@ -21,7 +21,7 @@ selected = true
 tags = ["bayesian","maps"]
 # Links (optional).
 url_pdf = "statb.pdf"
-url_slides = "/talk/statb.pdf"
+url_slides = "/files/statb.pdf"
 url_video = ""
 url_code = ""
 

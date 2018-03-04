@@ -11,6 +11,15 @@
     <atom:link href="/" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Visualizing Classifier Peformance</title>
+      <link>/talk/maps-312018/</link>
+      <pubDate>Thu, 01 Mar 2018 08:24:06 -0700</pubDate>
+      
+      <guid>/talk/maps-312018/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Idaho ACS Mapping</title>
       <link>/post/2018-01-27-acs-map/</link>
       <pubDate>Sat, 27 Jan 2018 00:00:00 +0000</pubDate>
@@ -179,127 +188,127 @@ kable(rwData)&lt;/code&gt;&lt;/pre&gt;
 &lt;tbody&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;56&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;144.6124&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;144.5784&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;even&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;57&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;145.1765&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;146.2035&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;58&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;146.2223&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;144.7451&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;even&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;59&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;148.5383&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;142.6243&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;60&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;145.8693&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;141.8303&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;even&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;61&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;142.9983&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;142.1619&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;62&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;140.9448&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;140.6649&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;even&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;63&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;140.5002&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;141.3005&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;64&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;141.7207&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;142.0169&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;even&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;65&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;143.1821&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;142.9144&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;66&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;144.5664&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;144.5575&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;even&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;67&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;145.0018&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;145.5519&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;68&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;148.6431&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;148.1797&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;even&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;69&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;147.3710&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;146.6338&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;70&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;146.4526&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;147.9975&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;even&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;71&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;145.8188&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;147.0684&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;72&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;146.0089&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;147.9050&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;even&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;73&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;147.7918&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;146.7997&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;74&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;149.4959&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;145.7820&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;even&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;75&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;148.2887&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;145.8861&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;76&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;147.2918&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;147.7343&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;even&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;77&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;147.4470&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;146.6477&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;78&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;147.9991&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;149.7615&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;even&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;79&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;148.3948&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;149.4796&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;right&#34;&gt;80&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;149.2846&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;146.7478&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;RW&lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
@@ -944,8 +953,7 @@ gather(confMats, key=Type, value=Count, -c(ner, mdl, mdlType)) %&amp;gt;% ggplot
       <pubDate>Sun, 22 Oct 2017 00:00:00 -0600</pubDate>
       
       <guid>/talk/stat-b/</guid>
-      <description>&lt;p&gt;Embed your slides or video here using &lt;a href=&#34;https://sourcethemes.com/academic/post/writing-markdown-latex/&#34; target=&#34;_blank&#34;&gt;shortcodes&lt;/a&gt;. Further details can easily be added using &lt;em&gt;Markdown&lt;/em&gt; and $\rm \LaTeX$ math code.&lt;/p&gt;
-</description>
+      <description></description>
     </item>
     
     <item>

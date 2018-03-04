@@ -8,7 +8,92 @@
     <language>en-us</language>
     <copyright>&amp;copy; 2017 Jason Preszler</copyright>
     <lastBuildDate>Thu, 28 Dec 2017 00:00:00 +0000</lastBuildDate>
-    <atom:link href="/home/" rel="self" type="application/rss+xml" />
+    
+	<atom:link href="/home/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title></title>
+      <link>/home/about/</link>
+      <pubDate>Thu, 28 Dec 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/home/about/</guid>
+      <description>Biography I am an Assistant Professor of Mathematics, Statistics and Computer Science at The College of Idaho. My research interests are in the application of statistics and machine learning to problems in algebraic number theory as well as other applications of machine learning and Bayesian modeling, depending on collaborators and other interesting things that pass my way.
+Currently, my main focus is on using machine learning to better understand why some irreducible polynomials factor after being composed with themselves.</description>
+    </item>
+    
+    <item>
+      <title>Selected Publications</title>
+      <link>/home/publications_selected/</link>
+      <pubDate>Mon, 01 Jan 2018 00:00:00 -0700</pubDate>
+      
+      <guid>/home/publications_selected/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Recent Publications</title>
+      <link>/home/publications/</link>
+      <pubDate>Thu, 28 Dec 2017 00:00:00 -0700</pubDate>
+      
+      <guid>/home/publications/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Recent &amp; Upcoming Talks</title>
+      <link>/home/talks/</link>
+      <pubDate>Wed, 20 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/home/talks/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Recent Posts</title>
+      <link>/home/posts/</link>
+      <pubDate>Sat, 06 Jan 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/home/posts/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Projects</title>
+      <link>/home/projects/</link>
+      <pubDate>Wed, 20 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/home/projects/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Teaching</title>
+      <link>/home/teaching/</link>
+      <pubDate>Wed, 20 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/home/teaching/</guid>
+      <description>I am teaching the following courses at The College of Idaho:
+ CSC150: Intro. to Computer Science MAT125: Intro. to Statistics and Data Analysis MAT399T: An Intro. to Diophantine Equations MAT370: Geometry CSC270: Applied Databases MAT494: Machine Learning in Number Theory MAT494: Bayesian Data Analysis MAT???: Time Series Modeling  </description>
+    </item>
+    
+    <item>
+      <title>Tags</title>
+      <link>/home/tags/</link>
+      <pubDate>Wed, 20 Sep 2017 00:00:00 -0600</pubDate>
+      
+      <guid>/home/tags/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Contact</title>
+      <link>/home/contact/</link>
+      <pubDate>Wed, 20 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/home/contact/</guid>
+      <description></description>
+    </item>
     
   </channel>
 </rss>
