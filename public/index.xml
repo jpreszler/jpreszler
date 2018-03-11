@@ -11,6 +11,88 @@
     <atom:link href="/" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Running Tacoma: Maps</title>
+      <link>/post/2018-3-11-run-tacoma1/</link>
+      <pubDate>Sun, 11 Mar 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-3-11-run-tacoma1/</guid>
+      <description>&lt;p&gt;When I lived in Tacoma, I was running quite a bit. Since I moved away my training has become much more irregular, but I thought it would be interesting to take the Tacoma data from my current Garmin Forerunner 220 a take a look.&lt;/p&gt;
+&lt;div id=&#34;data-prep&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Data Prep&lt;/h1&gt;
+&lt;p&gt;The Garmin stores data in .fit format, but gpsbabel can translate to a nicely structured GPX file, which is what I’ll start with here. The XML package in R has some nice features to easily parse xml files (GPX is GPS data in a special XML schema). First, I have a function that turns a single run into a dataframe, then I can glue the dataframes together.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(XML)
+library(lubridate)
+
+getRunDF &amp;lt;- function(filename) {
+  pfile &amp;lt;- htmlTreeParse(filename,
+                      error = function (...) {}, useInternalNodes = T)
+# Get all elevations, times and coordinates via the respective xpath
+  elevations &amp;lt;- as.numeric(xpathSApply(pfile, path = &amp;quot;//trkpt/ele&amp;quot;, xmlValue))
+  times &amp;lt;- xpathSApply(pfile, path = &amp;quot;//trkpt/time&amp;quot;, xmlValue)
+  coords &amp;lt;- xpathSApply(pfile, path = &amp;quot;//trkpt&amp;quot;, xmlAttrs)
+  speeds &amp;lt;- xpathSApply(pfile, path = &amp;quot;//trkpt/speed&amp;quot;, xmlValue)
+#convert speed from meters/sec to minutes/mile and clean
+  speeds &amp;lt;- 26.8224/as.numeric(speeds)
+  speeds[1] &amp;lt;- 0 #first speed is 0 m/s
+  speeds &amp;lt;- ifelse(speeds&amp;gt;12, mean(speeds),speeds)
+  speeds &amp;lt;- ifelse(speeds&amp;lt;5.5, mean(speeds),speeds)
+#convert elevation to feet from meters
+  elevations &amp;lt;- elevations*3.28084
+# Extract latitude and longitude from the coordinates
+  lats &amp;lt;- as.numeric(coords[&amp;quot;lat&amp;quot;,])
+  lons &amp;lt;- as.numeric(coords[&amp;quot;lon&amp;quot;,])
+# Put everything in a dataframe and get rid of old variables
+  geodf &amp;lt;- data.frame(lat = lats, lon = lons, elev = elevations, time = times, pace=speeds)
+rm(list=c(&amp;quot;elevations&amp;quot;, &amp;quot;lats&amp;quot;, &amp;quot;lons&amp;quot;, &amp;quot;pfile&amp;quot;, &amp;quot;times&amp;quot;, &amp;quot;coords&amp;quot;, &amp;quot;speeds&amp;quot;))
+geodf$time &amp;lt;- as.POSIXct(strptime(geodf$time, format = &amp;quot;%Y-%m-%dT%H:%M:%OS&amp;quot;))
+geodf$elapsed.time &amp;lt;- difftime(geodf$time,geodf$time[1])/60
+geodf$distance &amp;lt;- geodf$elapsed.time/geodf$pace
+geodf$elev.offset &amp;lt;- geodf$elev - mean(geodf$elev[1:10])
+geodf$elev.lag &amp;lt;- geodf$elev - lag(geodf$elev)
+#geodf$pace.offset &amp;lt;- geodf$pace - lag(geodf$pace)
+#geodf$total.elev.change &amp;lt;- cumsum(abs(geodf$elev.change))
+
+return(geodf)
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;running-it-together&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Running it Together&lt;/h1&gt;
+&lt;p&gt;I have some index files with notes (shoe worn, location features like bridges or hills, race or not, etc.), I use that to grab the runs from Tacoma and combine each run into a single dataframe. Some of the GPX files were pulled from Garmin Connect, which I tried using briefly (it doesn’t play well with Linux, and I’d rather do my own analysis).&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(knitr)
+
+indx &amp;lt;- read.table(&amp;quot;/home/jpreszler/garmin-220/GPX/index-data.org&amp;quot;, strip.white = TRUE, sep = &amp;quot;|&amp;quot;, header=TRUE) %&amp;gt;% select(File, Location) %&amp;gt;% filter(Location == &amp;quot;Tacoma&amp;quot;)
+indxGC &amp;lt;- read.table(&amp;quot;/home/jpreszler/garmin-220/GPX/gc-index.org&amp;quot;, strip.white = TRUE, sep=&amp;quot;|&amp;quot;, header=TRUE) %&amp;gt;% select(File, Location) %&amp;gt;% filter(Location==&amp;quot;Tacoma&amp;quot;)
+
+for(i in 1:length(indx$File)){
+  run &amp;lt;- getRunDF(paste(&amp;quot;/home/jpreszler/garmin-220/GPX/&amp;quot;,indx$File[i],&amp;quot;.gpx&amp;quot;, sep=&amp;quot;&amp;quot;))
+  ifelse(i==1,runs &amp;lt;- run, runs &amp;lt;- rbind.data.frame(runs,run))
+}
+for(i in 1:length(indxGC$File)){
+  run &amp;lt;- getRunDF(paste(&amp;quot;/home/jpreszler/garmin-220/GPX/from-gc/&amp;quot;,indxGC$File[i],sep=&amp;quot;&amp;quot;))
+  runs &amp;lt;- rbind.data.frame(runs,run)
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This has gathered data for 52 runs.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;maps&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Maps&lt;/h1&gt;
+&lt;p&gt;Originally, I used OpenStreetMap to overlay the run data onto a map, but I’m not getting errors and ggmap seems to work much better. Since I’m combining lots of runs with overlapping coordincates, it’s important to set alpha fairly low unless you want a massive blob of red. First, I’ll plot the run coordinates without a map.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Plot the tracks without any map
+ggplot(runs, aes(x=lon, y=lat))+geom_point(alpha=0.05, col=&amp;quot;red&amp;quot;)+xlab(&amp;quot;Longitude&amp;quot;)+ylab(&amp;quot;Latitude&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-3-11-run-tacoma1_files/figure-html/mapplots1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Now we’ll take the same map an overlay it on top of a satellite image from Google Maps via ggmap.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(ggmap)
+map2 &amp;lt;- get_map(location = c(left=min(runs$lon), right = max(runs$lon), bottom = min(runs$lat), top = max(runs$lat)), maptype = &amp;quot;satellite&amp;quot;, zoom=12)
+ggmap(map2)+geom_point(data=runs, aes(x=lon,y=lat),alpha=0.05, col=&amp;quot;red&amp;quot;, size=1)+xlab(&amp;quot;Longitude&amp;quot;)+ylab(&amp;quot;Latitude&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-3-11-run-tacoma1_files/figure-html/mapplots2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Clearly, I preferred to run towards the water rather than down into scenic South Tacoma.&lt;/p&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Visualizing Classifier Peformance</title>
       <link>/talk/maps-312018/</link>
       <pubDate>Thu, 01 Mar 2018 08:24:06 -0700</pubDate>

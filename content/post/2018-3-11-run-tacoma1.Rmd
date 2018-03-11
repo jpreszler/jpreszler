@@ -1,0 +1,95 @@
+---
+title: "Running Tacoma: Maps"
+author: "Jason Preszler"
+date: 2018-03-11
+tags: ["R", "ggplot", "map", "run"]
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+```
+
+When I lived in Tacoma, I was running quite a bit. Since I moved away my training has become much more irregular, but I thought it would be interesting to take the Tacoma data from my current Garmin Forerunner 220 a take a look.
+
+# Data Prep
+
+The Garmin stores data in .fit format, but gpsbabel can translate to a nicely structured GPX file, which is what I'll start with here. The XML package in R has some nice features to easily parse xml files (GPX is GPS data in a special XML schema). First, I have a function that turns a single run into a dataframe, then I can glue the dataframes together.
+
+```{r initialize}
+library(XML)
+library(lubridate)
+
+getRunDF <- function(filename) {
+  pfile <- htmlTreeParse(filename,
+                      error = function (...) {}, useInternalNodes = T)
+# Get all elevations, times and coordinates via the respective xpath
+  elevations <- as.numeric(xpathSApply(pfile, path = "//trkpt/ele", xmlValue))
+  times <- xpathSApply(pfile, path = "//trkpt/time", xmlValue)
+  coords <- xpathSApply(pfile, path = "//trkpt", xmlAttrs)
+  speeds <- xpathSApply(pfile, path = "//trkpt/speed", xmlValue)
+#convert speed from meters/sec to minutes/mile and clean
+  speeds <- 26.8224/as.numeric(speeds)
+  speeds[1] <- 0 #first speed is 0 m/s
+  speeds <- ifelse(speeds>12, mean(speeds),speeds)
+  speeds <- ifelse(speeds<5.5, mean(speeds),speeds)
+#convert elevation to feet from meters
+  elevations <- elevations*3.28084
+# Extract latitude and longitude from the coordinates
+  lats <- as.numeric(coords["lat",])
+  lons <- as.numeric(coords["lon",])
+# Put everything in a dataframe and get rid of old variables
+  geodf <- data.frame(lat = lats, lon = lons, elev = elevations, time = times, pace=speeds)
+rm(list=c("elevations", "lats", "lons", "pfile", "times", "coords", "speeds"))
+geodf$time <- as.POSIXct(strptime(geodf$time, format = "%Y-%m-%dT%H:%M:%OS"))
+geodf$elapsed.time <- difftime(geodf$time,geodf$time[1])/60
+geodf$distance <- geodf$elapsed.time/geodf$pace
+geodf$elev.offset <- geodf$elev - mean(geodf$elev[1:10])
+geodf$elev.lag <- geodf$elev - lag(geodf$elev)
+#geodf$pace.offset <- geodf$pace - lag(geodf$pace)
+#geodf$total.elev.change <- cumsum(abs(geodf$elev.change))
+
+return(geodf)
+}
+```
+# Running it Together
+
+I have some index files with notes (shoe worn, location features like bridges or hills, race or not, etc.), I use that to grab the runs from Tacoma and combine each run into a single dataframe. Some of the GPX files were pulled from Garmin Connect, which I tried using briefly (it doesn't play well with Linux, and I'd rather do my own analysis).
+
+```{r loadData, warning=FALSE, message=FALSE}
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(knitr)
+
+indx <- read.table("/home/jpreszler/garmin-220/GPX/index-data.org", strip.white = TRUE, sep = "|", header=TRUE) %>% select(File, Location) %>% filter(Location == "Tacoma")
+indxGC <- read.table("/home/jpreszler/garmin-220/GPX/gc-index.org", strip.white = TRUE, sep="|", header=TRUE) %>% select(File, Location) %>% filter(Location=="Tacoma")
+
+for(i in 1:length(indx$File)){
+  run <- getRunDF(paste("/home/jpreszler/garmin-220/GPX/",indx$File[i],".gpx", sep=""))
+  ifelse(i==1,runs <- run, runs <- rbind.data.frame(runs,run))
+}
+for(i in 1:length(indxGC$File)){
+  run <- getRunDF(paste("/home/jpreszler/garmin-220/GPX/from-gc/",indxGC$File[i],sep=""))
+  runs <- rbind.data.frame(runs,run)
+}
+
+```
+This has gathered data for `r length(indx$File)+length(indxGC$File)` runs.
+
+# Maps
+
+Originally, I used OpenStreetMap to overlay the run data onto a map, but I'm not getting errors and ggmap seems to work much better. Since I'm combining lots of runs with overlapping coordincates, it's important to set alpha fairly low unless you want a massive blob of red. First, I'll plot the run coordinates without a map.
+```{r mapplots1, warning=FALSE, message=FALSE}
+# Plot the tracks without any map
+ggplot(runs, aes(x=lon, y=lat))+geom_point(alpha=0.05, col="red")+xlab("Longitude")+ylab("Latitude")
+```
+
+Now we'll take the same map an overlay it on top of a satellite image from Google Maps via ggmap.
+```{r mapplots2, warning=FALSE, message=FALSE}
+library(ggmap)
+map2 <- get_map(location = c(left=min(runs$lon), right = max(runs$lon), bottom = min(runs$lat), top = max(runs$lat)), maptype = "satellite", zoom=12)
+ggmap(map2)+geom_point(data=runs, aes(x=lon,y=lat),alpha=0.05, col="red", size=1)+xlab("Longitude")+ylab("Latitude")
+```
+
+Clearly, I preferred to run towards the water rather than down into scenic South Tacoma.

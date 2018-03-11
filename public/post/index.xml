@@ -13,6 +13,16 @@
     
     
     <item>
+      <title>Running Tacoma: Maps</title>
+      <link>/post/2018-3-11-run-tacoma1/</link>
+      <pubDate>Sun, 11 Mar 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-3-11-run-tacoma1/</guid>
+      <description>When I lived in Tacoma, I was running quite a bit. Since I moved away my training has become much more irregular, but I thought it would be interesting to take the Tacoma data from my current Garmin Forerunner 220 a take a look.
+Data Prep The Garmin stores data in .fit format, but gpsbabel can translate to a nicely structured GPX file, which is what I’ll start with here. The XML package in R has some nice features to easily parse xml files (GPX is GPS data in a special XML schema).</description>
+    </item>
+    
+    <item>
       <title>Idaho ACS Mapping</title>
       <link>/post/2018-01-27-acs-map/</link>
       <pubDate>Sat, 27 Jan 2018 00:00:00 +0000</pubDate>
