@@ -1,0 +1,44 @@
+---
+title: "SQL in RMarkdown!"
+author: "Jason Preszler"
+date: 2018-04-01
+output: html_document
+tags: ["R", "SQL", "RMarkdown"]
+---
+
+This semester I'm teaching *Applied Databases* for the first time and have been struggling with some notes and handouts for students; as well as simple, easy to use database interfaces that work well across platforms. I love RMarkdown, and today realized that knitr has an SQL code engine! 
+
+## Basic Syntax
+
+I often give handouts on SQL statements as we learn about them, so I need a nice way to show commands. To do this, we'll set up a dummy database connection.
+
+```{r dummyDB, include=TRUE, echo=TRUE, highlight=TRUE}
+library(DBI)
+db <- dbConnect(RSQLite::SQLite(), dbname = ":memory:")
+```
+
+This creates an empty, in memory, SQLite database. Clearly you need both the R packages DBI and RSQLite installed. Now we can have an SQL code chunk (must give 'connection=db', and 'eval=FALSE') to demonstrate commands like:
+
+```{sql, connection=db, echo=TRUE, eval=FALSE}
+SELECT var1, COUNT(DISTINCT(var2)) FROM tab1 GROUP BY var1;
+```
+
+## Real Example
+
+Or, we can grab a real SQLite database (such as [sf-salary](/files/sf-salary.sqlite) from Kaggle) and do some querying.
+
+```{r sfSalary}
+sf_salary <- dbConnect(RSQLite::SQLite(),
+                    dbname="../../static/files/sf-salary.sqlite")
+```
+
+Obviously, within R we can use the dbGetQuery() and dbSendQuery() commands from DBI, or if you're more comfortable with SQL, just use an SQL code chunk:
+
+```{sql, connection=sf_salary, echo=TRUE}
+SELECT JobTitle, AVG(BasePay) FROM Salaries 
+  GROUP BY JobTitle ORDER BY AVG(BasePay) DESC LIMIT 8;
+```
+
+## The Real Reason For Excitement
+
+Beyond a love of doing everything in R, I'm really excited because we've been using SQLiteStudio as a nice GUI for SQLite databases. However, my students with Macs have to use an old version due to an installation bug. This old version makes it impossible for them to use some SQL such as the DISTINCT command. Obviously this is a problem, but perhaps RMarkdown is the answer!

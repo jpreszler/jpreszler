@@ -11,6 +11,82 @@
     <atom:link href="/" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>SQL in RMarkdown!</title>
+      <link>/post/2018-04-01-sql-rmd/</link>
+      <pubDate>Sun, 01 Apr 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-04-01-sql-rmd/</guid>
+      <description>&lt;p&gt;This semester I’m teaching &lt;em&gt;Applied Databases&lt;/em&gt; for the first time and have been struggling with some notes and handouts for students; as well as simple, easy to use database interfaces that work well across platforms. I love RMarkdown, and today realized that knitr has an SQL code engine!&lt;/p&gt;
+&lt;div id=&#34;basic-syntax&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Basic Syntax&lt;/h2&gt;
+&lt;p&gt;I often give handouts on SQL statements as we learn about them, so I need a nice way to show commands. To do this, we’ll set up a dummy database connection.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(DBI)
+db &amp;lt;- dbConnect(RSQLite::SQLite(), dbname = &amp;quot;:memory:&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This creates an empty, in memory, SQLite database. Clearly you need both the R packages DBI and RSQLite installed. Now we can have an SQL code chunk (must give ‘connection=db’, and ‘eval=FALSE’) to demonstrate commands like:&lt;/p&gt;
+&lt;pre class=&#34;sql&#34;&gt;&lt;code&gt;SELECT var1, COUNT(DISTINCT(var2)) FROM tab1 GROUP BY var1;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;real-example&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Real Example&lt;/h2&gt;
+&lt;p&gt;Or, we can grab a real SQLite database (such as &lt;a href=&#34;/files/sf-salary.sqlite&#34;&gt;sf-salary&lt;/a&gt; from Kaggle) and do some querying.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;sf_salary &amp;lt;- dbConnect(RSQLite::SQLite(),
+                    dbname=&amp;quot;../../static/files/sf-salary.sqlite&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Obviously, within R we can use the dbGetQuery() and dbSendQuery() commands from DBI, or if you’re more comfortable with SQL, just use an SQL code chunk:&lt;/p&gt;
+&lt;pre class=&#34;sql&#34;&gt;&lt;code&gt;SELECT JobTitle, AVG(BasePay) FROM Salaries 
+  GROUP BY JobTitle ORDER BY AVG(BasePay) DESC LIMIT 8;&lt;/code&gt;&lt;/pre&gt;
+&lt;div class=&#34;knitsql-table&#34;&gt;
+&lt;table&gt;
+&lt;caption&gt;&lt;span id=&#34;tab:unnamed-chunk-2&#34;&gt;Table 1: &lt;/span&gt;8 records&lt;/caption&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;left&#34;&gt;JobTitle&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;AVG(BasePay)&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Chief of Police&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;309767.7&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Chief, Fire Department&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;304232.3&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Gen Mgr, Public Trnsp Dept&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;297769.4&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;CHIEF OF DEPARTMENT, (FIRE DEPARTMENT)&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;285262.0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Dep Dir for Investments, Ret&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;276153.8&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Mayor&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;275852.5&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Adm, SFGH Medical Center&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;265218.8&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;EXECUTIVE CONTRACT EMPLOYEE&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;264452.5&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-real-reason-for-excitement&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;The Real Reason For Excitement&lt;/h2&gt;
+&lt;p&gt;Beyond a love of doing everything in R, I’m really excited because we’ve been using SQLiteStudio as a nice GUI for SQLite databases. However, my students with Macs have to use an old version due to an installation bug. This old version makes it impossible for them to use some SQL such as the DISTINCT command. Obviously this is a problem, but perhaps RMarkdown is the answer!&lt;/p&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Running Tacoma: Maps</title>
       <link>/post/2018-3-11-run-tacoma1/</link>
       <pubDate>Sun, 11 Mar 2018 00:00:00 +0000</pubDate>

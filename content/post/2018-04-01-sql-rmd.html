@@ -1,0 +1,77 @@
+---
+title: "SQL in RMarkdown!"
+author: "Jason Preszler"
+date: 2018-04-01
+output: html_document
+tags: ["R", "SQL", "RMarkdown"]
+---
+
+
+
+<p>This semester I’m teaching <em>Applied Databases</em> for the first time and have been struggling with some notes and handouts for students; as well as simple, easy to use database interfaces that work well across platforms. I love RMarkdown, and today realized that knitr has an SQL code engine!</p>
+<div id="basic-syntax" class="section level2">
+<h2>Basic Syntax</h2>
+<p>I often give handouts on SQL statements as we learn about them, so I need a nice way to show commands. To do this, we’ll set up a dummy database connection.</p>
+<pre class="r"><code>library(DBI)
+db &lt;- dbConnect(RSQLite::SQLite(), dbname = &quot;:memory:&quot;)</code></pre>
+<p>This creates an empty, in memory, SQLite database. Clearly you need both the R packages DBI and RSQLite installed. Now we can have an SQL code chunk (must give ‘connection=db’, and ‘eval=FALSE’) to demonstrate commands like:</p>
+<pre class="sql"><code>SELECT var1, COUNT(DISTINCT(var2)) FROM tab1 GROUP BY var1;</code></pre>
+</div>
+<div id="real-example" class="section level2">
+<h2>Real Example</h2>
+<p>Or, we can grab a real SQLite database (such as <a href="/files/sf-salary.sqlite">sf-salary</a> from Kaggle) and do some querying.</p>
+<pre class="r"><code>sf_salary &lt;- dbConnect(RSQLite::SQLite(),
+                    dbname=&quot;../../static/files/sf-salary.sqlite&quot;)</code></pre>
+<p>Obviously, within R we can use the dbGetQuery() and dbSendQuery() commands from DBI, or if you’re more comfortable with SQL, just use an SQL code chunk:</p>
+<pre class="sql"><code>SELECT JobTitle, AVG(BasePay) FROM Salaries 
+  GROUP BY JobTitle ORDER BY AVG(BasePay) DESC LIMIT 8;</code></pre>
+<div class="knitsql-table">
+<table>
+<caption><span id="tab:unnamed-chunk-2">Table 1: </span>8 records</caption>
+<thead>
+<tr class="header">
+<th align="left">JobTitle</th>
+<th align="right">AVG(BasePay)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Chief of Police</td>
+<td align="right">309767.7</td>
+</tr>
+<tr class="even">
+<td align="left">Chief, Fire Department</td>
+<td align="right">304232.3</td>
+</tr>
+<tr class="odd">
+<td align="left">Gen Mgr, Public Trnsp Dept</td>
+<td align="right">297769.4</td>
+</tr>
+<tr class="even">
+<td align="left">CHIEF OF DEPARTMENT, (FIRE DEPARTMENT)</td>
+<td align="right">285262.0</td>
+</tr>
+<tr class="odd">
+<td align="left">Dep Dir for Investments, Ret</td>
+<td align="right">276153.8</td>
+</tr>
+<tr class="even">
+<td align="left">Mayor</td>
+<td align="right">275852.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Adm, SFGH Medical Center</td>
+<td align="right">265218.8</td>
+</tr>
+<tr class="even">
+<td align="left">EXECUTIVE CONTRACT EMPLOYEE</td>
+<td align="right">264452.5</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="the-real-reason-for-excitement" class="section level2">
+<h2>The Real Reason For Excitement</h2>
+<p>Beyond a love of doing everything in R, I’m really excited because we’ve been using SQLiteStudio as a nice GUI for SQLite databases. However, my students with Macs have to use an old version due to an installation bug. This old version makes it impossible for them to use some SQL such as the DISTINCT command. Obviously this is a problem, but perhaps RMarkdown is the answer!</p>
+</div>
