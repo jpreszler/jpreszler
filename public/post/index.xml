@@ -13,6 +13,15 @@
     
     
     <item>
+      <title>Counting Classes: The Basics</title>
+      <link>/post/2018-05-05-counting-class/</link>
+      <pubDate>Sat, 05 May 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-05-05-counting-class/</guid>
+      <description>At the College of Idaho, there’s been discussion about visualizing the curriculum as well as understanding the curriculum. Naturally this interests me as a chance to wallow in some complicated data (students are required to complete a major and 3 minors across 4 “peaks” rather than complete courses from a traditional “core”). I thought using R and a Neo4j graph database would be useful (something to look forward to) - but first I needed to get data from the catalogue!</description>
+    </item>
+    
+    <item>
       <title>SQL in RMarkdown!</title>
       <link>/post/2018-04-01-sql-rmd/</link>
       <pubDate>Sun, 01 Apr 2018 00:00:00 +0000</pubDate>

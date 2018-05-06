@@ -1,0 +1,188 @@
+---
+title: "Counting Classes: The Basics"
+author: "Jason Preszler"
+date: 2018-05-05
+tags: ["R", "scrape", "rvest"]
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+library(rvest)
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(purrr)
+library(knitr)
+library(kableExtra)
+```
+
+At the College of Idaho, there's been discussion about visualizing the curriculum as well as understanding the curriculum. Naturally this interests me as a chance to wallow in some complicated data (students are required to complete a major and 3 minors across 4 "peaks" rather than complete courses from a traditional "core"). I thought using R and a Neo4j graph database would be useful (something to look forward to) - but first I needed to get data from the catalogue!
+
+# Web Scraping
+
+Web scraping is one the essential data science skills that I'm not as fluent in as I would like to be, so getting the course data from the catalogue is a nice chance to hone my skills. The `rvest` package (from Hadley Wickham) is a great tool for web scraping in R and combines well with `stringr` text manipulation functions and the `SelectorGadget` chrome extension.
+
+We'll start by getting a list of all subjects in the catalogue, with links to the subject page which has the class list in that subject.
+```{r subScrape}
+base_url <- "http://collegeofidaho.smartcatalogiq.com"
+base_url_ext <- "/en/current/Undergraduate-Catalog/Courses"
+
+#read base page
+base_html <- read_html(paste0(base_url,base_url_ext))
+#extract links from base page
+subjectLinks <- html_nodes(base_html, 'a')
+#convert links to text
+subjectText <- html_text(subjectLinks)
+subjectText <- subjectText[78:120]
+#keep url for each subject also
+sub_url <- html_attr(subjectLinks, 'href')[78:120]
+
+subDF <- str_split(subjectText,pattern= '-', n=2, 
+                   simplify=TRUE) %>% as.data.frame()
+names(subDF) <- c("sub", "subject")
+subDF <-mutate(subDF, sub = str_trim(sub, side = "both"), 
+               subject = str_trim(subject, side = "both"), 
+               url=paste0(base_url,sub_url))
+
+kable(head(subDF),"html") %>%  
+  kable_styling( bootstrap_options = c("striped", "hover",                                   "condensed", "responsive"), full_width=FALSE) 
+```
+
+The `kable_styling` function is from the `kableExtra` package and provides some nice features to control kable style. Now we need to follow the link for each subject and get a dataframe of course numbers, names and urls for description, credit, and prerequisite info. The nice way of doing this is use purrr's `map_dfr` function which is a more user friendly version of `*apply` and `rbind.data.frame`. As with apply, we'll need a function to call on each subject.
+
+```{r classList}
+get_class_list <- function(i){
+  #get list of links on subject page
+  class_links <- html_nodes(read_html(subDF$url[i]), 'a')
+  #turn links to text
+  class_list <- html_text(class_links)
+  class_url <- html_attr(class_links, 'href')
+  classDF <- data.frame(list=class_list, url=class_url)
+  
+  #only keep links for classes, each subject has 
+  #classes starting in a different position
+  classDF <- classDF %>% filter(str_detect(list,
+                                  paste0(subDF$sub[i],'-')))
+
+    #We'll split on 1st space, discard everything after it and use
+  #what's before it to build the required DF
+  classDF <- separate(classDF, list, 
+                  into=c("id", "name"), sep = " ", extra = "merge")
+  
+  #two theater classes have typos -THE-###
+  #this is solely dealing with that
+  classDF$id <- str_replace(classDF$id, "-THE", "THE")
+
+  #back to normal  
+  classDF <- separate(classDF, id, into = 
+                        c("sub", "number"), sep="-")
+  
+  #the id field has the last part of the new url, we need the 
+  #subject url with the course level (100,200,etc) then id
+  classDF <- mutate(classDF, url=paste0(base_url,url))
+  
+  #several class names have '\n' in them, let's remove that now
+  classDF <- mutate(classDF, name=str_replace_all(name, '\n',' '))
+  
+  return(classDF)
+}
+
+classes <- map_dfr(1:length(subDF$sub), get_class_list)
+#add level variable (100,200, etc.)
+classes <- classes %>% mutate(level=paste0(
+          str_extract(number, '[:digit:]'),"00"))
+
+kable(head(classes),"html") %>%  
+  kable_styling( bootstrap_options = 
+               c("striped", "hover", "condensed", 
+                 "responsive"), full_width=FALSE) 
+```
+
+Now we have the basic class info, on to some descriptive analysis.
+
+# The Counts
+
+I should mention that this data is all from the current (2017-2018) catalogue, so it doesn't reflect courses added, removed, or changed during this academic year. The most basic question is how many classes does CofI offer? Well, the `r length(unique(classes$sub))` subjects offer `r length(classes$number)` courses, but how are they distributed across subject and level?
+
+First, let's group by subject to see which subjects offer the most and least courses. 
+```{r most}
+group_by(classes, sub) %>% 
+  summarise(Count = n()) %>% 
+  arrange(desc(Count)) %>% head() %>% 
+  kable("html", caption = 
+          "Subjects with the Most Courses") %>% 
+  kable_styling( bootstrap_options = c("striped", 
+                  "hover", "condensed", "responsive"), full_width=FALSE) 
+```
+
+```{r least}
+group_by(classes, sub) %>% summarise(Count = n()) %>% 
+  arrange(desc(Count)) %>% tail() %>% 
+  kable("html", caption = "Subjects with the Least Courses") %>%
+  kable_styling( bootstrap_options = c("striped", "hover", 
+                        "condensed", "responsive"), full_width=FALSE) 
+```
+
+Clearly, History doesn't teach all of those classes every semester. It would be interesting to incorporate frequency of classes into this analysis, but that requires data from elsewhere since CofI doesn't typically put course frequency into the catalogue.
+
+Second, we can ignore subjects and look at the distribution of courses at different levels:
+```{r levelDist}
+group_by(classes, level) %>% summarise(Count = n()) %>% 
+  kable("html", caption = "Number of Courses at each Level") %>%
+  kable_styling( bootstrap_options = c("striped", "hover", 
+                          "condensed", "responsive"), full_width=FALSE) 
+```
+
+Finally, we can look at the distribution grouped by subject and level but because of the range of course counts at each subject, it's probably better to work with proportions rather than counts. I'll also order by decreasing proportion and note that if a subject (like accounting) doesn't teach any classes of a particular level, we won't see zeros in the list.
+
+```{r sublevel}
+subCnt <- group_by(classes, sub) %>% summarise(Count_s = n())
+sublevDF <- group_by(classes, sub, level) %>% 
+  summarise(Count_sl = n())
+
+sublevDF <- inner_join(sublevDF, subCnt, by="sub") %>% 
+  mutate(sub.prop = round(Count_sl/Count_s, 4)) %>% 
+  dplyr::select(sub, level, sub.prop) %>% 
+  arrange(desc(sub.prop))
+
+kable(sublevDF, "html", caption = "Proportion of Subject's 
+      Courses at each Level") %>%  
+  kable_styling( bootstrap_options = c("striped", "hover", 
+          "condensed", "responsive"), full_width=FALSE) %>%
+  scroll_box(width="100%", height = "250px")
+```
+
+
+# Course Name Word Cloud
+
+Now for a different type of counting, let's make a word cloud of words in course names. I would rather use the `wordcloud2` package which allows for some interesting visualizations, but it relies on javascript which doesn't play well with a static site generator (but a shiny app would work). We'll need to load some additional packages and split up the name data into words and frequencies, after doing a little cleaning of the names.
+
+```{r wc_init}
+library(devtools)
+library(tm)
+library(SnowballC)
+library(wordcloud)
+#Load and clean
+wordFreq <- Corpus(VectorSource(classes$name))
+wordFreq <- tm_map(wordFreq, PlainTextDocument)
+wordFreq <- tm_map(wordFreq, content_transformer(tolower))
+wordFreq <- tm_map(wordFreq, removePunctuation)
+wordFreq <- tm_map(wordFreq, removeWords, c("a", "the", "and", "for"))
+wordFreq <- tm_map(wordFreq, stripWhitespace)
+
+#build TDM and DF of words and frequencies
+wordTDM <- TermDocumentMatrix(wordFreq)
+wordTDM<- wordTDM %>% as.matrix() %>% rowSums() %>% sort()
+wordDF <- data.frame(word=names(wordTDM), freq=wordTDM)
+
+pal <- brewer.pal(9, "Purples")[-(1:3)]
+
+wordcloud(words=wordDF$word, freq=wordDF$freq, 
+          min.freq = 6,  random.order = FALSE, rot.per = .25, 
+          scale = c(3,.5), colors = pal)
+```
+
+The *special topics* and *independent study* classes that almost all subjects have along with *lab* and *introduction* are not too surprising. History, with it's high course count and the fact that it appears in other subjects (*History of Math* or *Music History*) is also not surprising. Beyond that, the wordcloud shows a nice diversity of disciplines and unifying ideas. 
+
+Clearly this is just scratching the surface of exploring a college's curriculum and it would be interesting to compare similar schools in addition to exploring deeper into course descriptions and the links formed by prerequisites and major/minor requirements.

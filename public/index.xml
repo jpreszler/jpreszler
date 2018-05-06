@@ -11,6 +11,2147 @@
     <atom:link href="/" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Counting Classes: The Basics</title>
+      <link>/post/2018-05-05-counting-class/</link>
+      <pubDate>Sat, 05 May 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-05-05-counting-class/</guid>
+      <description>&lt;p&gt;At the College of Idaho, there’s been discussion about visualizing the curriculum as well as understanding the curriculum. Naturally this interests me as a chance to wallow in some complicated data (students are required to complete a major and 3 minors across 4 “peaks” rather than complete courses from a traditional “core”). I thought using R and a Neo4j graph database would be useful (something to look forward to) - but first I needed to get data from the catalogue!&lt;/p&gt;
+&lt;div id=&#34;web-scraping&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Web Scraping&lt;/h1&gt;
+&lt;p&gt;Web scraping is one the essential data science skills that I’m not as fluent in as I would like to be, so getting the course data from the catalogue is a nice chance to hone my skills. The &lt;code&gt;rvest&lt;/code&gt; package (from Hadley Wickham) is a great tool for web scraping in R and combines well with &lt;code&gt;stringr&lt;/code&gt; text manipulation functions and the &lt;code&gt;SelectorGadget&lt;/code&gt; chrome extension.&lt;/p&gt;
+&lt;p&gt;We’ll start by getting a list of all subjects in the catalogue, with links to the subject page which has the class list in that subject.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;base_url &amp;lt;- &amp;quot;http://collegeofidaho.smartcatalogiq.com&amp;quot;
+base_url_ext &amp;lt;- &amp;quot;/en/current/Undergraduate-Catalog/Courses&amp;quot;
+
+#read base page
+base_html &amp;lt;- read_html(paste0(base_url,base_url_ext))
+#extract links from base page
+subjectLinks &amp;lt;- html_nodes(base_html, &amp;#39;a&amp;#39;)
+#convert links to text
+subjectText &amp;lt;- html_text(subjectLinks)
+subjectText &amp;lt;- subjectText[78:120]
+#keep url for each subject also
+sub_url &amp;lt;- html_attr(subjectLinks, &amp;#39;href&amp;#39;)[78:120]
+
+subDF &amp;lt;- str_split(subjectText,pattern= &amp;#39;-&amp;#39;, n=2, 
+                   simplify=TRUE) %&amp;gt;% as.data.frame()
+names(subDF) &amp;lt;- c(&amp;quot;sub&amp;quot;, &amp;quot;subject&amp;quot;)
+subDF &amp;lt;-mutate(subDF, sub = str_trim(sub, side = &amp;quot;both&amp;quot;), 
+               subject = str_trim(subject, side = &amp;quot;both&amp;quot;), 
+               url=paste0(base_url,sub_url))
+
+kable(head(subDF),&amp;quot;html&amp;quot;) %&amp;gt;%  
+  kable_styling( bootstrap_options = c(&amp;quot;striped&amp;quot;, &amp;quot;hover&amp;quot;,                                   &amp;quot;condensed&amp;quot;, &amp;quot;responsive&amp;quot;), full_width=FALSE) &lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;width: auto !important; margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+sub
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+subject
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+url
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ACC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Accounting
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+&lt;a href=&#34;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting&#34; class=&#34;uri&#34;&gt;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting&lt;/a&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ART
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Art
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+&lt;a href=&#34;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ART-Art&#34; class=&#34;uri&#34;&gt;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ART-Art&lt;/a&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ASN
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Asian Studies
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+&lt;a href=&#34;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ASN-Asian-Studies&#34; class=&#34;uri&#34;&gt;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ASN-Asian-Studies&lt;/a&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ATH
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Anthropology
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+&lt;a href=&#34;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ATH-Anthropology&#34; class=&#34;uri&#34;&gt;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ATH-Anthropology&lt;/a&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ATHSOC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Anthropology Sociology
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+&lt;a href=&#34;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ATHSOC-Anthropology-Sociology&#34; class=&#34;uri&#34;&gt;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ATHSOC-Anthropology-Sociology&lt;/a&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+BIO
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Biology
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+&lt;a href=&#34;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/BIO-Biology&#34; class=&#34;uri&#34;&gt;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/BIO-Biology&lt;/a&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;The &lt;code&gt;kable_styling&lt;/code&gt; function is from the &lt;code&gt;kableExtra&lt;/code&gt; package and provides some nice features to control kable style. Now we need to follow the link for each subject and get a dataframe of course numbers, names and urls for description, credit, and prerequisite info. The nice way of doing this is use purrr’s &lt;code&gt;map_dfr&lt;/code&gt; function which is a more user friendly version of &lt;code&gt;*apply&lt;/code&gt; and &lt;code&gt;rbind.data.frame&lt;/code&gt;. As with apply, we’ll need a function to call on each subject.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;get_class_list &amp;lt;- function(i){
+  #get list of links on subject page
+  class_links &amp;lt;- html_nodes(read_html(subDF$url[i]), &amp;#39;a&amp;#39;)
+  #turn links to text
+  class_list &amp;lt;- html_text(class_links)
+  class_url &amp;lt;- html_attr(class_links, &amp;#39;href&amp;#39;)
+  classDF &amp;lt;- data.frame(list=class_list, url=class_url)
+  
+  #only keep links for classes, each subject has 
+  #classes starting in a different position
+  classDF &amp;lt;- classDF %&amp;gt;% filter(str_detect(list,
+                                  paste0(subDF$sub[i],&amp;#39;-&amp;#39;)))
+
+    #We&amp;#39;ll split on 1st space, discard everything after it and use
+  #what&amp;#39;s before it to build the required DF
+  classDF &amp;lt;- separate(classDF, list, 
+                  into=c(&amp;quot;id&amp;quot;, &amp;quot;name&amp;quot;), sep = &amp;quot; &amp;quot;, extra = &amp;quot;merge&amp;quot;)
+  
+  #two theater classes have typos -THE-###
+  #this is solely dealing with that
+  classDF$id &amp;lt;- str_replace(classDF$id, &amp;quot;-THE&amp;quot;, &amp;quot;THE&amp;quot;)
+
+  #back to normal  
+  classDF &amp;lt;- separate(classDF, id, into = 
+                        c(&amp;quot;sub&amp;quot;, &amp;quot;number&amp;quot;), sep=&amp;quot;-&amp;quot;)
+  
+  #the id field has the last part of the new url, we need the 
+  #subject url with the course level (100,200,etc) then id
+  classDF &amp;lt;- mutate(classDF, url=paste0(base_url,url))
+  
+  #several class names have &amp;#39;\n&amp;#39; in them, let&amp;#39;s remove that now
+  classDF &amp;lt;- mutate(classDF, name=str_replace_all(name, &amp;#39;\n&amp;#39;,&amp;#39; &amp;#39;))
+  
+  return(classDF)
+}
+
+classes &amp;lt;- map_dfr(1:length(subDF$sub), get_class_list)
+#add level variable (100,200, etc.)
+classes &amp;lt;- classes %&amp;gt;% mutate(level=paste0(
+          str_extract(number, &amp;#39;[:digit:]&amp;#39;),&amp;quot;00&amp;quot;))
+
+kable(head(classes),&amp;quot;html&amp;quot;) %&amp;gt;%  
+  kable_styling( bootstrap_options = 
+               c(&amp;quot;striped&amp;quot;, &amp;quot;hover&amp;quot;, &amp;quot;condensed&amp;quot;, 
+                 &amp;quot;responsive&amp;quot;), full_width=FALSE) &lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;width: auto !important; margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+sub
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+number
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+name
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+url
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+level
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ACC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+221
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Financial Accounting
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+&lt;a href=&#34;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting/200/ACC-221&#34; class=&#34;uri&#34;&gt;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting/200/ACC-221&lt;/a&gt;
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ACC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+222
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Managerial Accounting
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+&lt;a href=&#34;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting/200/ACC-222&#34; class=&#34;uri&#34;&gt;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting/200/ACC-222&lt;/a&gt;
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ACC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+318
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Intermediate Accounting I
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+&lt;a href=&#34;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting/300/ACC-318&#34; class=&#34;uri&#34;&gt;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting/300/ACC-318&lt;/a&gt;
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ACC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+320
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Intermediate Accounting II
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+&lt;a href=&#34;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting/300/ACC-320&#34; class=&#34;uri&#34;&gt;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting/300/ACC-320&lt;/a&gt;
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ACC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+323
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Electronic Accounting &amp;amp; Analysis
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+&lt;a href=&#34;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting/300/ACC-323&#34; class=&#34;uri&#34;&gt;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting/300/ACC-323&lt;/a&gt;
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ACC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+423
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Auditing
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+&lt;a href=&#34;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting/400/ACC-423&#34; class=&#34;uri&#34;&gt;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting/400/ACC-423&lt;/a&gt;
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Now we have the basic class info, on to some descriptive analysis.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-counts&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;The Counts&lt;/h1&gt;
+&lt;p&gt;I should mention that this data is all from the current (2017-2018) catalogue, so it doesn’t reflect courses added, removed, or changed during this academic year. The most basic question is how many classes does CofI offer? Well, the 43 subjects offer 1034 courses, but how are they distributed across subject and level?&lt;/p&gt;
+&lt;p&gt;First, let’s group by subject to see which subjects offer the most and least courses.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;group_by(classes, sub) %&amp;gt;% 
+  summarise(Count = n()) %&amp;gt;% 
+  arrange(desc(Count)) %&amp;gt;% head() %&amp;gt;% 
+  kable(&amp;quot;html&amp;quot;, caption = 
+          &amp;quot;Subjects with the Most Courses&amp;quot;) %&amp;gt;% 
+  kable_styling( bootstrap_options = c(&amp;quot;striped&amp;quot;, 
+                  &amp;quot;hover&amp;quot;, &amp;quot;condensed&amp;quot;, &amp;quot;responsive&amp;quot;), full_width=FALSE) &lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;width: auto !important; margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;caption&gt;
+&lt;span id=&#34;tab:most&#34;&gt;Table 1: &lt;/span&gt;Subjects with the Most Courses
+&lt;/caption&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+sub
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Count
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HIS
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+94
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+BIO
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+92
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ENG
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+61
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+MUS
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+54
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+PSY
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+54
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+POE
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+51
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;group_by(classes, sub) %&amp;gt;% summarise(Count = n()) %&amp;gt;% 
+  arrange(desc(Count)) %&amp;gt;% tail() %&amp;gt;% 
+  kable(&amp;quot;html&amp;quot;, caption = &amp;quot;Subjects with the Least Courses&amp;quot;) %&amp;gt;%
+  kable_styling( bootstrap_options = c(&amp;quot;striped&amp;quot;, &amp;quot;hover&amp;quot;, 
+                        &amp;quot;condensed&amp;quot;, &amp;quot;responsive&amp;quot;), full_width=FALSE) &lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;width: auto !important; margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;caption&gt;
+&lt;span id=&#34;tab:least&#34;&gt;Table 2: &lt;/span&gt;Subjects with the Least Courses
+&lt;/caption&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+sub
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Count
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ASN
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+EDUSPA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ESL
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+FYS
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ECN
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+STS
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Clearly, History doesn’t teach all of those classes every semester. It would be interesting to incorporate frequency of classes into this analysis, but that requires data from elsewhere since CofI doesn’t typically put course frequency into the catalogue.&lt;/p&gt;
+&lt;p&gt;Second, we can ignore subjects and look at the distribution of courses at different levels:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;group_by(classes, level) %&amp;gt;% summarise(Count = n()) %&amp;gt;% 
+  kable(&amp;quot;html&amp;quot;, caption = &amp;quot;Number of Courses at each Level&amp;quot;) %&amp;gt;%
+  kable_styling( bootstrap_options = c(&amp;quot;striped&amp;quot;, &amp;quot;hover&amp;quot;, 
+                          &amp;quot;condensed&amp;quot;, &amp;quot;responsive&amp;quot;), full_width=FALSE) &lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;width: auto !important; margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;caption&gt;
+&lt;span id=&#34;tab:levelDist&#34;&gt;Table 3: &lt;/span&gt;Number of Courses at each Level
+&lt;/caption&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+level
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Count
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+174
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+224
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+415
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+220
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Finally, we can look at the distribution grouped by subject and level but because of the range of course counts at each subject, it’s probably better to work with proportions rather than counts. I’ll also order by decreasing proportion and note that if a subject (like accounting) doesn’t teach any classes of a particular level, we won’t see zeros in the list.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;subCnt &amp;lt;- group_by(classes, sub) %&amp;gt;% summarise(Count_s = n())
+sublevDF &amp;lt;- group_by(classes, sub, level) %&amp;gt;% 
+  summarise(Count_sl = n())
+
+sublevDF &amp;lt;- inner_join(sublevDF, subCnt, by=&amp;quot;sub&amp;quot;) %&amp;gt;% 
+  mutate(sub.prop = round(Count_sl/Count_s, 4)) %&amp;gt;% 
+  dplyr::select(sub, level, sub.prop) %&amp;gt;% 
+  arrange(desc(sub.prop))
+
+kable(sublevDF, &amp;quot;html&amp;quot;, caption = &amp;quot;Proportion of Subject&amp;#39;s 
+      Courses at each Level&amp;quot;) %&amp;gt;%  
+  kable_styling( bootstrap_options = c(&amp;quot;striped&amp;quot;, &amp;quot;hover&amp;quot;, 
+          &amp;quot;condensed&amp;quot;, &amp;quot;responsive&amp;quot;), full_width=FALSE) %&amp;gt;%
+  scroll_box(width=&amp;quot;100%&amp;quot;, height = &amp;quot;250px&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;div style=&#34;border: 1px solid #ddd; padding: 5px; overflow-y: scroll; height:250px; overflow-x: scroll; width:100%; &#34;&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;width: auto !important; margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;caption&gt;
+&lt;span id=&#34;tab:sublevel&#34;&gt;Table 4: &lt;/span&gt;Proportion of Subject’s Courses at each Level
+&lt;/caption&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+sub
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+level
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+sub.prop
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ECN
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.0000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+EDUSPA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.0000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ESL
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.0000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+FYS
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.0000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+STS
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.0000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ATHSOC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.8333
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HHPA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.8276
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+MFL
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.7273
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HIS
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.6702
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ASN
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.6667
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IND
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.6250
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HSC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.6000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ACC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5833
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+CHI
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5714
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+GER
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5714
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+BIO
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5652
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+POE
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5294
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+SOC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5294
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+PHI
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5263
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+PHY
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5161
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+EDU
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+LAS
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+LSP
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+SPA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+SPE
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+PSY
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4815
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ENV
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4762
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+CSC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4667
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ENG
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4590
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+CHE
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4324
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ENG
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4098
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+BUS
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4048
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+FRE
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+JOURN
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+MUSAP
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+REL
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+THE
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HHP
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3864
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+BUS
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3810
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+EDU
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3750
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+GEO
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3750
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+GEO
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3750
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+REL
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3667
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+MS
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3636
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+MUS
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3519
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ART
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3333
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ASN
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3333
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+CHE
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3243
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HHP
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3182
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+THE
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3111
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+FRE
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+FRE
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+JOURN
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+JOURN
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ATH
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2941
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ATH
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2941
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+CHI
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2857
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+GER
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2857
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+MS
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2727
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+MAT
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2703
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+MAT
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2703
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+PHI
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2632
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ART
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2619
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+MUS
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2593
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ACC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2500
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+GEO
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2500
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+LAS
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2500
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+LSP
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2500
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+SPE
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2500
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+SPE
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2500
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+MAT
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2432
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+PSY
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2407
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ATH
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2353
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+SPA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2333
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+MAT
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2162
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ART
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2143
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+CSC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+CSC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HSC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HSC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+MUSAP
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+MUSAP
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+MUSAP
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+BIO
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1957
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+PHY
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1935
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ART
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1905
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ENV
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1905
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ENV
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1905
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IND
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1875
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+MUS
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1852
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+MUS
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1852
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+MFL
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1818
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+MS
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1818
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+MS
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1818
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+THE
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1778
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ATH
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1765
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+POE
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1765
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+POE
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1765
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+SOC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1765
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+SOC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1765
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ACC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1667
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ATHSOC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1667
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+PSY
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1667
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+SPA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1667
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+PHY
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1613
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HHP
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1591
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+PHI
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1579
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+BIO
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1522
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HIS
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1489
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+CHI
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1429
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ENV
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1429
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+GER
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1429
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HIS
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1383
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HHPA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1379
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HHP
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1364
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+CHE
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1351
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+CSC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1333
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+REL
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1333
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+PHY
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1290
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+EDU
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1250
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IND
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1250
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+LAS
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1250
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+LAS
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1250
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+LSP
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1250
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+LSP
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1250
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+BUS
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1190
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+POE
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1176
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+SOC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1176
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ENG
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1148
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+PSY
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1111
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+THE
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1111
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+CHE
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1081
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+REL
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+SPA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+BUS
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0952
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+MFL
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0909
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+BIO
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0870
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IND
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0625
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+PHI
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0526
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HIS
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0426
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HHPA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0345
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+MUS
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0185
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ENG
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0164
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;course-name-word-cloud&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Course Name Word Cloud&lt;/h1&gt;
+&lt;p&gt;Now for a different type of counting, let’s make a word cloud of words in course names. I would rather use the &lt;code&gt;wordcloud2&lt;/code&gt; package which allows for some interesting visualizations, but it relies on javascript which doesn’t play well with a static site generator (but a shiny app would work). We’ll need to load some additional packages and split up the name data into words and frequencies, after doing a little cleaning of the names.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(devtools)
+library(tm)
+library(SnowballC)
+library(wordcloud)
+#Load and clean
+wordFreq &amp;lt;- Corpus(VectorSource(classes$name))
+wordFreq &amp;lt;- tm_map(wordFreq, PlainTextDocument)
+wordFreq &amp;lt;- tm_map(wordFreq, content_transformer(tolower))
+wordFreq &amp;lt;- tm_map(wordFreq, removePunctuation)
+wordFreq &amp;lt;- tm_map(wordFreq, removeWords, c(&amp;quot;a&amp;quot;, &amp;quot;the&amp;quot;, &amp;quot;and&amp;quot;, &amp;quot;for&amp;quot;))
+wordFreq &amp;lt;- tm_map(wordFreq, stripWhitespace)
+
+#build TDM and DF of words and frequencies
+wordTDM &amp;lt;- TermDocumentMatrix(wordFreq)
+wordTDM&amp;lt;- wordTDM %&amp;gt;% as.matrix() %&amp;gt;% rowSums() %&amp;gt;% sort()
+wordDF &amp;lt;- data.frame(word=names(wordTDM), freq=wordTDM)
+
+pal &amp;lt;- brewer.pal(9, &amp;quot;Purples&amp;quot;)[-(1:3)]
+
+wordcloud(words=wordDF$word, freq=wordDF$freq, 
+          min.freq = 6,  random.order = FALSE, rot.per = .25, 
+          scale = c(3,.5), colors = pal)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-05-05-counting-class_files/figure-html/wc_init-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;The &lt;em&gt;special topics&lt;/em&gt; and &lt;em&gt;independent study&lt;/em&gt; classes that almost all subjects have along with &lt;em&gt;lab&lt;/em&gt; and &lt;em&gt;introduction&lt;/em&gt; are not too surprising. History, with it’s high course count and the fact that it appears in other subjects (&lt;em&gt;History of Math&lt;/em&gt; or &lt;em&gt;Music History&lt;/em&gt;) is also not surprising. Beyond that, the wordcloud shows a nice diversity of disciplines and unifying ideas.&lt;/p&gt;
+&lt;p&gt;Clearly this is just scratching the surface of exploring a college’s curriculum and it would be interesting to compare similar schools in addition to exploring deeper into course descriptions and the links formed by prerequisites and major/minor requirements.&lt;/p&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
       <title>SQL in RMarkdown!</title>
       <link>/post/2018-04-01-sql-rmd/</link>
       <pubDate>Sun, 01 Apr 2018 00:00:00 +0000</pubDate>
