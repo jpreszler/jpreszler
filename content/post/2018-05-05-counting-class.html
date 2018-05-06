@@ -2118,6 +2118,7 @@ ENG
 library(tm)
 library(SnowballC)
 library(wordcloud)
+
 #Load and clean
 wordFreq &lt;- Corpus(VectorSource(classes$name))
 wordFreq &lt;- tm_map(wordFreq, PlainTextDocument)

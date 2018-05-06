@@ -163,6 +163,7 @@ library(devtools)
 library(tm)
 library(SnowballC)
 library(wordcloud)
+
 #Load and clean
 wordFreq <- Corpus(VectorSource(classes$name))
 wordFreq <- tm_map(wordFreq, PlainTextDocument)
