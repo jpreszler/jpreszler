@@ -1,0 +1,341 @@
+---
+title: "Machine Learning Meets Pure Mathematics"
+author: "Jason Preszler, jpreszler.rbind.io"
+date: "June 1, 2018"
+output: 
+  ioslides_presentation:
+    incremental: true
+    widescreen: true
+    logo: CofI-vert.png
+  
+---
+
+<style>
+h2 {
+  color:white;
+  background:rgb(90,33,73);
+}
+
+.gdbar img {
+  width: 125px !important;
+  height: 125px !important;
+  margin: 3px 3px;
+}
+
+.gdbar {
+  width: 140px !important;
+  height: 140px !important;
+}
+
+slides > slide:not(.nobackground):before {
+  width: 80px;
+  height: 80px;
+  background-size: 80px 80px;
+}
+slides > slide.backdrop {
+  background: white;
+}
+slides > slide.dark {
+  background: white !important;
+}
+.title-slide hgroup h1 {
+  font-size: 70px;
+  line-height: 1.4;
+  letter-spacing: -3px;
+  color: rgb(90,33,73);
+}
+/* effects title */
+.title-slide hgroup h2 {
+  font-size: 55px;
+  color: rgb(90,30,73);
+  font-weight: inherit;
+}
+slides > slide {
+  display: none;
+  font-family: 'Open Sans', Arial, sans-serif;
+  font-size: 26px;
+  color: #231f20;
+  width: 900px;
+  height: 700px;
+  margin-left: -450px;
+  margin-top: -350px;
+  padding: 40px 60px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  -o-border-radius: 5px;
+  border-radius: 5px;
+  -webkit-transition: all 0.6s ease-in-out;
+  -moz-transition: all 0.6s ease-in-out;
+  -o-transition: all 0.6s ease-in-out;
+  transition: all 0.6s ease-in-out;
+}
+
+/* effects author/date on title slide */
+.title-slide hgroup p {
+  font-size: 30px;
+  color: black;
+  line-height: 1.3;
+  margin-top: 2em;
+}
+.footer {
+    color: black;
+    background: #E8E8E8;
+    position: fixed;
+    top: 90%;
+    text-align:center;
+    width:100%;
+}
+.midcenter {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+}
+.small-code pre code {
+  font-size: 1em;
+}
+
+.reveal h3 {
+  word-wrap: normal;
+  -moz-hyphens: none;
+}
+.reveal h1 {
+  word-wrap: normal;
+  -moz-hyphens: none;
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+# The Problem
+
+## Background
+
+ - We say a polynomial $f(x)$ is **irreducible over $\mathbb{Q}$**, or simply irreducible, if it has no rational roots, i.e. there is no rational $a$ such that $f(a) = 0$.
+ - This is equivalent to not being able to write $f(x) = g(x)h(x)$ as a product of two (or more) polynomials of lesser degree.
+ - If $f(x)$ is *reducible*, then the first iterate $f(f(x))$ must be *reducible*.
+ - If $f(x)$ is *irreducible*, then $f(f(x))$ is *not neccessarily irreducible*.
+ - Why is this?
+ - Given $f(x)$ can we predict what will happen?
+ 
+
+## Emergent Reducibility: Examples
+
+ - We say a polynomial has **emergent reducibility** if $f(x)$ is irreducible, but $f(f(x))$ is reducible.
+ - $f(x) = x^2-8x+20$, then 
+ \[
+ f(f(x)) = (x^2-8x+20)^2-8(x^2-8x+20)+20 
+ \]
+ \[
+ \qquad = (x^2-10x+26)(x^2-6x+10)
+\]
+ - $f(x) = x^2-x-1$ is irreducible but $f(f(f(x)))$ factors.
+ - $f_a(x) = -8ax^3-(8a+2)x^2+(4a-1)x+a$ irreducible but $f_a(f_a(x))$ factors for positive integer $a$.
+
+##Why Mathematicians care?
+<div class="columns-2">
+ - The roots of iterates form a tree
+ - The automorphism groups of the trees have a natural *Galois* structure, and are structurally similar to $p$-adic Lie groups
+
+
+```{r tree, echo=FALSE, message=FALSE, warning=FALSE, fig.height=4.25, fig.width=4}
+library(igraph)
+tr <- make_tree(40, children = 3, mode = "undirected")
+
+plot(tr, vertex.size=10, vertex.label=NA) 
+#g <- graph.empty(7, directed = FALSE)
+#g<- add.edges(g, c(1,2, 1,3, 2,4, 2,5, 3,6, 3,7))
+#V(g)$name <- c("0", "a","b","ac","ad","bc","bd")
+#plot(g, layout=matrix(c(-4,0, -1, 1, -1, -1, 2,-3, 2, -1, 2,1, 2, -3 ), nrow = 7, ncol = 2))
+```
+
+<!-- - Hopefully and analgous theory to $p$-adic linear Galois representations exists for the automorphism groups of these trees
+ - When roots are rational (or iterates factor) the Galois action is a very small part of the automorphism group (this is bad)-->
+
+## Frequency and Imbalance
+
+ - Brute-force search of over $200$ million irreducible cubics
+ - Found $59$ examples of ER
+ - Typical *solution* to class imbalance: re-balance training sets
+ - How does re-balancing effect different models?
+
+# Machine Learning Process
+## Build Sets
+
+- Read data in with data.table (11GB)
+- Remove duplicates
+- Build 21 training sets
+- Each has same 43 ER cases
+- Number of non-ER varies from 500 to 2500 by 100
+- Non-ER cases are sampled from main dataset
+- One test set, 16 ER cases and 8000 non-ER
+
+## Build NER R code
+
+mkNER.R:
+```{r setBuild, echo=TRUE, eval=FALSE}
+  bigNER <- fread(bigFile, header=TRUE, sep=",")
+  bigNER <- bigNER[!duplicated(bigNER) & bigNER$numFact==1,]
+
+    samps <- sapply(nerSize, function(x) sample(1:n, x, 
+                                            replace = FALSE))
+    nerss <- map(samps, function(x) bigNER[x,])
+    for(i in 1:length(nerSize)){
+      trsName <- paste(paste("NERtrain",nerSize[i],
+                             sep = "-"),"csv",sep=".")
+      write.csv(nerss[[i]],trsName, row.names = FALSE)
+    }
+```
+
+## Models 
+
+For each of the 21 training sets, we'll build 9 models
+
+- 3 logistic regression with **regularization** (glmnet)
+- 4 random forests
+- naive Bayes, knn
+
+- Each model build using 10-fold cross validation and "Kappa" error metric
+
+## One of the models:
+```{r modelBuild, echo=TRUE, eval=FALSE}
+library(caret)
+library(doParallel)
+  cl <- makeCluster(detectCores())
+  registerDoParallel(cl)
+  
+ tr1.rfs <- train(numFact~const+lin+quad+cube+nSign+pSign+sigReal,
+                  data=trs1, method="rf", metric = "Kappa",  
+                  trControl = trainControl(method="cv", 
+                              number = 10, allowParallel = TRUE))
+
+ tst$rfs <- predict(tr1.rfs, tst, type = "prob")[,2]
+
+ stopCluster(cl)
+```
+
+## Confusion Data Frame
+Sample of Data Frame with 1134 confusion matrices!
+
+```{r confDF, echo=FALSE, warning=FALSE, message=FALSE}
+library(readr)
+pred_confMatrix <- read_csv("pred-confMatrix.csv")
+library(knitr)
+kable(pred_confMatrix[sample(1:length(pred_confMatrix$mdl), 6, replace=FALSE),])
+```
+
+## ROC: Fix ner, vary $\theta$
+```{r rocTheta, echo=FALSE, warning=FALSE, message=FALSE}
+library(dplyr)
+library(ggplot2)
+cbbPalette <- c("#000000", "#009E73", "#e79f00", "#9ad0f3", "#0072B2", "#D55E00", "#CC79A7", "#F0E442" )
+cb11<-c('#000000','#1f78b4','#0000ff','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#551151','#cab2d6','#6a3d9a','#ffff99')
+c9<-c('#000000','#800000','#f58231','#e6194b','#aa6e28','#3cb44b','#0082c8','#0000ff','#911eb4')
+filter(pred_confMatrix, ner==800) %>%
+  ggplot(aes(y= TP/(TP+FN),x=FP/(TN+FP), col=mdl,shape=as.factor(theta)))+geom_point(size=3, position="jitter")+
+  ggtitle("ROC Plot with ner==800")+scale_color_manual(values=c9)
+```
+
+## ROC: Fix $\theta$, vary ner
+```{r rocNER, echo=FALSE, warning=FALSE, message=FALSE}
+filter(pred_confMatrix, theta==.25) %>%
+  ggplot(aes(y= TP/(TP+FN),x=FP/(TN+FP), col=mdl))+geom_line()+ggtitle('ROC Plot with theta = .25')+scale_color_manual(values=c9)
+```
+
+## Animated ROC
+
+<div class="columns-2">
+```{r aniROC, echo=FALSE, warning=FALSE, message=FALSE}
+library(gganimate)
+
+g <- ggplot(pred_confMatrix, aes(x = FP/(TN+FP), y= TP/(TP+FN), col=mdl, frame=ner))+geom_path(aes(cumulative=TRUE, group=mdl))+ggtitle("ROC paths")+scale_color_manual(values=c9)+facet_wrap(~as.factor(theta))
+gganimate(g, "aniROC.gif")
+```
+![aniroc](aniROC.gif)
+
+<!--## Animated ROC, \theta = .25-->
+```{r aniROCft, message=FALSE, warning=FALSE, echo=FALSE}
+g <- filter(pred_confMatrix, theta==.25)%>%ggplot(aes(x = FP/(TN+FP), y= TP/(TP+FN), col=mdl, frame=ner))+geom_path(aes(cumulative=TRUE, group=mdl))+ggtitle("ROC paths, theta .25 ")+scale_color_manual(values=c9)
+
+gganimate(g, "aniROCft.gif")
+```
+![anirocft](aniROCft.gif)
+
+## Results Overview {.smaller}
+
+```{r allER, echo=FALSE}
+pred_confMatrix %>% filter(TP>14) %>% group_by(TP, mdl) %>% summarize(count=n(), avg.FP = mean(FP), min.ner = min(ner), max.ner = max(ner), max.theta = max(theta))%>% arrange(desc(TP), desc(count)) %>% kable()
+```
+ 
+## Results: RF
+```{r rfRes}
+library(stringr)
+pred_confMatrix %>% filter(str_detect(mdl, "rf")) %>% arrange(desc(TP), FP) %>% head(7)%>%kable()# %>% scroll_box(width="100%", height="300px")
+```
+
+## RFS Variable Importance {.smaller}
+```{r rfsVI}
+ rfs.vi <- read.csv("rfs-vi.csv", header=TRUE) %>% filter(rfs6 > 30, rfs8 > 30, rfs12 > 30) %>% select(variable, rfs6, rfs8, rfs12)
+ kable(rfs.vi, digits=2)#, "html", digits=2) %>% kable_styling( bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width=FALSE)
+```
+
+## Results: KNN
+
+```{r knnResults}
+pred_confMatrix %>% filter(mdl=="knn") %>% arrange(desc(TP), FP) %>% head(7) %>% kable()
+```
+
+## KNN Variable Importance
+```{r knnVI, echo=FALSE}
+ library(kableExtra)
+ knn.vi <- read.csv("knn-vi.csv", header=TRUE)
+ kable(knn.vi)#, "html") %>% kable_styling(full_width=FALSE)# bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width=FALSE)
+```
+ 
+## Missed ER by RF
+
+```{r RFstrikes, echo=FALSE}
+predProbs <- read.csv("predict-probs.csv", header=TRUE, stringsAsFactors = FALSE)
+missedRF <-  select(predProbs, poly, numFact, knn, rfs, rfp, ner) %>% filter(numFact=="2", (rfs < .25 | rfp<.25),ner %in% c(600,800,1200,2500,2100,2300) ) %>% arrange(rfs, rfp, desc(knn))%>% group_by(poly) %>% summarise(knn.mean = mean(knn), rfs.mean=mean(rfs), rfp.mean=mean(rfp), n=n(), min.ner=min(ner), max.ner=max(ner))
+kable(missedRF, digits=3)
+
+```
+
+## Missed ER by KNN
+The following are missed by KNN
+```{r strikes, echo=FALSE}
+missedKNN <- select(predProbs, poly, numFact, knn, rfs, rfp, ner) %>% filter(numFact=="2", (knn<.25), ner %in% c(600,800,1200,2500,2100,2300) ) %>% group_by(poly) %>% summarise(knn.mean = mean(knn), rfs.mean=mean(rfs), rfp.mean=mean(rfp), n=n(), min.ner=min(ner), max.ner=max(ner))
+kable(missedKNN, digits=3)
+```
+
+## Properties of Misses
+
+```{r missedProps, echo=FALSE, warning=FALSE, message=FALSE}
+source("loadTT.R")
+library(tidyr)
+missedPoly <-data.frame(poly=unique(c(missedKNN$poly, missedRF$poly)))
+missed <- loadTT("data/test-8023.csv") %>% unite(poly, const,lin,quad,cube, sep=",", remove=TRUE)
+m <- inner_join(missed, missedPoly)
+kable(select(m,-discSF))
+```
+
+## Properties of Hits {.smaller}
+
+```{r hits, echo=FALSE, message=FALSE, warning=FALSE}
+hits <-  select(predProbs, poly, numFact, knn, rfs, ner) %>% filter(numFact=="2", (rfs > .8 | knn>.8),ner %in% c(600,800,1200,2500,2100,2300) ) %>% group_by(poly) %>% summarise(knn.mean = mean(knn), rfs.mean=mean(rfs), n=n(), min.ner=min(ner), max.ner=max(ner))
+#kable(hits, digits=3)
+#```
+
+## Properties of Hits {.smaller}
+#```{r hitProps, echo=FALSE, message=FALSE, warning=FALSE}
+h <- inner_join(missed, hits) %>% select(-discSF) %>% filter(n>3)
+kable(arrange(h, desc(n)), digits=3)
+```
+
+## Next
+- Incorporate classifiers into search code
+- Interpret RFS in detail
+- See http://jpreszler.rbind.io for cubic family paper and related work.
+
