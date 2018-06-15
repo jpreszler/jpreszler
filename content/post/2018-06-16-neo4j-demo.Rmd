@@ -21,14 +21,18 @@ A college curriculum seems like something that is a natural fit for a graph data
 ## Graph DB Basics
 For those who haven't had much discrete math or computer science, a graph is a collection of nodes (aka vertices) and edges that connect nodes. A graph database is is a form of NoSQL databases (broadly defined) that stores data as a graph where nodes and edges can have various properties attached to them. Graph databases like Neo4j excel at working with highly connected data since relationships (edges) are put on an equal footing with objects (nodes).
 
-To model a college curriculum as a graph, any "things" such as courses, minors, majors, or groups of classes are stored as nodes of different types and different types of nodes have different properties. For example course nodes with have subject, number, url (for catalog description), description, credits, etc.. The relationships between the nodes are the edges such as prerequisites (links between courses), "Satisfies" (courses can satisfy a requirement of a minor/major), and "Part_Of" (groups of courses are a part of a minor/major). The introduction of what I refer to as "Component" nodes (components of majors or minors) are part of the graph model to split up the large number of courses that may be options for a minor or major. This is done to improve visualization as well as database performance. Here's the connection to the Neo4j database and a call to show the schema:
+To model a college curriculum as a graph, any "things" such as courses, minors, majors, or groups of classes are stored as nodes of different types and different types of nodes have different properties. For example course nodes with have subject, number, url (for catalog description), description, credits, etc.. The relationships between the nodes are the edges such as prerequisites (links between courses), "Satisfies" (courses can satisfy a requirement of a minor/major), and "Part_Of" (groups of courses are a part of a minor/major). The introduction of what I refer to as "Component" nodes (components of majors or minors) are part of the graph model to split up the large number of courses that may be options for a minor or major. This is done to improve visualization as well as database performance. 
 
+## Connect to the DB
+A neo4j database needs to be running locally with data in it. We can connect to it in R via:
 ```{r graphConnect}
 library(RNeo4j)
 
 #data is already loaded into database
 gdb <- startGraph("http://localhost:7474/db/data", user="neo4j", password = "maps") #only the password is DB specific here
 ```
+
+Note the last comment. The default user is *neo4j* and the port and path are all defaults. Only the password is mine, and since this is a local DB with no sensitive info, I'm not concerned about revealing the passwork in a blog post, or trying to pick a secure password.
 
 ## Basic Counting
 We'll start with some basic counting of courses and minor structure. For each minor, we list the number of courses required by that minor. This count only includes specific courses required such as *MAT-175*, if the minor requires either *MAT-175* or *MAT-275* that is an option group (or component) counted later.
@@ -60,6 +64,7 @@ kable(arrange(gq, Minor, OptionGroup, desc(NumberClasses)), caption = "Number of
 ```
 
 # Minor Visuals
+Now let's use graphs to visualize the minors in the MAPS department. I'm going to look at each minor separately for now. What follows is a function that takes the minor name, queries the neo4j database and uses visNetwork to show the resulting graph. VisNetork requires a dataframe of nodes and edges as input which we gather from separate queries - one for each type of node/edge.
 
 ```{r visNetFunction}
 library(visNetwork)
@@ -84,6 +89,10 @@ minorVis <- function(minorName){
   visNetwork(nodes, edges)
 }
 ```
+
+Next we'll call this function for each of the minors in MAPS. VisNetwork produces JavaScript graphs, so these may take some time to load. Also, you can drag nodes and edges around some (visNetwork bounces them back unless they move "enough") as well as zoom in and out.
+
+Several minors require an "approved lab course" which I've just put a single dummy course in for rather than showing over a dozen courses (most of which are outside MAPS) linked to the "Lab" component of these minors.
 
 ## Applied Math
 ```{r amVis, echo=FALSE}
@@ -119,3 +128,10 @@ minorVis("Physics")
 ```{r psVis, echo=FALSE}
 minorVis("Physical Science")
 ```
+
+## Closing Thoughts
+If it seems like the graph database is unneccessary overhead so far - you're right! I could have stored everything in a node and edge dataframe, but so far we're just showing how to pull data out and visualize it. The power of the graph DB comes in as curricula evolve and as we apply more sophisticated graph theory ideas to the data - such as finding articulation points, shortest paths, or computing node/edge metrics and using them in our analysis.
+
+Additionally, the last two minors are "messy" with a huge cloud of courses linked to certain nodes. While this mess doesn't pose a problem for students (finding six credits in the cloud in a given semester/year should be easy), closer inspection shows that many of the courses probably aren't feasible options for most students due to prerequisites. This indicates lazy catalog copy - the minor should specify the only the first courses meeting the requirements in a chain of prerequisites rather than all courses. For example don't include everything in the Chemistry department, only include the general chemistry course that is required for everything else or it will seem that students have more options than they do - or could allow *cheats* through the minor.
+
+Clearly, I haven't included any prerequisite links or usd them to impose additional strucure. Again, this is just the beginning of an ongoing project.
