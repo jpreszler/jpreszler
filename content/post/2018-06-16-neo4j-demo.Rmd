@@ -29,16 +29,18 @@ A neo4j database needs to be running locally with data in it. We can connect to 
 library(RNeo4j)
 
 #data is already loaded into database
-gdb <- startGraph("http://localhost:7474/db/data", user="neo4j", password = "maps") #only the password is DB specific here
+gdb <- startGraph("http://localhost:7474/db/data", user="neo4j", 
+                  password = "maps") #only the password is DB specific here
 ```
 
-Note the last comment. The default user is *neo4j* and the port and path are all defaults. Only the password is mine, and since this is a local DB with no sensitive info, I'm not concerned about revealing the passwork in a blog post, or trying to pick a secure password.
+Note the last comment. The default user is *neo4j* and the port and path are all defaults. Only the password is mine, and since this is a local DB with no sensitive info, I'm not concerned about revealing the password in a blog post, or trying to pick a secure password.
 
 ## Basic Counting
 We'll start with some basic counting of courses and minor structure. For each minor, we list the number of courses required by that minor. This count only includes specific courses required such as *MAT-175*, if the minor requires either *MAT-175* or *MAT-275* that is an option group (or component) counted later.
 
 ```{r requiredCourse}
-query <- 'MATCH (c:Course)-[:Satisfies{type:"required"}]->(mc:Component{name:"req"})-[:Part_Of]->(m:Minor) RETURN m.name AS Minor, count(c) AS NumberClasses, sum(toInt(c.minCredits)) AS CreditMin'
+query <- 'MATCH (c:Course)-[:Satisfies{type:"required"}]->(mc:Component{name:"req"})-[:Part_Of]->(m:Minor) 
+RETURN m.name AS Minor, count(c) AS NumberClasses, sum(toInt(c.minCredits)) AS CreditMin'
 gq <- cypher(gdb,query) %>% as.data.frame()
 
 kable(arrange(gq, Minor, desc(NumberClasses)), caption = "Number of courses required for each minor")
@@ -48,7 +50,8 @@ kable(arrange(gq, Minor, desc(NumberClasses)), caption = "Number of courses requ
 Next we look at the number of "option groups" for each minor. These are the number of groups of courses from which a selection of credits or courses must be completed. We then look at the number of courses and minimum credits available for each option group in each minor.
 
 ```{r optGroups}
-query <- 'MATCH (c:Component)-[p:Part_Of]->(m:Minor) WHERE c.name<>"req" RETURN m.name AS Minor, c.name AS OptName'
+query <- 'MATCH (c:Component)-[p:Part_Of]->(m:Minor) WHERE c.name<>"req"
+RETURN m.name AS Minor, c.name AS OptName'
 gq <- cypher(gdb,query) %>% as.data.frame()
 
 gq <- group_by(gq, Minor) %>% summarise(Number.Option.Groups = n_distinct(OptName))
@@ -56,7 +59,8 @@ kable(arrange(gq, Minor, desc(Number.Option.Groups)), caption = "Number of Optio
 ```
 
 ```{r optCourse}
-query <- 'MATCH (c:Course)-[s:Satisfies{type:"option"}]->(comp:Component)-[p:Part_Of]->(m:Minor) RETURN m.name AS Minor, comp.name AS OptionGroup, count(c) AS NumberClasses, sum(toInt(c.minCredits)) AS CreditMin'
+query <- 'MATCH (c:Course)-[s:Satisfies{type:"option"}]->(comp:Component)-[p:Part_Of]->(m:Minor) 
+RETURN m.name AS Minor, comp.name AS OptionGroup, count(c) AS NumberClasses, sum(toInt(c.minCredits)) AS CreditMin'
 
 gq <- cypher(gdb,query) %>% as.data.frame()
 
@@ -70,19 +74,25 @@ Now let's use graphs to visualize the minors in the MAPS department. I'm going t
 library(visNetwork)
 minorVis <- function(minorName){
   
-  MinorNodeQ <- paste0('MATCH (m:Minor {name:"',minorName,'"}) RETURN m.name AS id, m.name AS label, LABELS(m)[0] AS group')
+  MinorNodeQ <- paste0('MATCH (m:Minor {name:"',minorName,'"}) 
+                       RETURN m.name AS id, m.name AS label, LABELS(m)[0] AS group')
 
-  ComponentNodeQ <- paste0('MATCH (c:Component)-[:Part_Of]->(m:Minor{name:"', minorName,'"}) RETURN c.name AS id, c.name AS label, LABELS(c)[0] AS group')
+  ComponentNodeQ <- paste0('MATCH (c:Component)-[:Part_Of]->(m:Minor{name:"', minorName,'"}) 
+                           RETURN c.name AS id, c.name AS label, LABELS(c)[0] AS group')
 
-  CourseNodeQ <- paste0('MATCH (c:Course)-[:Satisfies]->(:Component)-[:Part_Of]->(m:Minor{name:"',minorName,'"}) RETURN c.id AS id, c.id AS label, LABELS(c)[0] AS group')
+  CourseNodeQ <- paste0('MATCH (c:Course)-[:Satisfies]->(:Component)-[:Part_Of]->(m:Minor{name:"',minorName,'"}) 
+                        RETURN c.id AS id, c.id AS label, LABELS(c)[0] AS group')
 
-  nodes <- rbind.data.frame(cypher(gdb, MinorNodeQ), cypher(gdb, CourseNodeQ))
+  nodes <- rbind.data.frame(cypher(gdb, MinorNodeQ), 
+                            cypher(gdb, CourseNodeQ))
   nodes <- rbind.data.frame(nodes, cypher(gdb, ComponentNodeQ))
   nodes <- nodes[!duplicated(nodes),]
 
-  edgeSatQ <- paste0('MATCH (c:Course)-[r:Satisfies]->(co:Component)-[:Part_Of]->(m:Minor {name:"',minorName,'"}) RETURN c.id AS from, co.name AS to, TYPE(r) AS label')
+  edgeSatQ <- paste0('MATCH (c:Course)-[r:Satisfies]->(co:Component)-[:Part_Of]->(m:Minor {name:"',minorName,'"}) 
+                     RETURN c.id AS from, co.name AS to, TYPE(r) AS label')
 
-  edgePOQ <- paste0('MATCH (c:Component)-[r:Part_Of]->(m:Minor {name:"',minorName,'"}) RETURN c.name AS from, m.name AS to, TYPE(r) AS label')
+  edgePOQ <- paste0('MATCH (c:Component)-[r:Part_Of]->(m:Minor {name:"',minorName,'"}) 
+                    RETURN c.name AS from, m.name AS to, TYPE(r) AS label')
 
   edges <- rbind.data.frame(cypher(gdb, edgeSatQ),cypher(gdb, edgePOQ))
 
@@ -130,8 +140,8 @@ minorVis("Physical Science")
 ```
 
 ## Closing Thoughts
-If it seems like the graph database is unneccessary overhead so far - you're right! I could have stored everything in a node and edge dataframe, but so far we're just showing how to pull data out and visualize it. The power of the graph DB comes in as curricula evolve and as we apply more sophisticated graph theory ideas to the data - such as finding articulation points, shortest paths, or computing node/edge metrics and using them in our analysis.
+If it seems like the graph database is unnecessary overhead so far - you're right! I could have stored everything in a node and edge dataframe, but so far we're just showing how to pull data out and visualize it. The power of the graph DB comes in as curricula evolve and as we apply more sophisticated graph theory ideas to the data - such as finding articulation points, shortest paths, or computing node/edge metrics and using them in our analysis.
 
 Additionally, the last two minors are "messy" with a huge cloud of courses linked to certain nodes. While this mess doesn't pose a problem for students (finding six credits in the cloud in a given semester/year should be easy), closer inspection shows that many of the courses probably aren't feasible options for most students due to prerequisites. This indicates lazy catalog copy - the minor should specify the only the first courses meeting the requirements in a chain of prerequisites rather than all courses. For example don't include everything in the Chemistry department, only include the general chemistry course that is required for everything else or it will seem that students have more options than they do - or could allow *cheats* through the minor.
 
-Clearly, I haven't included any prerequisite links or usd them to impose additional strucure. Again, this is just the beginning of an ongoing project.
+Clearly, I haven't included any prerequisite links or used them to impose additional structure. Again, this is just the beginning of an ongoing project.

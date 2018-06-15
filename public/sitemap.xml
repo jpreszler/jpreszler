@@ -5,6 +5,15 @@
     
     <url>
     
+      <loc>/post/2018-06-16-neo4j-demo/</loc>
+      <lastmod>2018-06-15T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/talk/asa-sr-2018/</loc>
       <lastmod>2018-06-01T08:24:06-07:00</lastmod>
     </url>
@@ -306,6 +315,16 @@
     
     <url>
     
+      <loc>/tags/neo4j/</loc>
+      <lastmod>2018-06-15T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/tags/number-theory/</loc>
       <lastmod>2017-12-28T00:00:00+00:00</lastmod>
       <priority>0</priority>
@@ -337,7 +356,7 @@
     <url>
     
       <loc>/tags/r/</loc>
-      <lastmod>2018-05-05T00:00:00+00:00</lastmod>
+      <lastmod>2018-06-15T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -428,6 +447,16 @@
     
       <loc>/categories/teaching/</loc>
       <lastmod>2018-01-06T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/visnetwork/</loc>
+      <lastmod>2018-06-15T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     

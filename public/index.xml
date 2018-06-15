@@ -11,6 +11,335 @@
     <atom:link href="/" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Maps Minors in Neo4J</title>
+      <link>/post/2018-06-16-neo4j-demo/</link>
+      <pubDate>Fri, 15 Jun 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-06-16-neo4j-demo/</guid>
+      <description>&lt;script src=&#34;/rmarkdown-libs/htmlwidgets/htmlwidgets.js&#34;&gt;&lt;/script&gt;
+&lt;link href=&#34;/rmarkdown-libs/vis/vis.css&#34; rel=&#34;stylesheet&#34; /&gt;
+&lt;script src=&#34;/rmarkdown-libs/vis/vis.min.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;/rmarkdown-libs/visNetwork-binding/visNetwork.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;p&gt;A college curriculum seems like something that is a natural fit for a graph database. My last post collected data from the College of Idaho’s online catalog, using that and some information about majors and minors I’ve populated a graph database in Neo4j. In this post I’ll show how to do some basic queries that return tabular data as well as graph data using .&lt;/p&gt;
+&lt;div id=&#34;graph-db-basics&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Graph DB Basics&lt;/h2&gt;
+&lt;p&gt;For those who haven’t had much discrete math or computer science, a graph is a collection of nodes (aka vertices) and edges that connect nodes. A graph database is is a form of NoSQL databases (broadly defined) that stores data as a graph where nodes and edges can have various properties attached to them. Graph databases like Neo4j excel at working with highly connected data since relationships (edges) are put on an equal footing with objects (nodes).&lt;/p&gt;
+&lt;p&gt;To model a college curriculum as a graph, any “things” such as courses, minors, majors, or groups of classes are stored as nodes of different types and different types of nodes have different properties. For example course nodes with have subject, number, url (for catalog description), description, credits, etc.. The relationships between the nodes are the edges such as prerequisites (links between courses), “Satisfies” (courses can satisfy a requirement of a minor/major), and “Part_Of” (groups of courses are a part of a minor/major). The introduction of what I refer to as “Component” nodes (components of majors or minors) are part of the graph model to split up the large number of courses that may be options for a minor or major. This is done to improve visualization as well as database performance.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;connect-to-the-db&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Connect to the DB&lt;/h2&gt;
+&lt;p&gt;A neo4j database needs to be running locally with data in it. We can connect to it in R via:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(RNeo4j)
+
+#data is already loaded into database
+gdb &amp;lt;- startGraph(&amp;quot;http://localhost:7474/db/data&amp;quot;, user=&amp;quot;neo4j&amp;quot;, 
+                  password = &amp;quot;maps&amp;quot;) #only the password is DB specific here&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Note the last comment. The default user is &lt;em&gt;neo4j&lt;/em&gt; and the port and path are all defaults. Only the password is mine, and since this is a local DB with no sensitive info, I’m not concerned about revealing the password in a blog post, or trying to pick a secure password.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;basic-counting&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Basic Counting&lt;/h2&gt;
+&lt;p&gt;We’ll start with some basic counting of courses and minor structure. For each minor, we list the number of courses required by that minor. This count only includes specific courses required such as &lt;em&gt;MAT-175&lt;/em&gt;, if the minor requires either &lt;em&gt;MAT-175&lt;/em&gt; or &lt;em&gt;MAT-275&lt;/em&gt; that is an option group (or component) counted later.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;query &amp;lt;- &amp;#39;MATCH (c:Course)-[:Satisfies{type:&amp;quot;required&amp;quot;}]-&amp;gt;(mc:Component{name:&amp;quot;req&amp;quot;})-[:Part_Of]-&amp;gt;(m:Minor) 
+RETURN m.name AS Minor, count(c) AS NumberClasses, sum(toInt(c.minCredits)) AS CreditMin&amp;#39;
+gq &amp;lt;- cypher(gdb,query) %&amp;gt;% as.data.frame()
+
+kable(arrange(gq, Minor, desc(NumberClasses)), caption = &amp;quot;Number of courses required for each minor&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;caption&gt;&lt;span id=&#34;tab:requiredCourse&#34;&gt;Table 1: &lt;/span&gt;Number of courses required for each minor&lt;/caption&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;left&#34;&gt;Minor&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;NumberClasses&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;CreditMin&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Applied Math&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Computer Science&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;16&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Computer Studies&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;8&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Geosciences&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Physical Science&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Physics&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;16&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Next we look at the number of “option groups” for each minor. These are the number of groups of courses from which a selection of credits or courses must be completed. We then look at the number of courses and minimum credits available for each option group in each minor.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;query &amp;lt;- &amp;#39;MATCH (c:Component)-[p:Part_Of]-&amp;gt;(m:Minor) WHERE c.name&amp;lt;&amp;gt;&amp;quot;req&amp;quot;
+RETURN m.name AS Minor, c.name AS OptName&amp;#39;
+gq &amp;lt;- cypher(gdb,query) %&amp;gt;% as.data.frame()
+
+gq &amp;lt;- group_by(gq, Minor) %&amp;gt;% summarise(Number.Option.Groups = n_distinct(OptName))
+kable(arrange(gq, Minor, desc(Number.Option.Groups)), caption = &amp;quot;Number of Option Groups required for each minor&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;caption&gt;&lt;span id=&#34;tab:optGroups&#34;&gt;Table 2: &lt;/span&gt;Number of Option Groups required for each minor&lt;/caption&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;left&#34;&gt;Minor&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;Number.Option.Groups&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Applied Math&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Computer Science&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Computer Studies&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Geosciences&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Mathematics&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Physical Science&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Physics&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;query &amp;lt;- &amp;#39;MATCH (c:Course)-[s:Satisfies{type:&amp;quot;option&amp;quot;}]-&amp;gt;(comp:Component)-[p:Part_Of]-&amp;gt;(m:Minor) 
+RETURN m.name AS Minor, comp.name AS OptionGroup, count(c) AS NumberClasses, sum(toInt(c.minCredits)) AS CreditMin&amp;#39;
+
+gq &amp;lt;- cypher(gdb,query) %&amp;gt;% as.data.frame()
+
+kable(arrange(gq, Minor, OptionGroup, desc(NumberClasses)), caption = &amp;quot;Number of courses for each option group of each minor&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;caption&gt;&lt;span id=&#34;tab:optCourse&#34;&gt;Table 3: &lt;/span&gt;Number of courses for each option group of each minor&lt;/caption&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;left&#34;&gt;Minor&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;OptionGroup&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;NumberClasses&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;CreditMin&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Applied Math&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Calculus&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;12&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Applied Math&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Data&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;8&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Applied Math&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Lab&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Computer Science&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Calculus&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;8&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Computer Science&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;IntermediateCSC&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;8&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Computer Studies&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Calculus&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;8&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Computer Studies&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Lab&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Geosciences&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Core&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Geosciences&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Math&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;12&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Geosciences&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;takeTwo&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;16&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Mathematics&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Calculus&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;8&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Mathematics&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Lab&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Mathematics&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Proofs&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;16&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Mathematics&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;sixCredits&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;15&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;60&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Physical Science&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;takeTwo&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;10&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;40&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Physical Science&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;threeCredit&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;76&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;206&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Physics&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;sixCredit&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;10&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;40&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Physics&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;threeCredit&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;27&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;108&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div id=&#34;minor-visuals&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Minor Visuals&lt;/h1&gt;
+&lt;p&gt;Now let’s use graphs to visualize the minors in the MAPS department. I’m going to look at each minor separately for now. What follows is a function that takes the minor name, queries the neo4j database and uses visNetwork to show the resulting graph. VisNetork requires a dataframe of nodes and edges as input which we gather from separate queries - one for each type of node/edge.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(visNetwork)
+minorVis &amp;lt;- function(minorName){
+  
+  MinorNodeQ &amp;lt;- paste0(&amp;#39;MATCH (m:Minor {name:&amp;quot;&amp;#39;,minorName,&amp;#39;&amp;quot;}) 
+                       RETURN m.name AS id, m.name AS label, LABELS(m)[0] AS group&amp;#39;)
+
+  ComponentNodeQ &amp;lt;- paste0(&amp;#39;MATCH (c:Component)-[:Part_Of]-&amp;gt;(m:Minor{name:&amp;quot;&amp;#39;, minorName,&amp;#39;&amp;quot;}) 
+                           RETURN c.name AS id, c.name AS label, LABELS(c)[0] AS group&amp;#39;)
+
+  CourseNodeQ &amp;lt;- paste0(&amp;#39;MATCH (c:Course)-[:Satisfies]-&amp;gt;(:Component)-[:Part_Of]-&amp;gt;(m:Minor{name:&amp;quot;&amp;#39;,minorName,&amp;#39;&amp;quot;}) 
+                        RETURN c.id AS id, c.id AS label, LABELS(c)[0] AS group&amp;#39;)
+
+  nodes &amp;lt;- rbind.data.frame(cypher(gdb, MinorNodeQ), 
+                            cypher(gdb, CourseNodeQ))
+  nodes &amp;lt;- rbind.data.frame(nodes, cypher(gdb, ComponentNodeQ))
+  nodes &amp;lt;- nodes[!duplicated(nodes),]
+
+  edgeSatQ &amp;lt;- paste0(&amp;#39;MATCH (c:Course)-[r:Satisfies]-&amp;gt;(co:Component)-[:Part_Of]-&amp;gt;(m:Minor {name:&amp;quot;&amp;#39;,minorName,&amp;#39;&amp;quot;}) 
+                     RETURN c.id AS from, co.name AS to, TYPE(r) AS label&amp;#39;)
+
+  edgePOQ &amp;lt;- paste0(&amp;#39;MATCH (c:Component)-[r:Part_Of]-&amp;gt;(m:Minor {name:&amp;quot;&amp;#39;,minorName,&amp;#39;&amp;quot;}) 
+                    RETURN c.name AS from, m.name AS to, TYPE(r) AS label&amp;#39;)
+
+  edges &amp;lt;- rbind.data.frame(cypher(gdb, edgeSatQ),cypher(gdb, edgePOQ))
+
+  visNetwork(nodes, edges)
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Next we’ll call this function for each of the minors in MAPS. VisNetwork produces JavaScript graphs, so these may take some time to load. Also, you can drag nodes and edges around some (visNetwork bounces them back unless they move “enough”) as well as zoom in and out.&lt;/p&gt;
+&lt;p&gt;Several minors require an “approved lab course” which I’ve just put a single dummy course in for rather than showing over a dozen courses (most of which are outside MAPS) linked to the “Lab” component of these minors.&lt;/p&gt;
+&lt;div id=&#34;applied-math&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Applied Math&lt;/h2&gt;
+&lt;div id=&#34;htmlwidget-1&#34; style=&#34;width:672px;height:480px;&#34; class=&#34;visNetwork html-widget&#34;&gt;&lt;/div&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-1&#34;&gt;{&#34;x&#34;:{&#34;nodes&#34;:{&#34;id&#34;:[&#34;Applied Math&#34;,&#34;AppLab&#34;,&#34;CSC150&#34;,&#34;MAT150&#34;,&#34;MAT275&#34;,&#34;MAT175&#34;,&#34;CSC270&#34;,&#34;MAT212&#34;,&#34;Lab&#34;,&#34;req&#34;,&#34;Calculus&#34;,&#34;Data&#34;],&#34;label&#34;:[&#34;Applied Math&#34;,&#34;AppLab&#34;,&#34;CSC150&#34;,&#34;MAT150&#34;,&#34;MAT275&#34;,&#34;MAT175&#34;,&#34;CSC270&#34;,&#34;MAT212&#34;,&#34;Lab&#34;,&#34;req&#34;,&#34;Calculus&#34;,&#34;Data&#34;],&#34;group&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;]},&#34;edges&#34;:{&#34;from&#34;:[&#34;AppLab&#34;,&#34;CSC150&#34;,&#34;MAT150&#34;,&#34;MAT275&#34;,&#34;MAT175&#34;,&#34;CSC270&#34;,&#34;MAT212&#34;,&#34;Lab&#34;,&#34;req&#34;,&#34;Calculus&#34;,&#34;Data&#34;],&#34;to&#34;:[&#34;Lab&#34;,&#34;req&#34;,&#34;Calculus&#34;,&#34;Calculus&#34;,&#34;Calculus&#34;,&#34;Data&#34;,&#34;Data&#34;,&#34;Applied Math&#34;,&#34;Applied Math&#34;,&#34;Applied Math&#34;,&#34;Applied Math&#34;],&#34;label&#34;:[&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;]},&#34;nodesToDataframe&#34;:true,&#34;edgesToDataframe&#34;:true,&#34;options&#34;:{&#34;width&#34;:&#34;100%&#34;,&#34;height&#34;:&#34;100%&#34;,&#34;nodes&#34;:{&#34;shape&#34;:&#34;dot&#34;},&#34;manipulation&#34;:{&#34;enabled&#34;:false}},&#34;groups&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Component&#34;],&#34;width&#34;:null,&#34;height&#34;:null,&#34;idselection&#34;:{&#34;enabled&#34;:false},&#34;byselection&#34;:{&#34;enabled&#34;:false},&#34;main&#34;:null,&#34;submain&#34;:null,&#34;footer&#34;:null,&#34;background&#34;:&#34;rgba(0, 0, 0, 0)&#34;},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;/div&gt;
+&lt;div id=&#34;computer-science&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Computer Science&lt;/h2&gt;
+&lt;div id=&#34;htmlwidget-2&#34; style=&#34;width:672px;height:480px;&#34; class=&#34;visNetwork html-widget&#34;&gt;&lt;/div&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-2&#34;&gt;{&#34;x&#34;:{&#34;nodes&#34;:{&#34;id&#34;:[&#34;Computer Science&#34;,&#34;CSC150&#34;,&#34;CSC160&#34;,&#34;CSC270&#34;,&#34;MAT252&#34;,&#34;MAT150&#34;,&#34;MAT175&#34;,&#34;CSC235&#34;,&#34;CSC340&#34;,&#34;req&#34;,&#34;Calculus&#34;,&#34;IntermediateCSC&#34;],&#34;label&#34;:[&#34;Computer Science&#34;,&#34;CSC150&#34;,&#34;CSC160&#34;,&#34;CSC270&#34;,&#34;MAT252&#34;,&#34;MAT150&#34;,&#34;MAT175&#34;,&#34;CSC235&#34;,&#34;CSC340&#34;,&#34;req&#34;,&#34;Calculus&#34;,&#34;IntermediateCSC&#34;],&#34;group&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;]},&#34;edges&#34;:{&#34;from&#34;:[&#34;CSC150&#34;,&#34;CSC160&#34;,&#34;CSC270&#34;,&#34;MAT252&#34;,&#34;MAT150&#34;,&#34;MAT175&#34;,&#34;CSC235&#34;,&#34;CSC340&#34;,&#34;req&#34;,&#34;Calculus&#34;,&#34;IntermediateCSC&#34;],&#34;to&#34;:[&#34;req&#34;,&#34;req&#34;,&#34;req&#34;,&#34;req&#34;,&#34;Calculus&#34;,&#34;Calculus&#34;,&#34;IntermediateCSC&#34;,&#34;IntermediateCSC&#34;,&#34;Computer Science&#34;,&#34;Computer Science&#34;,&#34;Computer Science&#34;],&#34;label&#34;:[&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;]},&#34;nodesToDataframe&#34;:true,&#34;edgesToDataframe&#34;:true,&#34;options&#34;:{&#34;width&#34;:&#34;100%&#34;,&#34;height&#34;:&#34;100%&#34;,&#34;nodes&#34;:{&#34;shape&#34;:&#34;dot&#34;},&#34;manipulation&#34;:{&#34;enabled&#34;:false}},&#34;groups&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Component&#34;],&#34;width&#34;:null,&#34;height&#34;:null,&#34;idselection&#34;:{&#34;enabled&#34;:false},&#34;byselection&#34;:{&#34;enabled&#34;:false},&#34;main&#34;:null,&#34;submain&#34;:null,&#34;footer&#34;:null,&#34;background&#34;:&#34;rgba(0, 0, 0, 0)&#34;},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;/div&gt;
+&lt;div id=&#34;computer-studies&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Computer Studies&lt;/h2&gt;
+&lt;div id=&#34;htmlwidget-3&#34; style=&#34;width:672px;height:480px;&#34; class=&#34;visNetwork html-widget&#34;&gt;&lt;/div&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-3&#34;&gt;{&#34;x&#34;:{&#34;nodes&#34;:{&#34;id&#34;:[&#34;Computer Studies&#34;,&#34;AppLab&#34;,&#34;MAT175&#34;,&#34;MAT150&#34;,&#34;CSC270&#34;,&#34;CSC150&#34;,&#34;Lab&#34;,&#34;Calculus&#34;,&#34;req&#34;],&#34;label&#34;:[&#34;Computer Studies&#34;,&#34;AppLab&#34;,&#34;MAT175&#34;,&#34;MAT150&#34;,&#34;CSC270&#34;,&#34;CSC150&#34;,&#34;Lab&#34;,&#34;Calculus&#34;,&#34;req&#34;],&#34;group&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;]},&#34;edges&#34;:{&#34;from&#34;:[&#34;AppLab&#34;,&#34;MAT175&#34;,&#34;MAT150&#34;,&#34;CSC270&#34;,&#34;CSC150&#34;,&#34;Lab&#34;,&#34;Calculus&#34;,&#34;req&#34;],&#34;to&#34;:[&#34;Lab&#34;,&#34;Calculus&#34;,&#34;Calculus&#34;,&#34;req&#34;,&#34;req&#34;,&#34;Computer Studies&#34;,&#34;Computer Studies&#34;,&#34;Computer Studies&#34;],&#34;label&#34;:[&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;]},&#34;nodesToDataframe&#34;:true,&#34;edgesToDataframe&#34;:true,&#34;options&#34;:{&#34;width&#34;:&#34;100%&#34;,&#34;height&#34;:&#34;100%&#34;,&#34;nodes&#34;:{&#34;shape&#34;:&#34;dot&#34;},&#34;manipulation&#34;:{&#34;enabled&#34;:false}},&#34;groups&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Component&#34;],&#34;width&#34;:null,&#34;height&#34;:null,&#34;idselection&#34;:{&#34;enabled&#34;:false},&#34;byselection&#34;:{&#34;enabled&#34;:false},&#34;main&#34;:null,&#34;submain&#34;:null,&#34;footer&#34;:null,&#34;background&#34;:&#34;rgba(0, 0, 0, 0)&#34;},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;/div&gt;
+&lt;div id=&#34;geosciences&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Geosciences&lt;/h2&gt;
+&lt;div id=&#34;htmlwidget-4&#34; style=&#34;width:672px;height:480px;&#34; class=&#34;visNetwork html-widget&#34;&gt;&lt;/div&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-4&#34;&gt;{&#34;x&#34;:{&#34;nodes&#34;:{&#34;id&#34;:[&#34;Geosciences&#34;,&#34;ENV350&#34;,&#34;GEO320&#34;,&#34;PHY271&#34;,&#34;PHY231&#34;,&#34;GEO310&#34;,&#34;ENV160&#34;,&#34;GEO150&#34;,&#34;MAT212&#34;,&#34;MAT150&#34;,&#34;MAT125&#34;,&#34;GEO101&#34;,&#34;takeTwo&#34;,&#34;Core&#34;,&#34;Math&#34;,&#34;req&#34;],&#34;label&#34;:[&#34;Geosciences&#34;,&#34;ENV350&#34;,&#34;GEO320&#34;,&#34;PHY271&#34;,&#34;PHY231&#34;,&#34;GEO310&#34;,&#34;ENV160&#34;,&#34;GEO150&#34;,&#34;MAT212&#34;,&#34;MAT150&#34;,&#34;MAT125&#34;,&#34;GEO101&#34;,&#34;takeTwo&#34;,&#34;Core&#34;,&#34;Math&#34;,&#34;req&#34;],&#34;group&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;]},&#34;edges&#34;:{&#34;from&#34;:[&#34;ENV350&#34;,&#34;GEO320&#34;,&#34;PHY271&#34;,&#34;PHY231&#34;,&#34;GEO310&#34;,&#34;ENV160&#34;,&#34;GEO150&#34;,&#34;MAT212&#34;,&#34;MAT150&#34;,&#34;MAT125&#34;,&#34;GEO101&#34;,&#34;takeTwo&#34;,&#34;Core&#34;,&#34;Math&#34;,&#34;req&#34;],&#34;to&#34;:[&#34;takeTwo&#34;,&#34;takeTwo&#34;,&#34;takeTwo&#34;,&#34;takeTwo&#34;,&#34;takeTwo&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Math&#34;,&#34;Math&#34;,&#34;Math&#34;,&#34;req&#34;,&#34;Geosciences&#34;,&#34;Geosciences&#34;,&#34;Geosciences&#34;,&#34;Geosciences&#34;],&#34;label&#34;:[&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;]},&#34;nodesToDataframe&#34;:true,&#34;edgesToDataframe&#34;:true,&#34;options&#34;:{&#34;width&#34;:&#34;100%&#34;,&#34;height&#34;:&#34;100%&#34;,&#34;nodes&#34;:{&#34;shape&#34;:&#34;dot&#34;},&#34;manipulation&#34;:{&#34;enabled&#34;:false}},&#34;groups&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Component&#34;],&#34;width&#34;:null,&#34;height&#34;:null,&#34;idselection&#34;:{&#34;enabled&#34;:false},&#34;byselection&#34;:{&#34;enabled&#34;:false},&#34;main&#34;:null,&#34;submain&#34;:null,&#34;footer&#34;:null,&#34;background&#34;:&#34;rgba(0, 0, 0, 0)&#34;},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;/div&gt;
+&lt;div id=&#34;mathematics&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Mathematics&lt;/h2&gt;
+&lt;div id=&#34;htmlwidget-5&#34; style=&#34;width:672px;height:480px;&#34; class=&#34;visNetwork html-widget&#34;&gt;&lt;/div&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-5&#34;&gt;{&#34;x&#34;:{&#34;nodes&#34;:{&#34;id&#34;:[&#34;Mathematics&#34;,&#34;AppLab&#34;,&#34;MAT280&#34;,&#34;MAT282&#34;,&#34;MAT281&#34;,&#34;MAT283&#34;,&#34;MAT175&#34;,&#34;MAT275&#34;,&#34;MAT441&#34;,&#34;MAT451&#34;,&#34;MAT399T&#34;,&#34;MAT431&#34;,&#34;MAT497&#34;,&#34;MAT498&#34;,&#34;MAT461&#34;,&#34;MAT494&#34;,&#34;MAT499T&#34;,&#34;MAT361&#34;,&#34;MAT352&#34;,&#34;MAT372&#34;,&#34;MAT370&#34;,&#34;MAT311&#34;,&#34;MAT312&#34;,&#34;Lab&#34;,&#34;Proofs&#34;,&#34;Calculus&#34;,&#34;sixCredits&#34;],&#34;label&#34;:[&#34;Mathematics&#34;,&#34;AppLab&#34;,&#34;MAT280&#34;,&#34;MAT282&#34;,&#34;MAT281&#34;,&#34;MAT283&#34;,&#34;MAT175&#34;,&#34;MAT275&#34;,&#34;MAT441&#34;,&#34;MAT451&#34;,&#34;MAT399T&#34;,&#34;MAT431&#34;,&#34;MAT497&#34;,&#34;MAT498&#34;,&#34;MAT461&#34;,&#34;MAT494&#34;,&#34;MAT499T&#34;,&#34;MAT361&#34;,&#34;MAT352&#34;,&#34;MAT372&#34;,&#34;MAT370&#34;,&#34;MAT311&#34;,&#34;MAT312&#34;,&#34;Lab&#34;,&#34;Proofs&#34;,&#34;Calculus&#34;,&#34;sixCredits&#34;],&#34;group&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;]},&#34;edges&#34;:{&#34;from&#34;:[&#34;AppLab&#34;,&#34;MAT280&#34;,&#34;MAT282&#34;,&#34;MAT281&#34;,&#34;MAT283&#34;,&#34;MAT175&#34;,&#34;MAT275&#34;,&#34;MAT441&#34;,&#34;MAT451&#34;,&#34;MAT399T&#34;,&#34;MAT431&#34;,&#34;MAT497&#34;,&#34;MAT498&#34;,&#34;MAT461&#34;,&#34;MAT494&#34;,&#34;MAT499T&#34;,&#34;MAT361&#34;,&#34;MAT352&#34;,&#34;MAT372&#34;,&#34;MAT370&#34;,&#34;MAT311&#34;,&#34;MAT312&#34;,&#34;Lab&#34;,&#34;Proofs&#34;,&#34;Calculus&#34;,&#34;sixCredits&#34;],&#34;to&#34;:[&#34;Lab&#34;,&#34;Proofs&#34;,&#34;Proofs&#34;,&#34;Proofs&#34;,&#34;Proofs&#34;,&#34;Calculus&#34;,&#34;Calculus&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;Mathematics&#34;,&#34;Mathematics&#34;,&#34;Mathematics&#34;,&#34;Mathematics&#34;],&#34;label&#34;:[&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;]},&#34;nodesToDataframe&#34;:true,&#34;edgesToDataframe&#34;:true,&#34;options&#34;:{&#34;width&#34;:&#34;100%&#34;,&#34;height&#34;:&#34;100%&#34;,&#34;nodes&#34;:{&#34;shape&#34;:&#34;dot&#34;},&#34;manipulation&#34;:{&#34;enabled&#34;:false}},&#34;groups&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Component&#34;],&#34;width&#34;:null,&#34;height&#34;:null,&#34;idselection&#34;:{&#34;enabled&#34;:false},&#34;byselection&#34;:{&#34;enabled&#34;:false},&#34;main&#34;:null,&#34;submain&#34;:null,&#34;footer&#34;:null,&#34;background&#34;:&#34;rgba(0, 0, 0, 0)&#34;},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;/div&gt;
+&lt;div id=&#34;physics&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Physics&lt;/h2&gt;
+&lt;div id=&#34;htmlwidget-6&#34; style=&#34;width:672px;height:480px;&#34; class=&#34;visNetwork html-widget&#34;&gt;&lt;/div&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-6&#34;&gt;{&#34;x&#34;:{&#34;nodes&#34;:{&#34;id&#34;:[&#34;Physics&#34;,&#34;PHY399T&#34;,&#34;PHY330&#34;,&#34;PHY450&#34;,&#34;PHY400&#34;,&#34;PHY496&#34;,&#34;PHY494&#34;,&#34;PHY499T&#34;,&#34;PHY497&#34;,&#34;PHY301&#34;,&#34;PHY313&#34;,&#34;PHY257&#34;,&#34;PHY294&#34;,&#34;PHY299T&#34;,&#34;PHY105&#34;,&#34;PHY100&#34;,&#34;PHY210&#34;,&#34;PHY199T&#34;,&#34;PHY199&#34;,&#34;PHY170&#34;,&#34;PHY231L&#34;,&#34;PHY231&#34;,&#34;PHY230L&#34;,&#34;PHY230&#34;,&#34;PHY240L&#34;,&#34;PHY240&#34;,&#34;PHY232L&#34;,&#34;PHY232&#34;,&#34;PHY272L&#34;,&#34;MAT275&#34;,&#34;MAT175&#34;,&#34;PHY271L&#34;,&#34;PHY272&#34;,&#34;MAT352&#34;,&#34;PHY271&#34;,&#34;sixCredit&#34;,&#34;threeCredit&#34;,&#34;req&#34;],&#34;label&#34;:[&#34;Physics&#34;,&#34;PHY399T&#34;,&#34;PHY330&#34;,&#34;PHY450&#34;,&#34;PHY400&#34;,&#34;PHY496&#34;,&#34;PHY494&#34;,&#34;PHY499T&#34;,&#34;PHY497&#34;,&#34;PHY301&#34;,&#34;PHY313&#34;,&#34;PHY257&#34;,&#34;PHY294&#34;,&#34;PHY299T&#34;,&#34;PHY105&#34;,&#34;PHY100&#34;,&#34;PHY210&#34;,&#34;PHY199T&#34;,&#34;PHY199&#34;,&#34;PHY170&#34;,&#34;PHY231L&#34;,&#34;PHY231&#34;,&#34;PHY230L&#34;,&#34;PHY230&#34;,&#34;PHY240L&#34;,&#34;PHY240&#34;,&#34;PHY232L&#34;,&#34;PHY232&#34;,&#34;PHY272L&#34;,&#34;MAT275&#34;,&#34;MAT175&#34;,&#34;PHY271L&#34;,&#34;PHY272&#34;,&#34;MAT352&#34;,&#34;PHY271&#34;,&#34;sixCredit&#34;,&#34;threeCredit&#34;,&#34;req&#34;],&#34;group&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;]},&#34;edges&#34;:{&#34;from&#34;:[&#34;PHY399T&#34;,&#34;PHY330&#34;,&#34;PHY450&#34;,&#34;PHY400&#34;,&#34;PHY496&#34;,&#34;PHY494&#34;,&#34;PHY499T&#34;,&#34;PHY497&#34;,&#34;PHY301&#34;,&#34;PHY313&#34;,&#34;PHY257&#34;,&#34;PHY294&#34;,&#34;PHY299T&#34;,&#34;PHY301&#34;,&#34;PHY313&#34;,&#34;PHY330&#34;,&#34;PHY399T&#34;,&#34;PHY400&#34;,&#34;PHY450&#34;,&#34;PHY494&#34;,&#34;PHY496&#34;,&#34;PHY497&#34;,&#34;PHY499T&#34;,&#34;PHY105&#34;,&#34;PHY100&#34;,&#34;PHY210&#34;,&#34;PHY199T&#34;,&#34;PHY199&#34;,&#34;PHY170&#34;,&#34;PHY231L&#34;,&#34;PHY231&#34;,&#34;PHY230L&#34;,&#34;PHY230&#34;,&#34;PHY240L&#34;,&#34;PHY240&#34;,&#34;PHY232L&#34;,&#34;PHY232&#34;,&#34;PHY272L&#34;,&#34;MAT275&#34;,&#34;MAT175&#34;,&#34;PHY271L&#34;,&#34;PHY272&#34;,&#34;MAT352&#34;,&#34;PHY271&#34;,&#34;sixCredit&#34;,&#34;threeCredit&#34;,&#34;req&#34;],&#34;to&#34;:[&#34;sixCredit&#34;,&#34;sixCredit&#34;,&#34;sixCredit&#34;,&#34;sixCredit&#34;,&#34;sixCredit&#34;,&#34;sixCredit&#34;,&#34;sixCredit&#34;,&#34;sixCredit&#34;,&#34;sixCredit&#34;,&#34;sixCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;req&#34;,&#34;req&#34;,&#34;req&#34;,&#34;req&#34;,&#34;req&#34;,&#34;req&#34;,&#34;req&#34;,&#34;Physics&#34;,&#34;Physics&#34;,&#34;Physics&#34;],&#34;label&#34;:[&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;]},&#34;nodesToDataframe&#34;:true,&#34;edgesToDataframe&#34;:true,&#34;options&#34;:{&#34;width&#34;:&#34;100%&#34;,&#34;height&#34;:&#34;100%&#34;,&#34;nodes&#34;:{&#34;shape&#34;:&#34;dot&#34;},&#34;manipulation&#34;:{&#34;enabled&#34;:false}},&#34;groups&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Component&#34;],&#34;width&#34;:null,&#34;height&#34;:null,&#34;idselection&#34;:{&#34;enabled&#34;:false},&#34;byselection&#34;:{&#34;enabled&#34;:false},&#34;main&#34;:null,&#34;submain&#34;:null,&#34;footer&#34;:null,&#34;background&#34;:&#34;rgba(0, 0, 0, 0)&#34;},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;/div&gt;
+&lt;div id=&#34;physical-science&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Physical Science&lt;/h2&gt;
+&lt;div id=&#34;htmlwidget-7&#34; style=&#34;width:672px;height:480px;&#34; class=&#34;visNetwork html-widget&#34;&gt;&lt;/div&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-7&#34;&gt;{&#34;x&#34;:{&#34;nodes&#34;:{&#34;id&#34;:[&#34;Physical Science&#34;,&#34;PHY499T&#34;,&#34;PHY497&#34;,&#34;PHY399T&#34;,&#34;PHY330&#34;,&#34;PHY313&#34;,&#34;PHY301&#34;,&#34;PHY496&#34;,&#34;PHY494&#34;,&#34;PHY450&#34;,&#34;PHY400&#34;,&#34;GEO410L&#34;,&#34;GEO410&#34;,&#34;PHY100&#34;,&#34;GEO494&#34;,&#34;PHY170&#34;,&#34;PHY105&#34;,&#34;PHY199T&#34;,&#34;PHY199&#34;,&#34;CHE499T&#34;,&#34;CHE497&#34;,&#34;GEO101&#34;,&#34;CHE499T.1&#34;,&#34;GEO150&#34;,&#34;GEO101L&#34;,&#34;GEO320&#34;,&#34;GEO310&#34;,&#34;PHY240L&#34;,&#34;CHE124L&#34;,&#34;CHE124&#34;,&#34;CHE399T.1&#34;,&#34;CHE399T&#34;,&#34;CHE401&#34;,&#34;CHE399T.2&#34;,&#34;CHE412&#34;,&#34;CHE401L&#34;,&#34;CHE420&#34;,&#34;CHE412L&#34;,&#34;CHE464&#34;,&#34;CHE420L&#34;,&#34;CHE465&#34;,&#34;CHE464L&#34;,&#34;CHE490&#34;,&#34;CHE465L&#34;,&#34;CHE495&#34;,&#34;CHE494&#34;,&#34;CHE141&#34;,&#34;CHE142&#34;,&#34;CHE199T&#34;,&#34;CHE252&#34;,&#34;CHE252L&#34;,&#34;CHE294&#34;,&#34;CHE299T&#34;,&#34;CHE301&#34;,&#34;CHE301L&#34;,&#34;CHE302&#34;,&#34;CHE302L&#34;,&#34;CHE352&#34;,&#34;CHE352L&#34;,&#34;CHE394&#34;,&#34;CHE395&#34;,&#34;CHE397&#34;,&#34;PHY240&#34;,&#34;PHY232L&#34;,&#34;PHY232&#34;,&#34;PHY231L&#34;,&#34;PHY231&#34;,&#34;PHY230L&#34;,&#34;PHY230&#34;,&#34;PHY210&#34;,&#34;PHY299T&#34;,&#34;PHY294&#34;,&#34;PHY272L&#34;,&#34;PHY272&#34;,&#34;PHY271L&#34;,&#34;PHY271&#34;,&#34;PHY257&#34;,&#34;MAT150&#34;,&#34;threeCredit&#34;,&#34;req&#34;,&#34;takeTwo&#34;],&#34;label&#34;:[&#34;Physical Science&#34;,&#34;PHY499T&#34;,&#34;PHY497&#34;,&#34;PHY399T&#34;,&#34;PHY330&#34;,&#34;PHY313&#34;,&#34;PHY301&#34;,&#34;PHY496&#34;,&#34;PHY494&#34;,&#34;PHY450&#34;,&#34;PHY400&#34;,&#34;GEO410L&#34;,&#34;GEO410&#34;,&#34;PHY100&#34;,&#34;GEO494&#34;,&#34;PHY170&#34;,&#34;PHY105&#34;,&#34;PHY199T&#34;,&#34;PHY199&#34;,&#34;CHE499T&#34;,&#34;CHE497&#34;,&#34;GEO101&#34;,&#34;CHE499T.1&#34;,&#34;GEO150&#34;,&#34;GEO101L&#34;,&#34;GEO320&#34;,&#34;GEO310&#34;,&#34;PHY240L&#34;,&#34;CHE124L&#34;,&#34;CHE124&#34;,&#34;CHE399T.1&#34;,&#34;CHE399T&#34;,&#34;CHE401&#34;,&#34;CHE399T.2&#34;,&#34;CHE412&#34;,&#34;CHE401L&#34;,&#34;CHE420&#34;,&#34;CHE412L&#34;,&#34;CHE464&#34;,&#34;CHE420L&#34;,&#34;CHE465&#34;,&#34;CHE464L&#34;,&#34;CHE490&#34;,&#34;CHE465L&#34;,&#34;CHE495&#34;,&#34;CHE494&#34;,&#34;CHE141&#34;,&#34;CHE142&#34;,&#34;CHE199T&#34;,&#34;CHE252&#34;,&#34;CHE252L&#34;,&#34;CHE294&#34;,&#34;CHE299T&#34;,&#34;CHE301&#34;,&#34;CHE301L&#34;,&#34;CHE302&#34;,&#34;CHE302L&#34;,&#34;CHE352&#34;,&#34;CHE352L&#34;,&#34;CHE394&#34;,&#34;CHE395&#34;,&#34;CHE397&#34;,&#34;PHY240&#34;,&#34;PHY232L&#34;,&#34;PHY232&#34;,&#34;PHY231L&#34;,&#34;PHY231&#34;,&#34;PHY230L&#34;,&#34;PHY230&#34;,&#34;PHY210&#34;,&#34;PHY299T&#34;,&#34;PHY294&#34;,&#34;PHY272L&#34;,&#34;PHY272&#34;,&#34;PHY271L&#34;,&#34;PHY271&#34;,&#34;PHY257&#34;,&#34;MAT150&#34;,&#34;threeCredit&#34;,&#34;req&#34;,&#34;takeTwo&#34;],&#34;group&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;]},&#34;edges&#34;:{&#34;from&#34;:[&#34;PHY499T&#34;,&#34;PHY497&#34;,&#34;PHY399T&#34;,&#34;PHY330&#34;,&#34;PHY313&#34;,&#34;PHY301&#34;,&#34;PHY496&#34;,&#34;PHY494&#34;,&#34;PHY450&#34;,&#34;PHY400&#34;,&#34;GEO410L&#34;,&#34;GEO410&#34;,&#34;PHY100&#34;,&#34;GEO494&#34;,&#34;PHY170&#34;,&#34;PHY105&#34;,&#34;PHY199T&#34;,&#34;PHY199&#34;,&#34;CHE499T&#34;,&#34;CHE497&#34;,&#34;GEO101&#34;,&#34;CHE499T.1&#34;,&#34;GEO150&#34;,&#34;GEO101L&#34;,&#34;GEO320&#34;,&#34;GEO310&#34;,&#34;PHY240L&#34;,&#34;CHE124L&#34;,&#34;CHE124&#34;,&#34;CHE399T.1&#34;,&#34;CHE399T&#34;,&#34;CHE401&#34;,&#34;CHE399T.2&#34;,&#34;CHE412&#34;,&#34;CHE401L&#34;,&#34;CHE420&#34;,&#34;CHE412L&#34;,&#34;CHE464&#34;,&#34;CHE420L&#34;,&#34;CHE465&#34;,&#34;CHE464L&#34;,&#34;CHE490&#34;,&#34;CHE465L&#34;,&#34;CHE495&#34;,&#34;CHE494&#34;,&#34;CHE141&#34;,&#34;CHE142&#34;,&#34;CHE199T&#34;,&#34;CHE252&#34;,&#34;CHE252L&#34;,&#34;CHE294&#34;,&#34;CHE299T&#34;,&#34;CHE301&#34;,&#34;CHE301L&#34;,&#34;CHE302&#34;,&#34;CHE302L&#34;,&#34;CHE352&#34;,&#34;CHE352L&#34;,&#34;CHE394&#34;,&#34;CHE395&#34;,&#34;CHE397&#34;,&#34;PHY240&#34;,&#34;PHY232L&#34;,&#34;PHY232&#34;,&#34;PHY231L&#34;,&#34;PHY231&#34;,&#34;PHY230L&#34;,&#34;PHY230&#34;,&#34;PHY210&#34;,&#34;PHY299T&#34;,&#34;PHY294&#34;,&#34;PHY272L&#34;,&#34;PHY272&#34;,&#34;PHY271L&#34;,&#34;PHY271&#34;,&#34;PHY257&#34;,&#34;MAT150&#34;,&#34;PHY272L&#34;,&#34;PHY232L&#34;,&#34;PHY271&#34;,&#34;PHY271L&#34;,&#34;PHY272&#34;,&#34;CHE142&#34;,&#34;PHY231&#34;,&#34;PHY231L&#34;,&#34;PHY232&#34;,&#34;CHE141&#34;,&#34;threeCredit&#34;,&#34;req&#34;,&#34;takeTwo&#34;],&#34;to&#34;:[&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;req&#34;,&#34;takeTwo&#34;,&#34;takeTwo&#34;,&#34;takeTwo&#34;,&#34;takeTwo&#34;,&#34;takeTwo&#34;,&#34;takeTwo&#34;,&#34;takeTwo&#34;,&#34;takeTwo&#34;,&#34;takeTwo&#34;,&#34;takeTwo&#34;,&#34;Physical Science&#34;,&#34;Physical Science&#34;,&#34;Physical Science&#34;],&#34;label&#34;:[&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;]},&#34;nodesToDataframe&#34;:true,&#34;edgesToDataframe&#34;:true,&#34;options&#34;:{&#34;width&#34;:&#34;100%&#34;,&#34;height&#34;:&#34;100%&#34;,&#34;nodes&#34;:{&#34;shape&#34;:&#34;dot&#34;},&#34;manipulation&#34;:{&#34;enabled&#34;:false}},&#34;groups&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Component&#34;],&#34;width&#34;:null,&#34;height&#34;:null,&#34;idselection&#34;:{&#34;enabled&#34;:false},&#34;byselection&#34;:{&#34;enabled&#34;:false},&#34;main&#34;:null,&#34;submain&#34;:null,&#34;footer&#34;:null,&#34;background&#34;:&#34;rgba(0, 0, 0, 0)&#34;},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;/div&gt;
+&lt;div id=&#34;closing-thoughts&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Closing Thoughts&lt;/h2&gt;
+&lt;p&gt;If it seems like the graph database is unnecessary overhead so far - you’re right! I could have stored everything in a node and edge dataframe, but so far we’re just showing how to pull data out and visualize it. The power of the graph DB comes in as curricula evolve and as we apply more sophisticated graph theory ideas to the data - such as finding articulation points, shortest paths, or computing node/edge metrics and using them in our analysis.&lt;/p&gt;
+&lt;p&gt;Additionally, the last two minors are “messy” with a huge cloud of courses linked to certain nodes. While this mess doesn’t pose a problem for students (finding six credits in the cloud in a given semester/year should be easy), closer inspection shows that many of the courses probably aren’t feasible options for most students due to prerequisites. This indicates lazy catalog copy - the minor should specify the only the first courses meeting the requirements in a chain of prerequisites rather than all courses. For example don’t include everything in the Chemistry department, only include the general chemistry course that is required for everything else or it will seem that students have more options than they do - or could allow &lt;em&gt;cheats&lt;/em&gt; through the minor.&lt;/p&gt;
+&lt;p&gt;Clearly, I haven’t included any prerequisite links or used them to impose additional structure. Again, this is just the beginning of an ongoing project.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Machine Learning Meets Pure Mathematics</title>
       <link>/talk/asa-sr-2018/</link>
       <pubDate>Fri, 01 Jun 2018 08:24:06 -0700</pubDate>
