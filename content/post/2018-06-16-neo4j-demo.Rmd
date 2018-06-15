@@ -1,0 +1,121 @@
+---
+title: "Maps Minors in Neo4J"
+author: "Jason Preszler"
+date: 2018-06-15
+tags: ["R","Neo4j","visNetwork"]
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(tidyr)
+library(purrr)
+library(knitr)
+library(ggplot2)
+library(igraph)
+```
+
+A college curriculum seems like something that is a natural fit for a graph database. My last post collected data from the College of Idaho's online catalog, using that and some information about majors and minors I've populated a graph database in Neo4j. In this post I'll show how to do some basic queries that return tabular data as well as graph data using `r library(visNetwork)`.
+
+## Graph DB Basics
+For those who haven't had much discrete math or computer science, a graph is a collection of nodes (aka vertices) and edges that connect nodes. A graph database is is a form of NoSQL databases (broadly defined) that stores data as a graph where nodes and edges can have various properties attached to them. Graph databases like Neo4j excel at working with highly connected data since relationships (edges) are put on an equal footing with objects (nodes).
+
+To model a college curriculum as a graph, any "things" such as courses, minors, majors, or groups of classes are stored as nodes of different types and different types of nodes have different properties. For example course nodes with have subject, number, url (for catalog description), description, credits, etc.. The relationships between the nodes are the edges such as prerequisites (links between courses), "Satisfies" (courses can satisfy a requirement of a minor/major), and "Part_Of" (groups of courses are a part of a minor/major). The introduction of what I refer to as "Component" nodes (components of majors or minors) are part of the graph model to split up the large number of courses that may be options for a minor or major. This is done to improve visualization as well as database performance. Here's the connection to the Neo4j database and a call to show the schema:
+
+```{r graphConnect}
+library(RNeo4j)
+
+#data is already loaded into database
+gdb <- startGraph("http://localhost:7474/db/data", user="neo4j", password = "maps") #only the password is DB specific here
+```
+
+## Basic Counting
+We'll start with some basic counting of courses and minor structure. For each minor, we list the number of courses required by that minor. This count only includes specific courses required such as *MAT-175*, if the minor requires either *MAT-175* or *MAT-275* that is an option group (or component) counted later.
+
+```{r requiredCourse}
+query <- 'MATCH (c:Course)-[:Satisfies{type:"required"}]->(mc:Component{name:"req"})-[:Part_Of]->(m:Minor) RETURN m.name AS Minor, count(c) AS NumberClasses, sum(toInt(c.minCredits)) AS CreditMin'
+gq <- cypher(gdb,query) %>% as.data.frame()
+
+kable(arrange(gq, Minor, desc(NumberClasses)), caption = "Number of courses required for each minor")
+
+```
+
+Next we look at the number of "option groups" for each minor. These are the number of groups of courses from which a selection of credits or courses must be completed. We then look at the number of courses and minimum credits available for each option group in each minor.
+
+```{r optGroups}
+query <- 'MATCH (c:Component)-[p:Part_Of]->(m:Minor) WHERE c.name<>"req" RETURN m.name AS Minor, c.name AS OptName'
+gq <- cypher(gdb,query) %>% as.data.frame()
+
+gq <- group_by(gq, Minor) %>% summarise(Number.Option.Groups = n_distinct(OptName))
+kable(arrange(gq, Minor, desc(Number.Option.Groups)), caption = "Number of Option Groups required for each minor")
+```
+
+```{r optCourse}
+query <- 'MATCH (c:Course)-[s:Satisfies{type:"option"}]->(comp:Component)-[p:Part_Of]->(m:Minor) RETURN m.name AS Minor, comp.name AS OptionGroup, count(c) AS NumberClasses, sum(toInt(c.minCredits)) AS CreditMin'
+
+gq <- cypher(gdb,query) %>% as.data.frame()
+
+kable(arrange(gq, Minor, OptionGroup, desc(NumberClasses)), caption = "Number of courses for each option group of each minor")
+```
+
+# Minor Visuals
+
+```{r visNetFunction}
+library(visNetwork)
+minorVis <- function(minorName){
+  
+  MinorNodeQ <- paste0('MATCH (m:Minor {name:"',minorName,'"}) RETURN m.name AS id, m.name AS label, LABELS(m)[0] AS group')
+
+  ComponentNodeQ <- paste0('MATCH (c:Component)-[:Part_Of]->(m:Minor{name:"', minorName,'"}) RETURN c.name AS id, c.name AS label, LABELS(c)[0] AS group')
+
+  CourseNodeQ <- paste0('MATCH (c:Course)-[:Satisfies]->(:Component)-[:Part_Of]->(m:Minor{name:"',minorName,'"}) RETURN c.id AS id, c.id AS label, LABELS(c)[0] AS group')
+
+  nodes <- rbind.data.frame(cypher(gdb, MinorNodeQ), cypher(gdb, CourseNodeQ))
+  nodes <- rbind.data.frame(nodes, cypher(gdb, ComponentNodeQ))
+  nodes <- nodes[!duplicated(nodes),]
+
+  edgeSatQ <- paste0('MATCH (c:Course)-[r:Satisfies]->(co:Component)-[:Part_Of]->(m:Minor {name:"',minorName,'"}) RETURN c.id AS from, co.name AS to, TYPE(r) AS label')
+
+  edgePOQ <- paste0('MATCH (c:Component)-[r:Part_Of]->(m:Minor {name:"',minorName,'"}) RETURN c.name AS from, m.name AS to, TYPE(r) AS label')
+
+  edges <- rbind.data.frame(cypher(gdb, edgeSatQ),cypher(gdb, edgePOQ))
+
+  visNetwork(nodes, edges)
+}
+```
+
+## Applied Math
+```{r amVis, echo=FALSE}
+minorVis("Applied Math")
+```
+
+## Computer Science
+```{r cscVis, echo=FALSE}
+minorVis("Computer Science")
+```
+
+## Computer Studies
+```{r csdVis, echo=FALSE}
+minorVis("Computer Studies")
+```
+
+## Geosciences
+```{r gVis, echo=FALSE}
+minorVis("Geosciences")
+```
+
+## Mathematics
+```{r mVis, echo=FALSE}
+minorVis("Mathematics")
+```
+
+## Physics
+```{r pVis, echo=FALSE}
+minorVis("Physics")
+```
+
+## Physical Science
+```{r psVis, echo=FALSE}
+minorVis("Physical Science")
+```
