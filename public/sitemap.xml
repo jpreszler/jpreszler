@@ -5,6 +5,15 @@
     
     <url>
     
+      <loc>/post/2018-06-18-neo4j-majors/</loc>
+      <lastmod>2018-06-18T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/post/2018-06-16-neo4j-demo/</loc>
       <lastmod>2018-06-15T00:00:00+00:00</lastmod>
     </url>
@@ -316,7 +325,7 @@
     <url>
     
       <loc>/tags/neo4j/</loc>
-      <lastmod>2018-06-15T00:00:00+00:00</lastmod>
+      <lastmod>2018-06-18T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -356,7 +365,7 @@
     <url>
     
       <loc>/tags/r/</loc>
-      <lastmod>2018-06-15T00:00:00+00:00</lastmod>
+      <lastmod>2018-06-18T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -456,7 +465,7 @@
     <url>
     
       <loc>/tags/visnetwork/</loc>
-      <lastmod>2018-06-15T00:00:00+00:00</lastmod>
+      <lastmod>2018-06-18T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     

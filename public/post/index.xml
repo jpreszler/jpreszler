@@ -13,6 +13,16 @@
     
     
     <item>
+      <title>Maps Majors in Neo4J</title>
+      <link>/post/2018-06-18-neo4j-majors/</link>
+      <pubDate>Mon, 18 Jun 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-06-18-neo4j-majors/</guid>
+      <description>My last post some basic queries that return tabular data as well as graph data using about minors attached to the MAPS (MAth and Physical Sciences) department at the College of Idaho. I thought it would be nice to show something similar for the majors as well. So similar in fact that the biggest change is replacing “minor” with “major”.
+Connect to the DB A neo4j database needs to be running locally with data in it.</description>
+    </item>
+    
+    <item>
       <title>Maps Minors in Neo4J</title>
       <link>/post/2018-06-16-neo4j-demo/</link>
       <pubDate>Fri, 15 Jun 2018 00:00:00 +0000</pubDate>

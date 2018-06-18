@@ -11,6 +11,217 @@
     <atom:link href="/" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Maps Majors in Neo4J</title>
+      <link>/post/2018-06-18-neo4j-majors/</link>
+      <pubDate>Mon, 18 Jun 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-06-18-neo4j-majors/</guid>
+      <description>&lt;script src=&#34;/rmarkdown-libs/htmlwidgets/htmlwidgets.js&#34;&gt;&lt;/script&gt;
+&lt;link href=&#34;/rmarkdown-libs/vis/vis.css&#34; rel=&#34;stylesheet&#34; /&gt;
+&lt;script src=&#34;/rmarkdown-libs/vis/vis.min.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;/rmarkdown-libs/visNetwork-binding/visNetwork.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;p&gt;My &lt;a href=&#34;http://jpreszler.rbind.io/post/2018-06-16-neo4j-demo/&#34;&gt;last post&lt;/a&gt; some basic queries that return tabular data as well as graph data using about minors attached to the MAPS (MAth and Physical Sciences) department at the College of Idaho. I thought it would be nice to show something similar for the majors as well. So similar in fact that the biggest change is replacing “minor” with “major”.&lt;/p&gt;
+&lt;div id=&#34;connect-to-the-db&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Connect to the DB&lt;/h2&gt;
+&lt;p&gt;A neo4j database needs to be running locally with data in it. We can connect to it in R via:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(RNeo4j)
+
+#data is already loaded into database
+gdb &amp;lt;- startGraph(&amp;quot;http://localhost:7474/db/data&amp;quot;, user=&amp;quot;neo4j&amp;quot;, 
+                  password = &amp;quot;maps&amp;quot;) #only the password is DB specific here&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Note the last comment. The default user is &lt;em&gt;neo4j&lt;/em&gt; and the port and path are all defaults. Only the password is mine, and since this is a local DB with no sensitive info, I’m not concerned about revealing the password in a blog post, or trying to pick a secure password.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;basic-counting&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Basic Counting&lt;/h2&gt;
+&lt;p&gt;We’ll start with some basic counting of courses and major structure. For each major, we list the number of courses required by that minor. This count only includes specific courses required such as &lt;em&gt;MAT-175&lt;/em&gt;, if the minor requires either &lt;em&gt;MAT-175&lt;/em&gt; or &lt;em&gt;MAT-275&lt;/em&gt; that is an option group (or component) counted later.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;query &amp;lt;- &amp;#39;MATCH (c:Course)-[:Satisfies{type:&amp;quot;required&amp;quot;}]-&amp;gt;(mc:Component{name:&amp;quot;Core&amp;quot;})-[:Part_Of]-&amp;gt;(m:Major) 
+RETURN m.name AS Major, count(c) AS NumberClasses, sum(toInt(c.minCredits)) AS CreditMin&amp;#39;
+gq &amp;lt;- cypher(gdb,query) %&amp;gt;% as.data.frame()
+
+kable(arrange(gq, Major, desc(NumberClasses)), caption = &amp;quot;Number of courses required for each major&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;caption&gt;&lt;span id=&#34;tab:requiredCourse&#34;&gt;Table 1: &lt;/span&gt;Number of courses required for each major&lt;/caption&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;left&#34;&gt;Major&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;NumberClasses&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;CreditMin&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Math/CS&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;11&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;32&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Math/Physics&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;11&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;32&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Mathematics&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;11&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;32&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Next we look at the number of “option groups” or components for each major. These are the number of groups of courses from which a selection of credits or courses must be completed. We then look at the number of courses and minimum credits available for each option group in each major.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;query &amp;lt;- &amp;#39;MATCH (c:Component)-[p:Part_Of]-&amp;gt;(m:Major) WHERE c.name&amp;lt;&amp;gt;&amp;quot;Core&amp;quot;
+RETURN m.name AS Major, c.name AS OptName&amp;#39;
+gq &amp;lt;- cypher(gdb,query) %&amp;gt;% as.data.frame()
+
+gq &amp;lt;- group_by(gq, Major) %&amp;gt;% summarise(Number.Option.Groups = n_distinct(OptName))
+kable(arrange(gq, Major, desc(Number.Option.Groups)), caption = &amp;quot;Number of Option Groups required for each major&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;caption&gt;&lt;span id=&#34;tab:optGroups&#34;&gt;Table 2: &lt;/span&gt;Number of Option Groups required for each major&lt;/caption&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;left&#34;&gt;Major&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;Number.Option.Groups&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Math/CS&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Math/Physics&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Mathematics&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;query &amp;lt;- &amp;#39;MATCH (c:Course)-[s:Satisfies{type:&amp;quot;option&amp;quot;}]-&amp;gt;(comp:Component)-[p:Part_Of]-&amp;gt;(m:Major) 
+RETURN m.name AS Major, comp.name AS Component, count(c) AS NumberClasses, sum(toInt(c.minCredits)) AS CreditMin&amp;#39;
+
+gq &amp;lt;- cypher(gdb,query) %&amp;gt;% as.data.frame()
+
+kable(arrange(gq, Major, Component, desc(NumberClasses)), caption = &amp;quot;Number of courses for each option group of each major&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;caption&gt;&lt;span id=&#34;tab:optCourse&#34;&gt;Table 3: &lt;/span&gt;Number of courses for each option group of each major&lt;/caption&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;left&#34;&gt;Major&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;Component&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;NumberClasses&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;CreditMin&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Math/CS&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Advanced&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;12&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Math/CS&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Calculus&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;8&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Math/Physics&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Elective&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;17&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;68&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Math/Physics&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Independent-Study&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;16&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Math/Physics&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Upper-Physics&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;16&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Mathematics&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Axiom&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;16&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Mathematics&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Elective&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;17&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;68&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Mathematics&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Independent-Study&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;16&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div id=&#34;major-visuals&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Major Visuals&lt;/h1&gt;
+&lt;p&gt;Now let’s use graphs to visualize the majors in the MAPS department. I’m going to look at each major separately for now. What follows is the same function from the last post, except with “minor” replaced with “major”. VisNetork requires a dataframe of nodes and edges as input which we gather from separate queries - one for each type of node/edge.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(visNetwork)
+minorVis &amp;lt;- function(majorName){
+  
+  MajorNodeQ &amp;lt;- paste0(&amp;#39;MATCH (m:Major {name:&amp;quot;&amp;#39;,majorName,&amp;#39;&amp;quot;}) 
+                       RETURN m.name AS id, m.name AS label, LABELS(m)[0] AS group&amp;#39;)
+
+  ComponentNodeQ &amp;lt;- paste0(&amp;#39;MATCH (c:Component)-[:Part_Of]-&amp;gt;(m:Major{name:&amp;quot;&amp;#39;, majorName,&amp;#39;&amp;quot;}) 
+                           RETURN c.name AS id, c.name AS label, LABELS(c)[0] AS group&amp;#39;)
+
+  CourseNodeQ &amp;lt;- paste0(&amp;#39;MATCH (c:Course)-[:Satisfies]-&amp;gt;(:Component)-[:Part_Of]-&amp;gt;(m:Major{name:&amp;quot;&amp;#39;,majorName,&amp;#39;&amp;quot;}) 
+                        RETURN c.id AS id, c.id AS label, LABELS(c)[0] AS group&amp;#39;)
+
+  nodes &amp;lt;- rbind.data.frame(cypher(gdb, MajorNodeQ), 
+                            cypher(gdb, CourseNodeQ))
+  nodes &amp;lt;- rbind.data.frame(nodes, cypher(gdb, ComponentNodeQ))
+  nodes &amp;lt;- nodes[!duplicated(nodes),]
+
+  edgeSatQ &amp;lt;- paste0(&amp;#39;MATCH (c:Course)-[r:Satisfies]-&amp;gt;(co:Component)-[:Part_Of]-&amp;gt;(m:Major {name:&amp;quot;&amp;#39;,majorName,&amp;#39;&amp;quot;}) 
+                     RETURN c.id AS from, co.name AS to, TYPE(r) AS label&amp;#39;)
+
+  edgePOQ &amp;lt;- paste0(&amp;#39;MATCH (c:Component)-[r:Part_Of]-&amp;gt;(m:Major {name:&amp;quot;&amp;#39;,majorName,&amp;#39;&amp;quot;}) 
+                    RETURN c.name AS from, m.name AS to, TYPE(r) AS label&amp;#39;)
+
+  edges &amp;lt;- rbind.data.frame(cypher(gdb, edgeSatQ),cypher(gdb, edgePOQ))
+
+  visNetwork(nodes, edges)
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Next we’ll call this function for each of the majors in MAPS. VisNetwork produces JavaScript graphs, so these may take some time to load. Also, you can drag nodes and edges around some (visNetwork bounces them back unless they move “enough”) as well as zoom in and out.&lt;/p&gt;
+&lt;div id=&#34;mathematics&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Mathematics&lt;/h2&gt;
+&lt;div id=&#34;htmlwidget-1&#34; style=&#34;width:672px;height:480px;&#34; class=&#34;visNetwork html-widget&#34;&gt;&lt;/div&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-1&#34;&gt;{&#34;x&#34;:{&#34;nodes&#34;:{&#34;id&#34;:[&#34;Mathematics&#34;,&#34;PHY497&#34;,&#34;PHY494&#34;,&#34;MAT497&#34;,&#34;MAT494&#34;,&#34;PHY301&#34;,&#34;PHY313&#34;,&#34;PHY450&#34;,&#34;PHY400&#34;,&#34;PHY399T&#34;,&#34;PHY330&#34;,&#34;MAT431&#34;,&#34;MAT441&#34;,&#34;MAT372&#34;,&#34;MAT399T&#34;,&#34;MAT361&#34;,&#34;MAT370&#34;,&#34;MAT312&#34;,&#34;MAT352&#34;,&#34;MAT311&#34;,&#34;MAT461&#34;,&#34;MAT451&#34;,&#34;SPE101&#34;,&#34;CSC160&#34;,&#34;CSC152&#34;,&#34;CSC235&#34;,&#34;Colloquium&#34;,&#34;PHY271&#34;,&#34;PHY271L&#34;,&#34;CSC150&#34;,&#34;Proofs&#34;,&#34;MAT275&#34;,&#34;MAT175&#34;,&#34;Independent-Study&#34;,&#34;Elective&#34;,&#34;Axiom&#34;,&#34;Core&#34;],&#34;label&#34;:[&#34;Mathematics&#34;,&#34;PHY497&#34;,&#34;PHY494&#34;,&#34;MAT497&#34;,&#34;MAT494&#34;,&#34;PHY301&#34;,&#34;PHY313&#34;,&#34;PHY450&#34;,&#34;PHY400&#34;,&#34;PHY399T&#34;,&#34;PHY330&#34;,&#34;MAT431&#34;,&#34;MAT441&#34;,&#34;MAT372&#34;,&#34;MAT399T&#34;,&#34;MAT361&#34;,&#34;MAT370&#34;,&#34;MAT312&#34;,&#34;MAT352&#34;,&#34;MAT311&#34;,&#34;MAT461&#34;,&#34;MAT451&#34;,&#34;SPE101&#34;,&#34;CSC160&#34;,&#34;CSC152&#34;,&#34;CSC235&#34;,&#34;Colloquium&#34;,&#34;PHY271&#34;,&#34;PHY271L&#34;,&#34;CSC150&#34;,&#34;Proofs&#34;,&#34;MAT275&#34;,&#34;MAT175&#34;,&#34;Independent-Study&#34;,&#34;Elective&#34;,&#34;Axiom&#34;,&#34;Core&#34;],&#34;group&#34;:[&#34;Major&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;]},&#34;edges&#34;:{&#34;from&#34;:[&#34;PHY497&#34;,&#34;PHY494&#34;,&#34;MAT497&#34;,&#34;MAT494&#34;,&#34;MAT494&#34;,&#34;PHY301&#34;,&#34;PHY313&#34;,&#34;PHY450&#34;,&#34;PHY400&#34;,&#34;PHY399T&#34;,&#34;PHY330&#34;,&#34;MAT431&#34;,&#34;MAT441&#34;,&#34;MAT372&#34;,&#34;MAT399T&#34;,&#34;MAT361&#34;,&#34;MAT370&#34;,&#34;MAT312&#34;,&#34;MAT352&#34;,&#34;MAT311&#34;,&#34;MAT461&#34;,&#34;MAT451&#34;,&#34;MAT461&#34;,&#34;MAT431&#34;,&#34;MAT451&#34;,&#34;MAT441&#34;,&#34;SPE101&#34;,&#34;CSC160&#34;,&#34;CSC152&#34;,&#34;CSC235&#34;,&#34;Colloquium&#34;,&#34;PHY271&#34;,&#34;PHY271L&#34;,&#34;CSC150&#34;,&#34;Proofs&#34;,&#34;MAT275&#34;,&#34;MAT175&#34;,&#34;Independent-Study&#34;,&#34;Elective&#34;,&#34;Axiom&#34;,&#34;Core&#34;],&#34;to&#34;:[&#34;Independent-Study&#34;,&#34;Independent-Study&#34;,&#34;Independent-Study&#34;,&#34;Independent-Study&#34;,&#34;Independent-Study&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Axiom&#34;,&#34;Axiom&#34;,&#34;Axiom&#34;,&#34;Axiom&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Mathematics&#34;,&#34;Mathematics&#34;,&#34;Mathematics&#34;,&#34;Mathematics&#34;],&#34;label&#34;:[&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;]},&#34;nodesToDataframe&#34;:true,&#34;edgesToDataframe&#34;:true,&#34;options&#34;:{&#34;width&#34;:&#34;100%&#34;,&#34;height&#34;:&#34;100%&#34;,&#34;nodes&#34;:{&#34;shape&#34;:&#34;dot&#34;},&#34;manipulation&#34;:{&#34;enabled&#34;:false}},&#34;groups&#34;:[&#34;Major&#34;,&#34;Course&#34;,&#34;Component&#34;],&#34;width&#34;:null,&#34;height&#34;:null,&#34;idselection&#34;:{&#34;enabled&#34;:false},&#34;byselection&#34;:{&#34;enabled&#34;:false},&#34;main&#34;:null,&#34;submain&#34;:null,&#34;footer&#34;:null,&#34;background&#34;:&#34;rgba(0, 0, 0, 0)&#34;},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;/div&gt;
+&lt;div id=&#34;mathcomputer-science&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Math/Computer Science&lt;/h2&gt;
+&lt;div id=&#34;htmlwidget-2&#34; style=&#34;width:672px;height:480px;&#34; class=&#34;visNetwork html-widget&#34;&gt;&lt;/div&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-2&#34;&gt;{&#34;x&#34;:{&#34;nodes&#34;:{&#34;id&#34;:[&#34;Math/CS&#34;,&#34;CSC481&#34;,&#34;CSC480&#34;,&#34;CSC482&#34;,&#34;CSC490&#34;,&#34;CSC455&#34;,&#34;CSC350&#34;,&#34;CSC497&#34;,&#34;CSC270&#34;,&#34;CSC340&#34;,&#34;MAT361&#34;,&#34;MAT252&#34;,&#34;PHY230L&#34;,&#34;PHY230&#34;,&#34;MAT175&#34;,&#34;MAT275&#34;,&#34;SPE101&#34;,&#34;CSC152&#34;,&#34;CSC235&#34;,&#34;CSC160&#34;,&#34;PHY271L&#34;,&#34;Colloquium&#34;,&#34;PHY271&#34;,&#34;CSC150&#34;,&#34;Proofs&#34;,&#34;Capstone&#34;,&#34;Topics&#34;,&#34;Advanced&#34;,&#34;Intermediate&#34;,&#34;Calculus&#34;,&#34;Core&#34;],&#34;label&#34;:[&#34;Math/CS&#34;,&#34;CSC481&#34;,&#34;CSC480&#34;,&#34;CSC482&#34;,&#34;CSC490&#34;,&#34;CSC455&#34;,&#34;CSC350&#34;,&#34;CSC497&#34;,&#34;CSC270&#34;,&#34;CSC340&#34;,&#34;MAT361&#34;,&#34;MAT252&#34;,&#34;PHY230L&#34;,&#34;PHY230&#34;,&#34;MAT175&#34;,&#34;MAT275&#34;,&#34;SPE101&#34;,&#34;CSC152&#34;,&#34;CSC235&#34;,&#34;CSC160&#34;,&#34;PHY271L&#34;,&#34;Colloquium&#34;,&#34;PHY271&#34;,&#34;CSC150&#34;,&#34;Proofs&#34;,&#34;Capstone&#34;,&#34;Topics&#34;,&#34;Advanced&#34;,&#34;Intermediate&#34;,&#34;Calculus&#34;,&#34;Core&#34;],&#34;group&#34;:[&#34;Major&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;]},&#34;edges&#34;:{&#34;from&#34;:[&#34;CSC481&#34;,&#34;CSC480&#34;,&#34;CSC482&#34;,&#34;CSC490&#34;,&#34;CSC455&#34;,&#34;CSC350&#34;,&#34;CSC497&#34;,&#34;CSC270&#34;,&#34;CSC340&#34;,&#34;MAT361&#34;,&#34;MAT252&#34;,&#34;PHY230L&#34;,&#34;PHY230&#34;,&#34;MAT175&#34;,&#34;MAT275&#34;,&#34;SPE101&#34;,&#34;CSC152&#34;,&#34;CSC235&#34;,&#34;CSC160&#34;,&#34;PHY271L&#34;,&#34;Colloquium&#34;,&#34;PHY271&#34;,&#34;CSC150&#34;,&#34;Proofs&#34;,&#34;MAT275&#34;,&#34;MAT175&#34;,&#34;Capstone&#34;,&#34;Topics&#34;,&#34;Advanced&#34;,&#34;Intermediate&#34;,&#34;Calculus&#34;,&#34;Core&#34;],&#34;to&#34;:[&#34;Capstone&#34;,&#34;Capstone&#34;,&#34;Capstone&#34;,&#34;Topics&#34;,&#34;Advanced&#34;,&#34;Advanced&#34;,&#34;Advanced&#34;,&#34;Intermediate&#34;,&#34;Intermediate&#34;,&#34;Intermediate&#34;,&#34;Intermediate&#34;,&#34;Intermediate&#34;,&#34;Intermediate&#34;,&#34;Calculus&#34;,&#34;Calculus&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Math/CS&#34;,&#34;Math/CS&#34;,&#34;Math/CS&#34;,&#34;Math/CS&#34;,&#34;Math/CS&#34;,&#34;Math/CS&#34;],&#34;label&#34;:[&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;]},&#34;nodesToDataframe&#34;:true,&#34;edgesToDataframe&#34;:true,&#34;options&#34;:{&#34;width&#34;:&#34;100%&#34;,&#34;height&#34;:&#34;100%&#34;,&#34;nodes&#34;:{&#34;shape&#34;:&#34;dot&#34;},&#34;manipulation&#34;:{&#34;enabled&#34;:false}},&#34;groups&#34;:[&#34;Major&#34;,&#34;Course&#34;,&#34;Component&#34;],&#34;width&#34;:null,&#34;height&#34;:null,&#34;idselection&#34;:{&#34;enabled&#34;:false},&#34;byselection&#34;:{&#34;enabled&#34;:false},&#34;main&#34;:null,&#34;submain&#34;:null,&#34;footer&#34;:null,&#34;background&#34;:&#34;rgba(0, 0, 0, 0)&#34;},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;/div&gt;
+&lt;div id=&#34;mathphysics&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Math/Physics&lt;/h2&gt;
+&lt;div id=&#34;htmlwidget-3&#34; style=&#34;width:672px;height:480px;&#34; class=&#34;visNetwork html-widget&#34;&gt;&lt;/div&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-3&#34;&gt;{&#34;x&#34;:{&#34;nodes&#34;:{&#34;id&#34;:[&#34;Math/Physics&#34;,&#34;PHY497&#34;,&#34;PHY494&#34;,&#34;MAT497&#34;,&#34;MAT494&#34;,&#34;PHY301&#34;,&#34;PHY313&#34;,&#34;PHY450&#34;,&#34;PHY400&#34;,&#34;PHY399T&#34;,&#34;PHY330&#34;,&#34;MAT399T&#34;,&#34;MAT431&#34;,&#34;MAT370&#34;,&#34;MAT372&#34;,&#34;MAT352&#34;,&#34;MAT361&#34;,&#34;MAT311&#34;,&#34;MAT312&#34;,&#34;MAT451&#34;,&#34;MAT441&#34;,&#34;MAT461&#34;,&#34;SPE101&#34;,&#34;CSC235&#34;,&#34;CSC152&#34;,&#34;CSC160&#34;,&#34;Colloquium&#34;,&#34;PHY271L&#34;,&#34;PHY271&#34;,&#34;CSC150&#34;,&#34;Proofs&#34;,&#34;MAT275&#34;,&#34;MAT175&#34;,&#34;Independent-Study&#34;,&#34;Elective&#34;,&#34;Upper-Physics&#34;,&#34;Core&#34;],&#34;label&#34;:[&#34;Math/Physics&#34;,&#34;PHY497&#34;,&#34;PHY494&#34;,&#34;MAT497&#34;,&#34;MAT494&#34;,&#34;PHY301&#34;,&#34;PHY313&#34;,&#34;PHY450&#34;,&#34;PHY400&#34;,&#34;PHY399T&#34;,&#34;PHY330&#34;,&#34;MAT399T&#34;,&#34;MAT431&#34;,&#34;MAT370&#34;,&#34;MAT372&#34;,&#34;MAT352&#34;,&#34;MAT361&#34;,&#34;MAT311&#34;,&#34;MAT312&#34;,&#34;MAT451&#34;,&#34;MAT441&#34;,&#34;MAT461&#34;,&#34;SPE101&#34;,&#34;CSC235&#34;,&#34;CSC152&#34;,&#34;CSC160&#34;,&#34;Colloquium&#34;,&#34;PHY271L&#34;,&#34;PHY271&#34;,&#34;CSC150&#34;,&#34;Proofs&#34;,&#34;MAT275&#34;,&#34;MAT175&#34;,&#34;Independent-Study&#34;,&#34;Elective&#34;,&#34;Upper-Physics&#34;,&#34;Core&#34;],&#34;group&#34;:[&#34;Major&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;]},&#34;edges&#34;:{&#34;from&#34;:[&#34;PHY497&#34;,&#34;PHY494&#34;,&#34;MAT497&#34;,&#34;MAT494&#34;,&#34;MAT494&#34;,&#34;PHY301&#34;,&#34;PHY313&#34;,&#34;PHY450&#34;,&#34;PHY400&#34;,&#34;PHY399T&#34;,&#34;PHY330&#34;,&#34;MAT399T&#34;,&#34;MAT431&#34;,&#34;MAT370&#34;,&#34;MAT372&#34;,&#34;MAT352&#34;,&#34;MAT361&#34;,&#34;MAT311&#34;,&#34;MAT312&#34;,&#34;MAT451&#34;,&#34;MAT441&#34;,&#34;MAT461&#34;,&#34;PHY301&#34;,&#34;PHY313&#34;,&#34;PHY330&#34;,&#34;PHY400&#34;,&#34;SPE101&#34;,&#34;CSC235&#34;,&#34;CSC152&#34;,&#34;CSC160&#34;,&#34;Colloquium&#34;,&#34;PHY271L&#34;,&#34;PHY271&#34;,&#34;CSC150&#34;,&#34;Proofs&#34;,&#34;MAT275&#34;,&#34;MAT175&#34;,&#34;Independent-Study&#34;,&#34;Elective&#34;,&#34;Upper-Physics&#34;,&#34;Core&#34;],&#34;to&#34;:[&#34;Independent-Study&#34;,&#34;Independent-Study&#34;,&#34;Independent-Study&#34;,&#34;Independent-Study&#34;,&#34;Independent-Study&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Upper-Physics&#34;,&#34;Upper-Physics&#34;,&#34;Upper-Physics&#34;,&#34;Upper-Physics&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Math/Physics&#34;,&#34;Math/Physics&#34;,&#34;Math/Physics&#34;,&#34;Math/Physics&#34;],&#34;label&#34;:[&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;]},&#34;nodesToDataframe&#34;:true,&#34;edgesToDataframe&#34;:true,&#34;options&#34;:{&#34;width&#34;:&#34;100%&#34;,&#34;height&#34;:&#34;100%&#34;,&#34;nodes&#34;:{&#34;shape&#34;:&#34;dot&#34;},&#34;manipulation&#34;:{&#34;enabled&#34;:false}},&#34;groups&#34;:[&#34;Major&#34;,&#34;Course&#34;,&#34;Component&#34;],&#34;width&#34;:null,&#34;height&#34;:null,&#34;idselection&#34;:{&#34;enabled&#34;:false},&#34;byselection&#34;:{&#34;enabled&#34;:false},&#34;main&#34;:null,&#34;submain&#34;:null,&#34;footer&#34;:null,&#34;background&#34;:&#34;rgba(0, 0, 0, 0)&#34;},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;/div&gt;
+&lt;div id=&#34;summary-and-next-steps&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Summary and Next Steps&lt;/h2&gt;
+&lt;p&gt;The similarity between majors and minors - in terms of the code required to produce similar results - is a good indictation that our model and data are loaded into the DB in a nice, consistent manner. The big change is that mmajors have a “Core” component of required classes while minors have a “req” comonpent with usually 1 or two classes.&lt;/p&gt;
+&lt;p&gt;Next, I would like to add two pieces to the data model: instructors and frequency nodes to represent who teaches certain courses and when courses are regularly offered. These will allow some of the big goals of this analysis to be performed: how will a faculty leave impact majors and minors and can we give students a timeline/flowchart of how they should progress through a major or minor. There’s also the issue of prerequisites and other dependencies, which are inconsistantly entered in the catalog so parsing to incorporate into the DB is not as straightforward as one would hope.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Maps Minors in Neo4J</title>
       <link>/post/2018-06-16-neo4j-demo/</link>
       <pubDate>Fri, 15 Jun 2018 00:00:00 +0000</pubDate>
@@ -3600,15 +3811,6 @@ gather(confMats, key=Type, value=Count, -c(ner, mdl, mdlType)) %&amp;gt;% ggplot
       <pubDate>Wed, 01 Mar 2017 00:00:00 -0700</pubDate>
       
       <guid>/publication/infinite-cubics/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>An Infinite Family of Cubic Polynomials with Depth 1 Emergent Reducibility</title>
-      <link>/talk/jmm-2015/</link>
-      <pubDate>Sun, 11 Jan 2015 00:00:00 -0700</pubDate>
-      
-      <guid>/talk/jmm-2015/</guid>
       <description></description>
     </item>
     

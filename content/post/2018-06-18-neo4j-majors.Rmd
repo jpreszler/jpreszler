@@ -1,0 +1,119 @@
+---
+title: "Maps Majors in Neo4J"
+author: "Jason Preszler"
+date: 2018-06-18
+tags: ["R","Neo4j","visNetwork"]
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(tidyr)
+library(purrr)
+library(knitr)
+library(ggplot2)
+library(igraph)
+```
+
+My [last post](http://jpreszler.rbind.io/post/2018-06-16-neo4j-demo/) some basic queries that return tabular data as well as graph data using `r library(visNetwork)` about minors attached to the MAPS (MAth and Physical Sciences) department at the College of Idaho. I thought it would be nice to show something similar for the majors as well. So similar in fact that the biggest change is replacing "minor" with "major".
+
+## Connect to the DB
+A neo4j database needs to be running locally with data in it. We can connect to it in R via:
+```{r graphConnect}
+library(RNeo4j)
+
+#data is already loaded into database
+gdb <- startGraph("http://localhost:7474/db/data", user="neo4j", 
+                  password = "maps") #only the password is DB specific here
+```
+
+Note the last comment. The default user is *neo4j* and the port and path are all defaults. Only the password is mine, and since this is a local DB with no sensitive info, I'm not concerned about revealing the password in a blog post, or trying to pick a secure password.
+
+## Basic Counting
+We'll start with some basic counting of courses and major structure. For each major, we list the number of courses required by that minor. This count only includes specific courses required such as *MAT-175*, if the minor requires either *MAT-175* or *MAT-275* that is an option group (or component) counted later.
+
+```{r requiredCourse}
+query <- 'MATCH (c:Course)-[:Satisfies{type:"required"}]->(mc:Component{name:"Core"})-[:Part_Of]->(m:Major) 
+RETURN m.name AS Major, count(c) AS NumberClasses, sum(toInt(c.minCredits)) AS CreditMin'
+gq <- cypher(gdb,query) %>% as.data.frame()
+
+kable(arrange(gq, Major, desc(NumberClasses)), caption = "Number of courses required for each major")
+
+```
+
+Next we look at the number of "option groups" or components for each major. These are the number of groups of courses from which a selection of credits or courses must be completed. We then look at the number of courses and minimum credits available for each option group in each major.
+
+```{r optGroups}
+query <- 'MATCH (c:Component)-[p:Part_Of]->(m:Major) WHERE c.name<>"Core"
+RETURN m.name AS Major, c.name AS OptName'
+gq <- cypher(gdb,query) %>% as.data.frame()
+
+gq <- group_by(gq, Major) %>% summarise(Number.Option.Groups = n_distinct(OptName))
+kable(arrange(gq, Major, desc(Number.Option.Groups)), caption = "Number of Option Groups required for each major")
+```
+
+```{r optCourse}
+query <- 'MATCH (c:Course)-[s:Satisfies{type:"option"}]->(comp:Component)-[p:Part_Of]->(m:Major) 
+RETURN m.name AS Major, comp.name AS Component, count(c) AS NumberClasses, sum(toInt(c.minCredits)) AS CreditMin'
+
+gq <- cypher(gdb,query) %>% as.data.frame()
+
+kable(arrange(gq, Major, Component, desc(NumberClasses)), caption = "Number of courses for each option group of each major")
+```
+
+# Major Visuals
+Now let's use graphs to visualize the majors in the MAPS department. I'm going to look at each major separately for now. What follows is the same function from the last post, except with "minor" replaced with "major". VisNetork requires a dataframe of nodes and edges as input which we gather from separate queries - one for each type of node/edge.
+
+```{r visNetFunction}
+library(visNetwork)
+minorVis <- function(majorName){
+  
+  MajorNodeQ <- paste0('MATCH (m:Major {name:"',majorName,'"}) 
+                       RETURN m.name AS id, m.name AS label, LABELS(m)[0] AS group')
+
+  ComponentNodeQ <- paste0('MATCH (c:Component)-[:Part_Of]->(m:Major{name:"', majorName,'"}) 
+                           RETURN c.name AS id, c.name AS label, LABELS(c)[0] AS group')
+
+  CourseNodeQ <- paste0('MATCH (c:Course)-[:Satisfies]->(:Component)-[:Part_Of]->(m:Major{name:"',majorName,'"}) 
+                        RETURN c.id AS id, c.id AS label, LABELS(c)[0] AS group')
+
+  nodes <- rbind.data.frame(cypher(gdb, MajorNodeQ), 
+                            cypher(gdb, CourseNodeQ))
+  nodes <- rbind.data.frame(nodes, cypher(gdb, ComponentNodeQ))
+  nodes <- nodes[!duplicated(nodes),]
+
+  edgeSatQ <- paste0('MATCH (c:Course)-[r:Satisfies]->(co:Component)-[:Part_Of]->(m:Major {name:"',majorName,'"}) 
+                     RETURN c.id AS from, co.name AS to, TYPE(r) AS label')
+
+  edgePOQ <- paste0('MATCH (c:Component)-[r:Part_Of]->(m:Major {name:"',majorName,'"}) 
+                    RETURN c.name AS from, m.name AS to, TYPE(r) AS label')
+
+  edges <- rbind.data.frame(cypher(gdb, edgeSatQ),cypher(gdb, edgePOQ))
+
+  visNetwork(nodes, edges)
+}
+```
+
+Next we'll call this function for each of the majors in MAPS. VisNetwork produces JavaScript graphs, so these may take some time to load. Also, you can drag nodes and edges around some (visNetwork bounces them back unless they move "enough") as well as zoom in and out.
+
+## Mathematics
+```{r amVis, echo=FALSE}
+minorVis("Mathematics")
+```
+
+## Math/Computer Science
+```{r cscVis, echo=FALSE}
+minorVis("Math/CS")
+```
+
+## Math/Physics
+```{r csdVis, echo=FALSE}
+minorVis("Math/Physics")
+```
+
+
+## Summary and Next Steps
+The similarity between majors and minors - in terms of the code required to produce similar results - is a good indictation that our model and data are loaded into the DB in a nice, consistent manner. The big change is that mmajors have a "Core" component of required classes while minors have a "req" comonpent with usually 1 or two classes.
+
+Next, I would like to add two pieces to the data model: instructors and frequency nodes to represent who teaches certain courses and when courses are regularly offered. These will allow some of the big goals of this analysis to be performed: how will a faculty leave impact majors and minors and can we give students a timeline/flowchart of how they should progress through a major or minor. There's also the issue of prerequisites and other dependencies, which are inconsistantly entered in the catalog so parsing to incorporate into the DB is not as straightforward as one would hope.
