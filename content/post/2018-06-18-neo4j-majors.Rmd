@@ -16,7 +16,7 @@ library(ggplot2)
 library(igraph)
 ```
 
-**UPDATE (6/19/2018)** The original version of this post used incorrectly loaded data that caused to "Core" of every major to have the same classes attached to it. This was noticed by my collegue Dave Rosoff and has been corrected.
+**UPDATE (6/19/2018)** The original version of this post used incorrectly loaded data that caused to "Core" of every major to have the same classes attached to it. This was noticed by my colleague Dave Rosoff and has been corrected.
 
 
 My [last post](http://jpreszler.rbind.io/post/2018-06-16-neo4j-demo/) some basic queries that return tabular data as well as graph data using `r library(visNetwork)` about minors attached to the MAPS (MAth and Physical Sciences) department at the College of Idaho. I thought it would be nice to show something similar for the majors as well. So similar in fact that the biggest change is replacing "minor" with "major".

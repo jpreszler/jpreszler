@@ -18,7 +18,7 @@
       <pubDate>Mon, 18 Jun 2018 00:00:00 +0000</pubDate>
       
       <guid>/post/2018-06-18-neo4j-majors/</guid>
-      <description>UPDATE (6/19/2018) The original version of this post used incorrectly loaded data that caused to “Core” of every major to have the same classes attached to it. This was noticed by my collegue Dave Rosoff and has been corrected.
+      <description>UPDATE (6/19/2018) The original version of this post used incorrectly loaded data that caused to “Core” of every major to have the same classes attached to it. This was noticed by my colleague Dave Rosoff and has been corrected.
 My last post some basic queries that return tabular data as well as graph data using about minors attached to the MAPS (MAth and Physical Sciences) department at the College of Idaho.</description>
     </item>
     
