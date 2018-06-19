@@ -16,6 +16,9 @@ library(ggplot2)
 library(igraph)
 ```
 
+**UPDATE (6/19/2018)** The original version of this post used incorrectly loaded data that caused to "Core" of every major to have the same classes attached to it. This was noticed by my collegue Dave Rosoff and has been corrected.
+
+
 My [last post](http://jpreszler.rbind.io/post/2018-06-16-neo4j-demo/) some basic queries that return tabular data as well as graph data using `r library(visNetwork)` about minors attached to the MAPS (MAth and Physical Sciences) department at the College of Idaho. I thought it would be nice to show something similar for the majors as well. So similar in fact that the biggest change is replacing "minor" with "major".
 
 ## Connect to the DB
@@ -31,7 +34,7 @@ gdb <- startGraph("http://localhost:7474/db/data", user="neo4j",
 Note the last comment. The default user is *neo4j* and the port and path are all defaults. Only the password is mine, and since this is a local DB with no sensitive info, I'm not concerned about revealing the password in a blog post, or trying to pick a secure password.
 
 ## Basic Counting
-We'll start with some basic counting of courses and major structure. For each major, we list the number of courses required by that minor. This count only includes specific courses required such as *MAT-175*, if the minor requires either *MAT-175* or *MAT-275* that is an option group (or component) counted later.
+We'll start with some basic counting of courses and major structure. For each major, we list the number of courses required by that major. This count only includes specific courses required such as *MAT-175*, if the major requires either *MAT-175* or *MAT-275* that is an option group (or component) counted later.
 
 ```{r requiredCourse}
 query <- 'MATCH (c:Course)-[:Satisfies{type:"required"}]->(mc:Component{name:"Core"})-[:Part_Of]->(m:Major) 
@@ -67,7 +70,7 @@ Now let's use graphs to visualize the majors in the MAPS department. I'm going t
 
 ```{r visNetFunction}
 library(visNetwork)
-minorVis <- function(majorName){
+majorVis <- function(majorName){
   
   MajorNodeQ <- paste0('MATCH (m:Major {name:"',majorName,'"}) 
                        RETURN m.name AS id, m.name AS label, LABELS(m)[0] AS group')
@@ -99,17 +102,17 @@ Next we'll call this function for each of the majors in MAPS. VisNetwork produce
 
 ## Mathematics
 ```{r amVis, echo=FALSE}
-minorVis("Mathematics")
+majorVis("Mathematics")
 ```
 
 ## Math/Computer Science
 ```{r cscVis, echo=FALSE}
-minorVis("Math/CS")
+majorVis("Math/CS")
 ```
 
 ## Math/Physics
 ```{r csdVis, echo=FALSE}
-minorVis("Math/Physics")
+majorVis("Math/Physics")
 ```
 
 
