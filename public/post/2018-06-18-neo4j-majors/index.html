@@ -326,6 +326,7 @@
 <script src="/rmarkdown-libs/visNetwork-binding/visNetwork.js"></script>
 
 
+<p><strong>UPDATE (6/20/2018)</strong> <em>The cypher query for Table 3 only used components with “optional” courses so the capstone and topics compnents of the Math/CS major weren’t included in table 3.</em></p>
 <p><strong>UPDATE (6/19/2018)</strong> <em>The original version of this post used incorrectly loaded data that caused to “Core” of every major to have the same classes attached to it. This was noticed by my colleague Dave Rosoff and has been corrected.</em></p>
 <p>My <a href="http://jpreszler.rbind.io/post/2018-06-16-neo4j-demo/">last post</a> some basic queries that return tabular data as well as graph data using about minors attached to the MAPS (MAth and Physical Sciences) department at the College of Idaho. I thought it would be nice to show something similar for the majors as well. So similar in fact that the biggest change is replacing “minor” with “major”.</p>
 <div id="connect-to-the-db" class="section level2">
@@ -403,7 +404,7 @@ kable(arrange(gq, Major, desc(Number.Option.Groups)), caption = &quot;Number of 
 </tr>
 </tbody>
 </table>
-<pre class="r"><code>query &lt;- &#39;MATCH (c:Course)-[s:Satisfies{type:&quot;option&quot;}]-&gt;(comp:Component)-[p:Part_Of]-&gt;(m:Major) 
+<pre class="r"><code>query &lt;- &#39;MATCH (c:Course)-[s:Satisfies]-&gt;(comp:Component)-[p:Part_Of]-&gt;(m:Major) WHERE comp.name&lt;&gt;&quot;Core&quot; 
 RETURN m.name AS Major, comp.name AS Component, count(c) AS NumberClasses, sum(toInt(c.minCredits)) AS CreditMin&#39;
 
 gq &lt;- cypher(gdb,query) %&gt;% as.data.frame()
@@ -433,34 +434,58 @@ kable(arrange(gq, Major, Component, desc(NumberClasses)), caption = &quot;Number
 <td align="right">8</td>
 </tr>
 <tr class="odd">
+<td align="left">Math/CS</td>
+<td align="left">Capstone</td>
+<td align="right">3</td>
+<td align="right">12</td>
+</tr>
+<tr class="even">
+<td align="left">Math/CS</td>
+<td align="left">Intermediate</td>
+<td align="right">6</td>
+<td align="right">24</td>
+</tr>
+<tr class="odd">
+<td align="left">Math/CS</td>
+<td align="left">Topics</td>
+<td align="right">1</td>
+<td align="right">4</td>
+</tr>
+<tr class="even">
 <td align="left">Math/Physics</td>
 <td align="left">Elective</td>
 <td align="right">17</td>
 <td align="right">68</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Math/Physics</td>
 <td align="left">Independent-Study</td>
 <td align="right">4</td>
 <td align="right">16</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Math/Physics</td>
 <td align="left">Upper-Physics</td>
 <td align="right">4</td>
 <td align="right">16</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Mathematics</td>
 <td align="left">Axiom</td>
 <td align="right">4</td>
 <td align="right">16</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Mathematics</td>
 <td align="left">Elective</td>
 <td align="right">11</td>
 <td align="right">44</td>
+</tr>
+<tr class="odd">
+<td align="left">Mathematics</td>
+<td align="left">Independent-Study</td>
+<td align="right">1</td>
+<td align="right">4</td>
 </tr>
 </tbody>
 </table>

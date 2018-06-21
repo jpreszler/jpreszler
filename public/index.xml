@@ -22,6 +22,7 @@
 &lt;script src=&#34;/rmarkdown-libs/visNetwork-binding/visNetwork.js&#34;&gt;&lt;/script&gt;
 
 
+&lt;p&gt;&lt;strong&gt;UPDATE (6/20/2018)&lt;/strong&gt; &lt;em&gt;The cypher query for Table 3 only used components with “optional” courses so the capstone and topics compnents of the Math/CS major weren’t included in table 3.&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;UPDATE (6/19/2018)&lt;/strong&gt; &lt;em&gt;The original version of this post used incorrectly loaded data that caused to “Core” of every major to have the same classes attached to it. This was noticed by my colleague Dave Rosoff and has been corrected.&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;My &lt;a href=&#34;http://jpreszler.rbind.io/post/2018-06-16-neo4j-demo/&#34;&gt;last post&lt;/a&gt; some basic queries that return tabular data as well as graph data using about minors attached to the MAPS (MAth and Physical Sciences) department at the College of Idaho. I thought it would be nice to show something similar for the majors as well. So similar in fact that the biggest change is replacing “minor” with “major”.&lt;/p&gt;
 &lt;div id=&#34;connect-to-the-db&#34; class=&#34;section level2&#34;&gt;
@@ -99,7 +100,7 @@ kable(arrange(gq, Major, desc(Number.Option.Groups)), caption = &amp;quot;Number
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;query &amp;lt;- &amp;#39;MATCH (c:Course)-[s:Satisfies{type:&amp;quot;option&amp;quot;}]-&amp;gt;(comp:Component)-[p:Part_Of]-&amp;gt;(m:Major) 
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;query &amp;lt;- &amp;#39;MATCH (c:Course)-[s:Satisfies]-&amp;gt;(comp:Component)-[p:Part_Of]-&amp;gt;(m:Major) WHERE comp.name&amp;lt;&amp;gt;&amp;quot;Core&amp;quot; 
 RETURN m.name AS Major, comp.name AS Component, count(c) AS NumberClasses, sum(toInt(c.minCredits)) AS CreditMin&amp;#39;
 
 gq &amp;lt;- cypher(gdb,query) %&amp;gt;% as.data.frame()
@@ -129,34 +130,58 @@ kable(arrange(gq, Major, Component, desc(NumberClasses)), caption = &amp;quot;Nu
 &lt;td align=&#34;right&#34;&gt;8&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Math/CS&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Capstone&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;12&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Math/CS&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Intermediate&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;24&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Math/CS&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Topics&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
 &lt;td align=&#34;left&#34;&gt;Math/Physics&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;Elective&lt;/td&gt;
 &lt;td align=&#34;right&#34;&gt;17&lt;/td&gt;
 &lt;td align=&#34;right&#34;&gt;68&lt;/td&gt;
 &lt;/tr&gt;
-&lt;tr class=&#34;even&#34;&gt;
+&lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;left&#34;&gt;Math/Physics&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;Independent-Study&lt;/td&gt;
 &lt;td align=&#34;right&#34;&gt;4&lt;/td&gt;
 &lt;td align=&#34;right&#34;&gt;16&lt;/td&gt;
 &lt;/tr&gt;
-&lt;tr class=&#34;odd&#34;&gt;
+&lt;tr class=&#34;even&#34;&gt;
 &lt;td align=&#34;left&#34;&gt;Math/Physics&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;Upper-Physics&lt;/td&gt;
 &lt;td align=&#34;right&#34;&gt;4&lt;/td&gt;
 &lt;td align=&#34;right&#34;&gt;16&lt;/td&gt;
 &lt;/tr&gt;
-&lt;tr class=&#34;even&#34;&gt;
+&lt;tr class=&#34;odd&#34;&gt;
 &lt;td align=&#34;left&#34;&gt;Mathematics&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;Axiom&lt;/td&gt;
 &lt;td align=&#34;right&#34;&gt;4&lt;/td&gt;
 &lt;td align=&#34;right&#34;&gt;16&lt;/td&gt;
 &lt;/tr&gt;
-&lt;tr class=&#34;odd&#34;&gt;
+&lt;tr class=&#34;even&#34;&gt;
 &lt;td align=&#34;left&#34;&gt;Mathematics&lt;/td&gt;
 &lt;td align=&#34;left&#34;&gt;Elective&lt;/td&gt;
 &lt;td align=&#34;right&#34;&gt;11&lt;/td&gt;
 &lt;td align=&#34;right&#34;&gt;44&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Mathematics&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Independent-Study&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4&lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
