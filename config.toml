@@ -216,6 +216,11 @@ defaultContentLanguageInSubdir = false
     icon = "github"
     icon_pack = "fa"
     link = "//github.com/jpreszler"
+    
+  [[params.social]]
+    icon = "gitlab"
+    icon_pack = "fa"
+    link = "//githlab.com/jpreszler"
 
 
 # Navigation Links

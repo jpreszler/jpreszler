@@ -1,0 +1,81 @@
+---
+title: 'DT: When Tables are the Product'
+author: "Jason Preszler"
+date: 2018-06-28
+output: html_document
+tags: ["R", "DT", "RMarkdown"]
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+In RMarkdown documents I often have a need to display tables, which I usually try to keep small with only the most useful information displayed. However, a recent project made me look for a better way to share tabular data with non-data-scientists. The answer was R's DT package, which allows for very powerful displays of tabular data.
+
+Today's data will be a summary of enrollment data from the College of Idaho:
+
+```{r load, message=FALSE, warning=FALSE}
+enrollSummary <- read.csv("../../static/files/enroll-summary.csv", header=TRUE)
+
+#packages for today
+library(knitr)
+library(dplyr)
+library(kableExtra)
+library(DT)
+```
+
+## Basic Kable 
+
+Knitr's `kable()` function is an excellent way to get nicely formatted tables into RMarkdown documents. It's quick and easy to use, and is miles ahead of using `print()`. Here's an example:
+
+```{r kableBasic}
+head(enrollSummary) %>% kable()
+```
+
+You'll notice that I only sent the first 6 rows to kable, that's because there are `r length(enrollSummary$Crs.Name)` rows in the dataframe. This table also looks a little nicer than it will in a vanila RMarkdown html document because of Hugo adding some flair.
+
+##Premium Kable
+
+As with most things in R, basic kable is nice but it's not too hard to get a lot more with a little customization. The `kableExtra` package provides extra customization for kable. I use it so much that I have a short-hand function with the most standard features I use.
+
+```{r kable2}
+my_kable <- function(df){
+  kable(df,"html", digits = 3) %>% 
+    kable_styling( bootstrap_options = 
+          c("striped", "hover","condensed", "responsive"), full_width=FALSE) 
+}
+
+head(enrollSummary) %>% my_kable()
+```
+
+This makes tables not span the entire page by default and adds some basic readability features. It's definitely an improvement over kable alone for almost any table. Look into the kableExtra documentation because there's a lot more that can be done such as coloring cells based on contents that can help add emphasis to data.
+
+One additional improvement is the easy of wrapping the table in a scroll box:
+
+```{r kableScroll}
+enrollSummary %>% my_kable() %>% scroll_box(width = "85%", height = "350px")
+```
+
+This at least allows the entire table to be read by someone without taking over the page. However, if you need to give non-technical people a table of data for them to really use (sort by a column, search or filter) then this is miserable - you might as well just send them a spreadsheet!
+
+## DT
+
+If you've ever used Shiny and seen table output, then you've seen the DT package at work. `DT` is an interface for the datatables javascript library for R and makes it easy to provide an interactive table of data to your audience.
+
+I needed to proved the enrollment summary to a group of other faculty and each member of the group would need to look at different sets of courses in the table to accomplish their work. This means they need something interactive, with sorting and searching capability - and I needed more than just this table. Here's how easy it is in DT (at least inside a RMarkdown html document):
+
+```{r dt, eval=FALSE}
+enrollSummary %>% datatable(rownames = FALSE, filter = "top")
+```
+
+You'll notice there's no table, that's because the dataTables javaScript has a conflict with Hugo. Yihui Xie shows two solutions in the [appendix of the blogdown book](https://bookdown.org/yihui/blogdown/html-widgets.html). I'm opting for the `widgetFrame` solution so I don't have to mess with Hugo internals, but this means we need to load the library and send our datatable into a widgetframe:
+
+```{r widget, message=FALSE, warning=FALSE, out.width="100%", out.height="600px"}
+library(widgetframe)
+
+enrollSummary %>% datatable(rownames = FALSE, filter = "top", options = list(pageLength=5)) %>%
+  frameWidget(height = 550, width = "100%")
+```
+
+
+As typical in R, `rownames=FALSE` prevents row indices from being displayed, and `filter="top"` puts the filter capabilities at the top of each column. I've also customized the items per page so the table would fit inside the iFrame (from frameWidget). You can do a lot more customization if you want, even going all the way to custom javaScript/html/css for specific parts of the table. Now there's no excuse for passing around spreadsheets or for having huge unreadable tables.
