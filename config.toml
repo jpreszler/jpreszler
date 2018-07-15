@@ -220,8 +220,12 @@ defaultContentLanguageInSubdir = false
   [[params.social]]
     icon = "gitlab"
     icon_pack = "fa"
-    link = "//githlab.com/jpreszler"
+    link = "//gitlab.com/jpreszler"
 
+  [[params.social]]
+    icon = "linkedin"
+    icon_pack = "fa"
+    link = "//linkedin.com/in/jpreszler"
 
 # Navigation Links
 #   To link a homepage widget, specify the URL as a hash `#` followed by the filename of the

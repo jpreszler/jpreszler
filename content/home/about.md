@@ -36,7 +36,7 @@ weight = 5
 
 # Biography
 
-I am an Assistant Professor of Mathematics, Statistics and Computer Science at The College of Idaho. My research interests are in the application of statistics and machine learning to problems in algebraic number theory as well as other applications of machine learning and Bayesian modeling, depending on collaborators and other interesting things that pass my way.
+I am an Assistant Professor of Mathematics, Statistics and Computer Science at The College of Idaho. My research interests are in the application of statistics and machine learning to problems in algebraic number theory as well as other applications of machine learning and statistical modeling, depending on collaborators and other interesting things that pass my way.
 
 Currently, my main focus is on using machine learning to better understand why some irreducible polynomials factor after being composed with themselves. There are infinitely many polynomials with this property, but only about 1 in a million randomly selected polynomials will do this. 
 
