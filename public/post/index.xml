@@ -13,6 +13,16 @@
     
     
     <item>
+      <title>Re-Counting Classes</title>
+      <link>/post/2018-07-24-recount-class/</link>
+      <pubDate>Tue, 24 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-07-24-recount-class/</guid>
+      <description>Back in early May, I wrote a post about scraping the College of Idaho catalog: Counting Classes. Below if the same post (boring…) except that the “current catalog” has been updated. This is really a demonstration of reproducibility, the upstream data has changed and ideally all my code still works.
+There are however, some problems - look at the old post and try to guess. If you guessed the hard-coded indices of</description>
+    </item>
+    
+    <item>
       <title>DT: When Tables are the Product</title>
       <link>/post/2018-06-28-dt/</link>
       <pubDate>Thu, 28 Jun 2018 00:00:00 +0000</pubDate>
