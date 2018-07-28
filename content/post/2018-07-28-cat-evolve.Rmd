@@ -1,0 +1,166 @@
+---
+title: "Catalog Evolution"
+author: "Jason Preszler"
+date: 2018-07-28
+output: html_document
+tags: ["curriculum"]
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+library(dplyr)
+library(purrr)
+library(tidyr)
+library(ggplot2)
+library(knitr)
+library(DT)
+library(widgetframe)
+```
+
+Recently I've posted about the College of Idaho's [2017-2018](/post/2018-05-05-counting-class.html) and [2018-2019](/post/2018-07-24-recount-class.html) course distribution. The second post showed how easy it was to reproduce everything, which was good because a colleague recently asked about the total number of courses in 2016-2017 for a funded grant related to curriculum review. These total numbers of courses of courses made me wonder about how the catalog has evolved over the last few years? Which subjects have seen the most change? 
+
+## Getting the Classes
+I'm not going to reproduce all the scrapping code, refer to the previous posts linked above. The array indices changed for the second post, as well as the extension on the base url need slight adjustments. I've done that (R scripts are actually [here](https://github.com/jpreszler/peak-neo4j/scrape/)) and saved the class lists, so we just need to load the csv's and tack on a catalog year for latter.
+
+```{r}
+cl15 <- read.csv("../../static/files/class-list-2015-2016.csv", 
+                 header=TRUE) %>% 
+  mutate(catYear = 2015) %>% select(-url)
+cl16 <- read.csv("../../static/files/class-list-2016-2017.csv",
+                 header=TRUE) %>% 
+  mutate(catYear = 2016) %>% select(-url)
+cl17 <- read.csv("../../static/files/class-list-2017-2018.csv", 
+                 header=TRUE) %>% 
+  mutate(catYear = 2017) %>% select(-url)
+cl18 <- read.csv("../../static/files/class-list-2018-2019.csv", 
+                 header=TRUE) %>% 
+  mutate(catYear = 2018) %>% select(-url)
+```
+
+Let's glue these together and do some basic counting:
+```{r}
+cl <- rbind.data.frame(cl15,cl16,cl17,cl18) 
+cl %>% group_by(catYear) %>% summarise(classes = n(), subjects = n_distinct(sub)) %>% kable()
+```
+
+So the number of subjects has barely changed, but there was significant growth in the course count for two consecutive years, and then recent increase was lost - possibly due to a perception of a growing, unwieldy curriculum. Let's look into some of the changes that took place.
+
+## The First Rise
+From 2015 to 2016 the number of subjects increased by one. The difference is: `r unique(cl16[!(cl16$sub %in% cl15$sub),]$sub)`. So did economics courses account for the additional `r length(cl16$name)-length(cl15$name)`? To check, we'll have some fun with `dplyr` anti-joins.
+
+###Deletions
+First, let's look into courses in the 2015-2016 catalog that are **not in** the 2016-2017 catalog. I'm going to join along the subject and number, so a change in the name won't show up (before writing this, I did include name, and there were over 200 courses in the following table!).
+
+```{r}
+dropped15 <-anti_join(cl15, cl16, by=c("sub","number")) 
+dropped15 %>% 
+  datatable(rownames = FALSE, filter = "top", 
+            options = list(pageLength=5)) %>%
+  frameWidget(height = 550, width = "100%")
+```
+
+Considering the increase in courses, that's a lot that got dropped. Let's group things on the subject level:
+```{r}
+dropped15 %>% group_by(sub) %>% 
+  summarise(course.count = n()) %>%
+  arrange(desc(course.count)) %>% 
+  kable()
+```
+
+With the addition of economics, it's not surprising that POE (POlitics and Economics) dropped a lot of courses. 
+
+###Additions
+Now we'll look at what was added. 
+
+```{r}
+added16 <- anti_join(cl16, cl15, by=c("sub","number")) 
+added16 %>% datatable(rownames = FALSE, filter = "top", 
+                      options = list(pageLength=5)) %>%
+  frameWidget(height = 550, width = "100%")
+
+added16 %>% group_by(sub) %>% 
+  summarise(course.count = n()) %>%
+  arrange(desc(course.count)) %>% 
+  kable()
+```
+
+So the increase is from (a) almost twice as many subjects adding courses as removing them and (b) additions being greater than deletions on a subject level. History, Music, and POE had the most additions AND deletions, and additions outnumber deletions.
+
+Recall that we had a new subject: Economics. Notice that this only accounted for 2 new courses so POE dropped 10 and POE+ECN added 10. I find it fitting that "economics" has a zero-sum in this instance.
+
+##The Second Rise
+We're going to get a bit repetitive in terms of code, but I expect the results to be a bit different.
+```{r}
+dropped16 <-anti_join(cl16, cl17, by=c("sub","number")) 
+dropped16 %>% 
+  datatable(rownames = FALSE, filter = "top", 
+            options = list(pageLength=5)) %>%
+  frameWidget(height = 550, width = "100%")
+```
+
+Only `r length(dropped16$name)` courses dropped. This means there wasn't as much movement in the curriculum, but which subjects were most active?
+
+```{r}
+dropped16 %>% group_by(sub) %>% 
+  summarise(course.count = n()) %>%
+  arrange(desc(course.count)) %>% 
+  kable()
+```
+
+Notice Music is joint top of the list, is this related to faculty turn-over (a major driver of curricula change at small colleges) or do they just like tinkering with the catalog? Did they add as many as the previous year though?
+
+```{r}
+added17 <- anti_join(cl17, cl16, by=c("sub","number")) 
+added17 %>% datatable(rownames = FALSE, filter = "top", 
+                      options = list(pageLength=5)) %>%
+  frameWidget(height = 550, width = "100%")
+
+added17 %>% group_by(sub) %>% 
+  summarise(course.count = n()) %>%
+  arrange(desc(course.count)) %>% 
+  kable()
+```
+
+So again, more subjects added courses than removed but the addition counts by subject are generally much lower. 
+
+##The Decline
+Now we can look into the recent decline.
+
+```{r}
+dropped17 <-anti_join(cl17, cl18, by=c("sub","number")) 
+dropped17 %>% 
+  datatable(rownames = FALSE, filter = "top", 
+            options = list(pageLength=5)) %>%
+  frameWidget(height = 550, width = "100%")
+```
+
+For a net decline, the dropped number had to be big, and it's basically the last two drops combined. 
+
+```{r}
+dropped17 %>% group_by(sub) %>% 
+  summarise(course.count = n()) %>%
+  arrange(desc(course.count)) %>% 
+  kable()
+```
+
+Music almost held steady for once. The two subjects in double digits all underwent major curricular changes: PSY restructured things based in part on new medical school requirements, and ART overhauled their program to both shift what types of faculty taught intro courses and to provide course offerings that will help majors go to graduate school. The point is that there's no surprise (to anyone who was at faculty meetings that last year) that these programs would be at the top of this list. 
+
+But we didn't lose 65 courses, so what was added?
+```{r}
+added18 <- anti_join(cl18, cl17, by=c("sub","number")) 
+added18 %>% datatable(rownames = FALSE, filter = "top", 
+                      options = list(pageLength=5)) %>%
+  frameWidget(height = 550, width = "100%")
+
+added18 %>% group_by(sub) %>% 
+  summarise(course.count = n()) %>%
+  arrange(desc(course.count)) %>% 
+  kable()
+```
+
+Art's curriculum revision meant adding courses and a new subject (Art History), but with a small net lose. Other programs were very small additions, and I'll admit I accounted for 2 (CSC and MAT).
+
+I'll also note that MFL changed their department code to WLC, but not the prefix of courses so they aren't showing up.
+
+##Conclusion
+The counts and lists of courses added and deleted are one thing, but there's a deeper story here which I don't know and the data alone can't really tell (at least not by itself). A college's curriculum is driven by the faculty, sometimes encouraged or discouraged by the administration (deans and presidents especially). Over this time, the College of Idaho has had 2 deans and at least 4 presidents (that I've been around for). Some have encouraged growth and expansion, but more recently contraction, of the curriculum. Combining this with the natural turn-over in faculty, shifting specialties, and evolving priorities of what current students need is the real story here. While I would love to tell this story (like [Hans Gosling's Gap Minder talk](https://youtu.be/usdJgEwMinM)), it would require a depth of institutional knowledge I don't yet possess and would make this post far too long!

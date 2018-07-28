@@ -1,0 +1,545 @@
+---
+draft: yes
+title: "Catalog Evolution"
+author: "Jason Preszler"
+date: 2018-07-28
+output: html_document
+tags: ["curriculum"]
+---
+
+<script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
+<script src="/rmarkdown-libs/pymjs/pym.v1.js"></script>
+<script src="/rmarkdown-libs/widgetframe-binding/widgetframe.js"></script>
+
+
+<p>Recently I’ve posted about the College of Idaho’s <a href="/post/2018-05-05-counting-class.html">2017-2018</a> and <a href="/post/2018-07-24-recount-class.html">2018-2019</a> course distribution. The second post showed how easy it was to reproduce everything, which was good because a colleague recently asked about the total number of courses in 2016-2017 for a funded grant related to curriculum review. These total numbers of courses of courses made me wonder about how the catalog has evolved over the last few years? Which subjects have seen the most change?</p>
+<div id="getting-the-classes" class="section level2">
+<h2>Getting the Classes</h2>
+<p>I’m not going to reproduce all the scrapping code, refer to the previous posts linked above. The array indices changed for the second post, as well as the extension on the base url need slight adjustments. I’ve done that (R scripts are actually <a href="https://github.com/jpreszler/peak-neo4j/scrape/">here</a>) and saved the class lists, so we just need to load the csv’s and tack on a catalog year for latter.</p>
+<pre class="r"><code>cl15 &lt;- read.csv(&quot;../../static/files/class-list-2015-2016.csv&quot;, 
+                 header=TRUE) %&gt;% 
+  mutate(catYear = 2015) %&gt;% select(-url)
+cl16 &lt;- read.csv(&quot;../../static/files/class-list-2016-2017.csv&quot;,
+                 header=TRUE) %&gt;% 
+  mutate(catYear = 2016) %&gt;% select(-url)
+cl17 &lt;- read.csv(&quot;../../static/files/class-list-2017-2018.csv&quot;, 
+                 header=TRUE) %&gt;% 
+  mutate(catYear = 2017) %&gt;% select(-url)
+cl18 &lt;- read.csv(&quot;../../static/files/class-list-2018-2019.csv&quot;, 
+                 header=TRUE) %&gt;% 
+  mutate(catYear = 2018) %&gt;% select(-url)</code></pre>
+<p>Let’s glue these together and do some basic counting:</p>
+<pre class="r"><code>cl &lt;- rbind.data.frame(cl15,cl16,cl17,cl18) 
+cl %&gt;% group_by(catYear) %&gt;% summarise(classes = n(), subjects = n_distinct(sub)) %&gt;% kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">catYear</th>
+<th align="right">classes</th>
+<th align="right">subjects</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">2015</td>
+<td align="right">976</td>
+<td align="right">42</td>
+</tr>
+<tr class="even">
+<td align="right">2016</td>
+<td align="right">1013</td>
+<td align="right">43</td>
+</tr>
+<tr class="odd">
+<td align="right">2017</td>
+<td align="right">1034</td>
+<td align="right">43</td>
+</tr>
+<tr class="even">
+<td align="right">2018</td>
+<td align="right">1026</td>
+<td align="right">44</td>
+</tr>
+</tbody>
+</table>
+<p>So the number of subjects has barely changed, but there was significant growth in the course count for two consecutive years, and then recent increase was lost - possibly due to a perception of a growing, unwieldy curriculum. Let’s look into some of the changes that took place.</p>
+</div>
+<div id="the-first-rise" class="section level2">
+<h2>The First Rise</h2>
+<p>From 2015 to 2016 the number of subjects increased by one. The difference is: ECN. So did economics courses account for the additional 37? To check, we’ll have some fun with <code>dplyr</code> anti-joins.</p>
+<div id="deletions" class="section level3">
+<h3>Deletions</h3>
+<p>First, let’s look into courses in the 2015-2016 catalog that are <strong>not in</strong> the 2016-2017 catalog. I’m going to join along the subject and number, so a change in the name won’t show up (before writing this, I did include name, and there were over 200 courses in the following table!).</p>
+<pre class="r"><code>dropped15 &lt;-anti_join(cl15, cl16, by=c(&quot;sub&quot;,&quot;number&quot;)) 
+dropped15 %&gt;% 
+  datatable(rownames = FALSE, filter = &quot;top&quot;, 
+            options = list(pageLength=5)) %&gt;%
+  frameWidget(height = 550, width = &quot;100%&quot;)</code></pre>
+<div id="htmlwidget-1" style="width:100%;height:550px;" class="widgetframe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/post/2018-07-28-cat-evolve_files/figure-html//widgets/widget_unnamed-chunk-3.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<p>Considering the increase in courses, that’s a lot that got dropped. Let’s group things on the subject level:</p>
+<pre class="r"><code>dropped15 %&gt;% group_by(sub) %&gt;% 
+  summarise(course.count = n()) %&gt;%
+  arrange(desc(course.count)) %&gt;% 
+  kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">sub</th>
+<th align="right">course.count</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">POE</td>
+<td align="right">10</td>
+</tr>
+<tr class="even">
+<td align="left">MUS</td>
+<td align="right">9</td>
+</tr>
+<tr class="odd">
+<td align="left">HIS</td>
+<td align="right">8</td>
+</tr>
+<tr class="even">
+<td align="left">ATH</td>
+<td align="right">4</td>
+</tr>
+<tr class="odd">
+<td align="left">ART</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">PSY</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">CSC</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">MAT</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">BIO</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">HHP</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">IND</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">SPE</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">THE</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+<p>With the addition of economics, it’s not surprising that POE (POlitics and Economics) dropped a lot of courses.</p>
+</div>
+<div id="additions" class="section level3">
+<h3>Additions</h3>
+<p>Now we’ll look at what was added.</p>
+<pre class="r"><code>added16 &lt;- anti_join(cl16, cl15, by=c(&quot;sub&quot;,&quot;number&quot;)) 
+added16 %&gt;% datatable(rownames = FALSE, filter = &quot;top&quot;, 
+                      options = list(pageLength=5)) %&gt;%
+  frameWidget(height = 550, width = &quot;100%&quot;)</code></pre>
+<div id="htmlwidget-2" style="width:100%;height:550px;" class="widgetframe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-2">{"x":{"url":"/post/2018-07-28-cat-evolve_files/figure-html//widgets/widget_unnamed-chunk-5.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>added16 %&gt;% group_by(sub) %&gt;% 
+  summarise(course.count = n()) %&gt;%
+  arrange(desc(course.count)) %&gt;% 
+  kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">sub</th>
+<th align="right">course.count</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">HIS</td>
+<td align="right">13</td>
+</tr>
+<tr class="even">
+<td align="left">MUS</td>
+<td align="right">10</td>
+</tr>
+<tr class="odd">
+<td align="left">POE</td>
+<td align="right">8</td>
+</tr>
+<tr class="even">
+<td align="left">PSY</td>
+<td align="right">5</td>
+</tr>
+<tr class="odd">
+<td align="left">SPE</td>
+<td align="right">5</td>
+</tr>
+<tr class="even">
+<td align="left">ENV</td>
+<td align="right">4</td>
+</tr>
+<tr class="odd">
+<td align="left">THE</td>
+<td align="right">4</td>
+</tr>
+<tr class="even">
+<td align="left">BIO</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">GEO</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">HHPA</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">IND</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">ART</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">BUS</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">CHE</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">ECN</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">HHP</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">HSC</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">JOURN</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">PHY</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">CSC</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">ENG</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">FRE</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">SOC</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">SPA</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+<p>So the increase is from (a) almost twice as many subjects adding courses as removing them and (b) additions being greater than deletions on a subject level. History, Music, and POE had the most additions AND deletions, and additions outnumber deletions.</p>
+<p>Recall that we had a new subject: Economics. Notice that this only accounted for 2 new courses so POE dropped 10 and POE+ECN added 10. I find it fitting that “economics” has a zero-sum in this instance.</p>
+</div>
+</div>
+<div id="the-second-rise" class="section level2">
+<h2>The Second Rise</h2>
+<p>We’re going to get a bit repetitive in terms of code, but I expect the results to be a bit different.</p>
+<pre class="r"><code>dropped16 &lt;-anti_join(cl16, cl17, by=c(&quot;sub&quot;,&quot;number&quot;)) 
+dropped16 %&gt;% 
+  datatable(rownames = FALSE, filter = &quot;top&quot;, 
+            options = list(pageLength=5)) %&gt;%
+  frameWidget(height = 550, width = &quot;100%&quot;)</code></pre>
+<div id="htmlwidget-3" style="width:100%;height:550px;" class="widgetframe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-3">{"x":{"url":"/post/2018-07-28-cat-evolve_files/figure-html//widgets/widget_unnamed-chunk-6.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<p>Only 18 courses dropped. This means there wasn’t as much movement in the curriculum, but which subjects were most active?</p>
+<pre class="r"><code>dropped16 %&gt;% group_by(sub) %&gt;% 
+  summarise(course.count = n()) %&gt;%
+  arrange(desc(course.count)) %&gt;% 
+  kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">sub</th>
+<th align="right">course.count</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">HHPA</td>
+<td align="right">7</td>
+</tr>
+<tr class="even">
+<td align="left">MUS</td>
+<td align="right">7</td>
+</tr>
+<tr class="odd">
+<td align="left">SPA</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">ECN</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">POE</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+<p>Notice Music is joint top of the list, is this related to faculty turn-over (a major driver of curricula change at small colleges) or do they just like tinkering with the catalog? Did they add as many as the previous year though?</p>
+<pre class="r"><code>added17 &lt;- anti_join(cl17, cl16, by=c(&quot;sub&quot;,&quot;number&quot;)) 
+added17 %&gt;% datatable(rownames = FALSE, filter = &quot;top&quot;, 
+                      options = list(pageLength=5)) %&gt;%
+  frameWidget(height = 550, width = &quot;100%&quot;)</code></pre>
+<div id="htmlwidget-4" style="width:100%;height:550px;" class="widgetframe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-4">{"x":{"url":"/post/2018-07-28-cat-evolve_files/figure-html//widgets/widget_unnamed-chunk-8.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>added17 %&gt;% group_by(sub) %&gt;% 
+  summarise(course.count = n()) %&gt;%
+  arrange(desc(course.count)) %&gt;% 
+  kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">sub</th>
+<th align="right">course.count</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">SPA</td>
+<td align="right">9</td>
+</tr>
+<tr class="even">
+<td align="left">BUS</td>
+<td align="right">4</td>
+</tr>
+<tr class="odd">
+<td align="left">CHE</td>
+<td align="right">4</td>
+</tr>
+<tr class="even">
+<td align="left">MUS</td>
+<td align="right">4</td>
+</tr>
+<tr class="odd">
+<td align="left">SOC</td>
+<td align="right">4</td>
+</tr>
+<tr class="even">
+<td align="left">HHP</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">HIS</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">IND</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">LAS</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">POE</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">ART</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">ENV</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">PSY</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+<p>So again, more subjects added courses than removed but the addition counts by subject are generally much lower.</p>
+</div>
+<div id="the-decline" class="section level2">
+<h2>The Decline</h2>
+<p>Now we can look into the recent decline.</p>
+<pre class="r"><code>dropped17 &lt;-anti_join(cl17, cl18, by=c(&quot;sub&quot;,&quot;number&quot;)) 
+dropped17 %&gt;% 
+  datatable(rownames = FALSE, filter = &quot;top&quot;, 
+            options = list(pageLength=5)) %&gt;%
+  frameWidget(height = 550, width = &quot;100%&quot;)</code></pre>
+<div id="htmlwidget-5" style="width:100%;height:550px;" class="widgetframe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-5">{"x":{"url":"/post/2018-07-28-cat-evolve_files/figure-html//widgets/widget_unnamed-chunk-9.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<p>For a net decline, the dropped number had to be big, and it’s basically the last two drops combined.</p>
+<pre class="r"><code>dropped17 %&gt;% group_by(sub) %&gt;% 
+  summarise(course.count = n()) %&gt;%
+  arrange(desc(course.count)) %&gt;% 
+  kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">sub</th>
+<th align="right">course.count</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">ART</td>
+<td align="right">33</td>
+</tr>
+<tr class="even">
+<td align="left">PSY</td>
+<td align="right">16</td>
+</tr>
+<tr class="odd">
+<td align="left">HIS</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">MAT</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">CHE</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">MUS</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">SPA</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">BUS</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">CSC</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">HHP</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">THE</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+<p>Music almost held steady for once. The two subjects in double digits all underwent major curricular changes: PSY restructured things based in part on new medical school requirements, and ART overhauled their program to both shift what types of faculty taught intro courses and to provide course offerings that will help majors go to graduate school. The point is that there’s no surprise (to anyone who was at faculty meetings that last year) that these programs would be at the top of this list.</p>
+<p>But we didn’t lose 65 courses, so what was added?</p>
+<pre class="r"><code>added18 &lt;- anti_join(cl18, cl17, by=c(&quot;sub&quot;,&quot;number&quot;)) 
+added18 %&gt;% datatable(rownames = FALSE, filter = &quot;top&quot;, 
+                      options = list(pageLength=5)) %&gt;%
+  frameWidget(height = 550, width = &quot;100%&quot;)</code></pre>
+<div id="htmlwidget-6" style="width:100%;height:550px;" class="widgetframe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-6">{"x":{"url":"/post/2018-07-28-cat-evolve_files/figure-html//widgets/widget_unnamed-chunk-11.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>added18 %&gt;% group_by(sub) %&gt;% 
+  summarise(course.count = n()) %&gt;%
+  arrange(desc(course.count)) %&gt;% 
+  kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">sub</th>
+<th align="right">course.count</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">ART</td>
+<td align="right">22</td>
+</tr>
+<tr class="even">
+<td align="left">ARH</td>
+<td align="right">8</td>
+</tr>
+<tr class="odd">
+<td align="left">CHE</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">HIS</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">MUS</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">PSY</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">ACC</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">BUS</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">THE</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">CSC</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">ECN</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">ENG</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">IND</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">MAT</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+<p>Art’s curriculum revision meant adding courses and a new subject (Art History), but with a small net lose. Other programs were very small additions, and I’ll admit I accounted for 2 (CSC and MAT).</p>
+<p>I’ll also note that MFL changed their department code to WLC, but not the prefix of courses so they aren’t showing up.</p>
+</div>
+<div id="conclusion" class="section level2">
+<h2>Conclusion</h2>
+<p>The counts and lists of courses added and deleted are one thing, but there’s a deeper story here which I don’t know and the data alone can’t really tell (at least not by itself). A college’s curriculum is driven by the faculty, sometimes encouraged or discouraged by the administration (deans and presidents especially). Over this time, the College of Idaho has had 2 deans and at least 4 presidents (that I’ve been around for). Some have encouraged growth and expansion, but more recently contraction, of the curriculum. Combining this with the natural turn-over in faculty, shifting specialties, and evolving priorities of what current students need is the real story here. While I would love to tell this story (like <a href="https://youtu.be/usdJgEwMinM">Hans Gosling’s Gap Minder talk</a>), it would require a depth of institutional knowledge I don’t yet possess and would make this post far too long!</p>
+</div>

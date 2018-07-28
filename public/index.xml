@@ -11,6 +11,551 @@
     <atom:link href="/" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Catalog Evolution</title>
+      <link>/post/2018-07-28-cat-evolve/</link>
+      <pubDate>Sat, 28 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-07-28-cat-evolve/</guid>
+      <description>&lt;script src=&#34;/rmarkdown-libs/htmlwidgets/htmlwidgets.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;/rmarkdown-libs/pymjs/pym.v1.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;/rmarkdown-libs/widgetframe-binding/widgetframe.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;p&gt;Recently I’ve posted about the College of Idaho’s &lt;a href=&#34;/post/2018-05-05-counting-class.html&#34;&gt;2017-2018&lt;/a&gt; and &lt;a href=&#34;/post/2018-07-24-recount-class.html&#34;&gt;2018-2019&lt;/a&gt; course distribution. The second post showed how easy it was to reproduce everything, which was good because a colleague recently asked about the total number of courses in 2016-2017 for a funded grant related to curriculum review. These total numbers of courses of courses made me wonder about how the catalog has evolved over the last few years? Which subjects have seen the most change?&lt;/p&gt;
+&lt;div id=&#34;getting-the-classes&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Getting the Classes&lt;/h2&gt;
+&lt;p&gt;I’m not going to reproduce all the scrapping code, refer to the previous posts linked above. The array indices changed for the second post, as well as the extension on the base url need slight adjustments. I’ve done that (R scripts are actually &lt;a href=&#34;https://github.com/jpreszler/peak-neo4j/scrape/&#34;&gt;here&lt;/a&gt;) and saved the class lists, so we just need to load the csv’s and tack on a catalog year for latter.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;cl15 &amp;lt;- read.csv(&amp;quot;../../static/files/class-list-2015-2016.csv&amp;quot;, 
+                 header=TRUE) %&amp;gt;% 
+  mutate(catYear = 2015) %&amp;gt;% select(-url)
+cl16 &amp;lt;- read.csv(&amp;quot;../../static/files/class-list-2016-2017.csv&amp;quot;,
+                 header=TRUE) %&amp;gt;% 
+  mutate(catYear = 2016) %&amp;gt;% select(-url)
+cl17 &amp;lt;- read.csv(&amp;quot;../../static/files/class-list-2017-2018.csv&amp;quot;, 
+                 header=TRUE) %&amp;gt;% 
+  mutate(catYear = 2017) %&amp;gt;% select(-url)
+cl18 &amp;lt;- read.csv(&amp;quot;../../static/files/class-list-2018-2019.csv&amp;quot;, 
+                 header=TRUE) %&amp;gt;% 
+  mutate(catYear = 2018) %&amp;gt;% select(-url)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Let’s glue these together and do some basic counting:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;cl &amp;lt;- rbind.data.frame(cl15,cl16,cl17,cl18) 
+cl %&amp;gt;% group_by(catYear) %&amp;gt;% summarise(classes = n(), subjects = n_distinct(sub)) %&amp;gt;% kable()&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;right&#34;&gt;catYear&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;classes&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;subjects&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;2015&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;976&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;42&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;2016&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1013&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;43&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;2017&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1034&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;43&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;2018&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1026&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;44&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;So the number of subjects has barely changed, but there was significant growth in the course count for two consecutive years, and then recent increase was lost - possibly due to a perception of a growing, unwieldy curriculum. Let’s look into some of the changes that took place.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-first-rise&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;The First Rise&lt;/h2&gt;
+&lt;p&gt;From 2015 to 2016 the number of subjects increased by one. The difference is: ECN. So did economics courses account for the additional 37? To check, we’ll have some fun with &lt;code&gt;dplyr&lt;/code&gt; anti-joins.&lt;/p&gt;
+&lt;div id=&#34;deletions&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Deletions&lt;/h3&gt;
+&lt;p&gt;First, let’s look into courses in the 2015-2016 catalog that are &lt;strong&gt;not in&lt;/strong&gt; the 2016-2017 catalog. I’m going to join along the subject and number, so a change in the name won’t show up (before writing this, I did include name, and there were over 200 courses in the following table!).&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;dropped15 &amp;lt;-anti_join(cl15, cl16, by=c(&amp;quot;sub&amp;quot;,&amp;quot;number&amp;quot;)) 
+dropped15 %&amp;gt;% 
+  datatable(rownames = FALSE, filter = &amp;quot;top&amp;quot;, 
+            options = list(pageLength=5)) %&amp;gt;%
+  frameWidget(height = 550, width = &amp;quot;100%&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;htmlwidget-1&#34; style=&#34;width:100%;height:550px;&#34; class=&#34;widgetframe html-widget&#34;&gt;&lt;/div&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-1&#34;&gt;{&#34;x&#34;:{&#34;url&#34;:&#34;/post/2018-07-28-cat-evolve_files/figure-html//widgets/widget_unnamed-chunk-3.html&#34;,&#34;options&#34;:{&#34;xdomain&#34;:&#34;*&#34;,&#34;allowfullscreen&#34;:false,&#34;lazyload&#34;:false}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;p&gt;Considering the increase in courses, that’s a lot that got dropped. Let’s group things on the subject level:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;dropped15 %&amp;gt;% group_by(sub) %&amp;gt;% 
+  summarise(course.count = n()) %&amp;gt;%
+  arrange(desc(course.count)) %&amp;gt;% 
+  kable()&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;left&#34;&gt;sub&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;course.count&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;POE&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;10&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;MUS&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;9&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;HIS&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;8&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;ATH&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;ART&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;PSY&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;CSC&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;MAT&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;BIO&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;HHP&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;IND&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;SPE&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;THE&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;With the addition of economics, it’s not surprising that POE (POlitics and Economics) dropped a lot of courses.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;additions&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Additions&lt;/h3&gt;
+&lt;p&gt;Now we’ll look at what was added.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;added16 &amp;lt;- anti_join(cl16, cl15, by=c(&amp;quot;sub&amp;quot;,&amp;quot;number&amp;quot;)) 
+added16 %&amp;gt;% datatable(rownames = FALSE, filter = &amp;quot;top&amp;quot;, 
+                      options = list(pageLength=5)) %&amp;gt;%
+  frameWidget(height = 550, width = &amp;quot;100%&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;htmlwidget-2&#34; style=&#34;width:100%;height:550px;&#34; class=&#34;widgetframe html-widget&#34;&gt;&lt;/div&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-2&#34;&gt;{&#34;x&#34;:{&#34;url&#34;:&#34;/post/2018-07-28-cat-evolve_files/figure-html//widgets/widget_unnamed-chunk-5.html&#34;,&#34;options&#34;:{&#34;xdomain&#34;:&#34;*&#34;,&#34;allowfullscreen&#34;:false,&#34;lazyload&#34;:false}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;added16 %&amp;gt;% group_by(sub) %&amp;gt;% 
+  summarise(course.count = n()) %&amp;gt;%
+  arrange(desc(course.count)) %&amp;gt;% 
+  kable()&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;left&#34;&gt;sub&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;course.count&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;HIS&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;13&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;MUS&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;10&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;POE&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;8&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;PSY&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;SPE&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;ENV&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;THE&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;BIO&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;GEO&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;HHPA&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;IND&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;ART&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;BUS&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;CHE&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;ECN&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;HHP&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;HSC&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;JOURN&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;PHY&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;CSC&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;ENG&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;FRE&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;SOC&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;SPA&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;So the increase is from (a) almost twice as many subjects adding courses as removing them and (b) additions being greater than deletions on a subject level. History, Music, and POE had the most additions AND deletions, and additions outnumber deletions.&lt;/p&gt;
+&lt;p&gt;Recall that we had a new subject: Economics. Notice that this only accounted for 2 new courses so POE dropped 10 and POE+ECN added 10. I find it fitting that “economics” has a zero-sum in this instance.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-second-rise&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;The Second Rise&lt;/h2&gt;
+&lt;p&gt;We’re going to get a bit repetitive in terms of code, but I expect the results to be a bit different.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;dropped16 &amp;lt;-anti_join(cl16, cl17, by=c(&amp;quot;sub&amp;quot;,&amp;quot;number&amp;quot;)) 
+dropped16 %&amp;gt;% 
+  datatable(rownames = FALSE, filter = &amp;quot;top&amp;quot;, 
+            options = list(pageLength=5)) %&amp;gt;%
+  frameWidget(height = 550, width = &amp;quot;100%&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;htmlwidget-3&#34; style=&#34;width:100%;height:550px;&#34; class=&#34;widgetframe html-widget&#34;&gt;&lt;/div&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-3&#34;&gt;{&#34;x&#34;:{&#34;url&#34;:&#34;/post/2018-07-28-cat-evolve_files/figure-html//widgets/widget_unnamed-chunk-6.html&#34;,&#34;options&#34;:{&#34;xdomain&#34;:&#34;*&#34;,&#34;allowfullscreen&#34;:false,&#34;lazyload&#34;:false}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;p&gt;Only 18 courses dropped. This means there wasn’t as much movement in the curriculum, but which subjects were most active?&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;dropped16 %&amp;gt;% group_by(sub) %&amp;gt;% 
+  summarise(course.count = n()) %&amp;gt;%
+  arrange(desc(course.count)) %&amp;gt;% 
+  kable()&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;left&#34;&gt;sub&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;course.count&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;HHPA&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;7&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;MUS&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;7&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;SPA&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;ECN&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;POE&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Notice Music is joint top of the list, is this related to faculty turn-over (a major driver of curricula change at small colleges) or do they just like tinkering with the catalog? Did they add as many as the previous year though?&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;added17 &amp;lt;- anti_join(cl17, cl16, by=c(&amp;quot;sub&amp;quot;,&amp;quot;number&amp;quot;)) 
+added17 %&amp;gt;% datatable(rownames = FALSE, filter = &amp;quot;top&amp;quot;, 
+                      options = list(pageLength=5)) %&amp;gt;%
+  frameWidget(height = 550, width = &amp;quot;100%&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;htmlwidget-4&#34; style=&#34;width:100%;height:550px;&#34; class=&#34;widgetframe html-widget&#34;&gt;&lt;/div&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-4&#34;&gt;{&#34;x&#34;:{&#34;url&#34;:&#34;/post/2018-07-28-cat-evolve_files/figure-html//widgets/widget_unnamed-chunk-8.html&#34;,&#34;options&#34;:{&#34;xdomain&#34;:&#34;*&#34;,&#34;allowfullscreen&#34;:false,&#34;lazyload&#34;:false}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;added17 %&amp;gt;% group_by(sub) %&amp;gt;% 
+  summarise(course.count = n()) %&amp;gt;%
+  arrange(desc(course.count)) %&amp;gt;% 
+  kable()&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;left&#34;&gt;sub&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;course.count&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;SPA&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;9&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;BUS&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;CHE&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;MUS&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;SOC&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;HHP&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;HIS&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;IND&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;LAS&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;POE&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;ART&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;ENV&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;PSY&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;So again, more subjects added courses than removed but the addition counts by subject are generally much lower.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-decline&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;The Decline&lt;/h2&gt;
+&lt;p&gt;Now we can look into the recent decline.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;dropped17 &amp;lt;-anti_join(cl17, cl18, by=c(&amp;quot;sub&amp;quot;,&amp;quot;number&amp;quot;)) 
+dropped17 %&amp;gt;% 
+  datatable(rownames = FALSE, filter = &amp;quot;top&amp;quot;, 
+            options = list(pageLength=5)) %&amp;gt;%
+  frameWidget(height = 550, width = &amp;quot;100%&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;htmlwidget-5&#34; style=&#34;width:100%;height:550px;&#34; class=&#34;widgetframe html-widget&#34;&gt;&lt;/div&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-5&#34;&gt;{&#34;x&#34;:{&#34;url&#34;:&#34;/post/2018-07-28-cat-evolve_files/figure-html//widgets/widget_unnamed-chunk-9.html&#34;,&#34;options&#34;:{&#34;xdomain&#34;:&#34;*&#34;,&#34;allowfullscreen&#34;:false,&#34;lazyload&#34;:false}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;p&gt;For a net decline, the dropped number had to be big, and it’s basically the last two drops combined.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;dropped17 %&amp;gt;% group_by(sub) %&amp;gt;% 
+  summarise(course.count = n()) %&amp;gt;%
+  arrange(desc(course.count)) %&amp;gt;% 
+  kable()&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;left&#34;&gt;sub&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;course.count&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;ART&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;33&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;PSY&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;16&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;HIS&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;MAT&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;CHE&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;MUS&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;SPA&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;BUS&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;CSC&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;HHP&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;THE&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Music almost held steady for once. The two subjects in double digits all underwent major curricular changes: PSY restructured things based in part on new medical school requirements, and ART overhauled their program to both shift what types of faculty taught intro courses and to provide course offerings that will help majors go to graduate school. The point is that there’s no surprise (to anyone who was at faculty meetings that last year) that these programs would be at the top of this list.&lt;/p&gt;
+&lt;p&gt;But we didn’t lose 65 courses, so what was added?&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;added18 &amp;lt;- anti_join(cl18, cl17, by=c(&amp;quot;sub&amp;quot;,&amp;quot;number&amp;quot;)) 
+added18 %&amp;gt;% datatable(rownames = FALSE, filter = &amp;quot;top&amp;quot;, 
+                      options = list(pageLength=5)) %&amp;gt;%
+  frameWidget(height = 550, width = &amp;quot;100%&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;htmlwidget-6&#34; style=&#34;width:100%;height:550px;&#34; class=&#34;widgetframe html-widget&#34;&gt;&lt;/div&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-6&#34;&gt;{&#34;x&#34;:{&#34;url&#34;:&#34;/post/2018-07-28-cat-evolve_files/figure-html//widgets/widget_unnamed-chunk-11.html&#34;,&#34;options&#34;:{&#34;xdomain&#34;:&#34;*&#34;,&#34;allowfullscreen&#34;:false,&#34;lazyload&#34;:false}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;added18 %&amp;gt;% group_by(sub) %&amp;gt;% 
+  summarise(course.count = n()) %&amp;gt;%
+  arrange(desc(course.count)) %&amp;gt;% 
+  kable()&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;left&#34;&gt;sub&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;course.count&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;ART&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;22&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;ARH&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;8&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;CHE&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;HIS&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;MUS&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;PSY&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;ACC&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;BUS&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;THE&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;CSC&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;ECN&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;ENG&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;IND&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;MAT&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Art’s curriculum revision meant adding courses and a new subject (Art History), but with a small net lose. Other programs were very small additions, and I’ll admit I accounted for 2 (CSC and MAT).&lt;/p&gt;
+&lt;p&gt;I’ll also note that MFL changed their department code to WLC, but not the prefix of courses so they aren’t showing up.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;conclusion&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;The counts and lists of courses added and deleted are one thing, but there’s a deeper story here which I don’t know and the data alone can’t really tell (at least not by itself). A college’s curriculum is driven by the faculty, sometimes encouraged or discouraged by the administration (deans and presidents especially). Over this time, the College of Idaho has had 2 deans and at least 4 presidents (that I’ve been around for). Some have encouraged growth and expansion, but more recently contraction, of the curriculum. Combining this with the natural turn-over in faculty, shifting specialties, and evolving priorities of what current students need is the real story here. While I would love to tell this story (like &lt;a href=&#34;https://youtu.be/usdJgEwMinM&#34;&gt;Hans Gosling’s Gap Minder talk&lt;/a&gt;), it would require a depth of institutional knowledge I don’t yet possess and would make this post far too long!&lt;/p&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Re-Counting Classes</title>
       <link>/post/2018-07-24-recount-class/</link>
       <pubDate>Tue, 24 Jul 2018 00:00:00 +0000</pubDate>
@@ -19,14 +564,15 @@
       <description>&lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
 
 
+&lt;p&gt;&lt;strong&gt;Edit 7/27/2018&lt;/strong&gt; I realized that MFL’s name change to WLC didn’t change the prefix of their courses, this broke my scrapper. Below is an updated post that deals with this.&lt;/p&gt;
 &lt;p&gt;Back in early May, I wrote a post about scraping the College of Idaho catalog: &lt;a href=&#34;2018-05-05-counting-class.html&#34;&gt;Counting Classes&lt;/a&gt;. Below if the same post (boring…) except that the “current catalog” has been updated. This is really a demonstration of &lt;strong&gt;reproducibility&lt;/strong&gt;, the upstream data has changed and ideally all my code still works.&lt;/p&gt;
 &lt;p&gt;There are however, some problems - look at the old post and try to guess. If you guessed the hard-coded indices of&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;subjectText &amp;lt;- subjectText[79:122]
 #keep url for each subject also
 sub_url &amp;lt;- html_attr(subjectLinks, &amp;#39;href&amp;#39;)[79:122]&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;you’re right! The link positions on the page changed slightly, but everything else works. Go ahead and compare the two.&lt;/p&gt;
-&lt;div id=&#34;begin-original&#34; class=&#34;section level2&#34;&gt;
-&lt;h2&gt;Begin Original&lt;/h2&gt;
+&lt;p&gt;you’re right! The link positions on the page changed slightly, partly because of MFL changing their department name to WLC. However, they didn’t change the prefixes of the courses, so I’ll need to change the &lt;code&gt;get_class_links&lt;/code&gt; function. The change required regular expressions, which I’m growing to love because of how clean they are with &lt;code&gt;stringr&lt;/code&gt; it helps me overcome the PERL nightmares of my youth.&lt;/p&gt;
+&lt;div id=&#34;begin-updated-original&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Begin Updated Original&lt;/h2&gt;
 &lt;p&gt;At the College of Idaho, there’s been discussion about visualizing the curriculum as well as understanding the curriculum. Naturally this interests me as a chance to wallow in some complicated data (students are required to complete a major and 3 minors across 4 “peaks” rather than complete courses from a traditional “core”). I thought using R and a Neo4j graph database would be useful (something to look forward to) - but first I needed to get data from the catalogue!&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;web-scraping&#34; class=&#34;section level1&#34;&gt;
@@ -150,7 +696,7 @@ Anthropology Sociology
   #only keep links for classes, each subject has 
   #classes starting in a different position
   classDF &amp;lt;- classDF %&amp;gt;% filter(str_detect(list,
-                                  paste0(subDF$sub[i],&amp;#39;-&amp;#39;)))
+                                  &amp;quot;[:upper:]{2,3}-&amp;quot;))
 
     #We&amp;#39;ll split on 1st space, discard everything after it and use
   #what&amp;#39;s before it to build the required DF
@@ -313,7 +859,7 @@ Electronic Accounting &amp;amp; Analysis
 &lt;/div&gt;
 &lt;div id=&#34;the-counts&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;The Counts&lt;/h1&gt;
-&lt;p&gt;I should mention that this data is all from the current (2017-2018) catalogue, so it doesn’t reflect courses added, removed, or changed during this academic year. The most basic question is how many classes does CofI offer? Well, the 43 subjects offer 1019 courses, but how are they distributed across subject and level?&lt;/p&gt;
+&lt;p&gt;I should mention that this data is all from the current (2017-2018) catalogue, so it doesn’t reflect courses added, removed, or changed during this academic year. The most basic question is how many classes does CofI offer? Well, the 44 subjects offer 1026 courses, but how are they distributed across subject and level?&lt;/p&gt;
 &lt;p&gt;First, let’s group by subject to see which subjects offer the most and least courses.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;group_by(classes, sub) %&amp;gt;% 
   summarise(Count = n()) %&amp;gt;% 
@@ -491,7 +1037,7 @@ Count
 100
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-164
+163
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -499,7 +1045,7 @@ Count
 200
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-230
+232
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -507,7 +1053,7 @@ Count
 300
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-414
+413
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -515,7 +1061,7 @@ Count
 400
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-210
+217
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
@@ -640,6 +1186,17 @@ ARH
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 0.7500
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+MFL
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.7273
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -875,17 +1432,6 @@ PSY
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-CSC
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-400
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.4375
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
 BUS
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
@@ -915,6 +1461,17 @@ ENG
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 0.4032
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+CSC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4000
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -1216,6 +1773,17 @@ GER
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
+MAT
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2857
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
 MS
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
@@ -1238,24 +1806,13 @@ PSY
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-MAT
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-100
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.2632
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-MAT
+CSC
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
 200
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-0.2632
+0.2667
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -1271,18 +1828,29 @@ PHI
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-ARH
+MAT
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-200
+100
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-0.2500
+0.2571
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-CSC
+MAT
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2571
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ARH
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
 200
@@ -1370,28 +1938,6 @@ SPE
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-MAT
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-300
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.2368
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-MAT
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-400
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.2368
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
 ATH
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
@@ -1399,6 +1945,17 @@ ATH
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 0.2353
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+CSC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2000
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -1418,6 +1975,17 @@ HSC
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
 400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+MAT
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 0.2000
@@ -1524,13 +2092,13 @@ ENV
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-CSC
+MFL
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-100
+200
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-0.1875
+0.1818
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -1821,6 +2389,17 @@ ACC
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
+CSC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1333
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
 REL
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
@@ -1850,17 +2429,6 @@ PHY
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 0.1290
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-CSC
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-300
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.1250
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -2037,6 +2605,17 @@ BUS
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 0.0930
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+MFL
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0909
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -37725,37 +38304,37 @@ minorVis &amp;lt;- function(minorName){
 &lt;div id=&#34;applied-math&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Applied Math&lt;/h2&gt;
 &lt;div id=&#34;htmlwidget-1&#34; style=&#34;width:672px;height:480px;&#34; class=&#34;visNetwork html-widget&#34;&gt;&lt;/div&gt;
-&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-1&#34;&gt;{&#34;x&#34;:{&#34;nodes&#34;:{&#34;id&#34;:[&#34;Applied Math&#34;,&#34;AppLab&#34;,&#34;CSC150&#34;,&#34;MAT150&#34;,&#34;MAT275&#34;,&#34;MAT175&#34;,&#34;CSC270&#34;,&#34;MAT212&#34;,&#34;Lab&#34;,&#34;req&#34;,&#34;Calculus&#34;,&#34;Data&#34;],&#34;label&#34;:[&#34;Applied Math&#34;,&#34;AppLab&#34;,&#34;CSC150&#34;,&#34;MAT150&#34;,&#34;MAT275&#34;,&#34;MAT175&#34;,&#34;CSC270&#34;,&#34;MAT212&#34;,&#34;Lab&#34;,&#34;req&#34;,&#34;Calculus&#34;,&#34;Data&#34;],&#34;group&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;]},&#34;edges&#34;:{&#34;from&#34;:[&#34;AppLab&#34;,&#34;CSC150&#34;,&#34;MAT150&#34;,&#34;MAT275&#34;,&#34;MAT175&#34;,&#34;CSC270&#34;,&#34;MAT212&#34;,&#34;Lab&#34;,&#34;req&#34;,&#34;Calculus&#34;,&#34;Data&#34;],&#34;to&#34;:[&#34;Lab&#34;,&#34;req&#34;,&#34;Calculus&#34;,&#34;Calculus&#34;,&#34;Calculus&#34;,&#34;Data&#34;,&#34;Data&#34;,&#34;Applied Math&#34;,&#34;Applied Math&#34;,&#34;Applied Math&#34;,&#34;Applied Math&#34;],&#34;label&#34;:[&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;]},&#34;nodesToDataframe&#34;:true,&#34;edgesToDataframe&#34;:true,&#34;options&#34;:{&#34;width&#34;:&#34;100%&#34;,&#34;height&#34;:&#34;100%&#34;,&#34;nodes&#34;:{&#34;shape&#34;:&#34;dot&#34;},&#34;manipulation&#34;:{&#34;enabled&#34;:false}},&#34;groups&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Component&#34;],&#34;width&#34;:null,&#34;height&#34;:null,&#34;idselection&#34;:{&#34;enabled&#34;:false},&#34;byselection&#34;:{&#34;enabled&#34;:false},&#34;main&#34;:null,&#34;submain&#34;:null,&#34;footer&#34;:null,&#34;background&#34;:&#34;rgba(0, 0, 0, 0)&#34;},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-1&#34;&gt;{&#34;x&#34;:{&#34;nodes&#34;:{&#34;id&#34;:[&#34;Applied Math&#34;,&#34;AppLab&#34;,&#34;CSC150&#34;,&#34;MAT150&#34;,&#34;MAT175&#34;,&#34;MAT275&#34;,&#34;CSC270&#34;,&#34;MAT212&#34;,&#34;Lab&#34;,&#34;req&#34;,&#34;Calculus&#34;,&#34;Data&#34;],&#34;label&#34;:[&#34;Applied Math&#34;,&#34;AppLab&#34;,&#34;CSC150&#34;,&#34;MAT150&#34;,&#34;MAT175&#34;,&#34;MAT275&#34;,&#34;CSC270&#34;,&#34;MAT212&#34;,&#34;Lab&#34;,&#34;req&#34;,&#34;Calculus&#34;,&#34;Data&#34;],&#34;group&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;]},&#34;edges&#34;:{&#34;from&#34;:[&#34;AppLab&#34;,&#34;CSC150&#34;,&#34;MAT150&#34;,&#34;MAT175&#34;,&#34;MAT275&#34;,&#34;CSC270&#34;,&#34;MAT212&#34;,&#34;Lab&#34;,&#34;req&#34;,&#34;Calculus&#34;,&#34;Data&#34;],&#34;to&#34;:[&#34;Lab&#34;,&#34;req&#34;,&#34;Calculus&#34;,&#34;Calculus&#34;,&#34;Calculus&#34;,&#34;Data&#34;,&#34;Data&#34;,&#34;Applied Math&#34;,&#34;Applied Math&#34;,&#34;Applied Math&#34;,&#34;Applied Math&#34;],&#34;label&#34;:[&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;]},&#34;nodesToDataframe&#34;:true,&#34;edgesToDataframe&#34;:true,&#34;options&#34;:{&#34;width&#34;:&#34;100%&#34;,&#34;height&#34;:&#34;100%&#34;,&#34;nodes&#34;:{&#34;shape&#34;:&#34;dot&#34;},&#34;manipulation&#34;:{&#34;enabled&#34;:false}},&#34;groups&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Component&#34;],&#34;width&#34;:null,&#34;height&#34;:null,&#34;idselection&#34;:{&#34;enabled&#34;:false},&#34;byselection&#34;:{&#34;enabled&#34;:false},&#34;main&#34;:null,&#34;submain&#34;:null,&#34;footer&#34;:null,&#34;background&#34;:&#34;rgba(0, 0, 0, 0)&#34;},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
 &lt;/div&gt;
 &lt;div id=&#34;computer-science&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Computer Science&lt;/h2&gt;
 &lt;div id=&#34;htmlwidget-2&#34; style=&#34;width:672px;height:480px;&#34; class=&#34;visNetwork html-widget&#34;&gt;&lt;/div&gt;
-&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-2&#34;&gt;{&#34;x&#34;:{&#34;nodes&#34;:{&#34;id&#34;:[&#34;Computer Science&#34;,&#34;CSC150&#34;,&#34;CSC160&#34;,&#34;CSC270&#34;,&#34;MAT252&#34;,&#34;MAT150&#34;,&#34;MAT175&#34;,&#34;CSC235&#34;,&#34;CSC340&#34;,&#34;req&#34;,&#34;Calculus&#34;,&#34;IntermediateCSC&#34;],&#34;label&#34;:[&#34;Computer Science&#34;,&#34;CSC150&#34;,&#34;CSC160&#34;,&#34;CSC270&#34;,&#34;MAT252&#34;,&#34;MAT150&#34;,&#34;MAT175&#34;,&#34;CSC235&#34;,&#34;CSC340&#34;,&#34;req&#34;,&#34;Calculus&#34;,&#34;IntermediateCSC&#34;],&#34;group&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;]},&#34;edges&#34;:{&#34;from&#34;:[&#34;CSC150&#34;,&#34;CSC160&#34;,&#34;CSC270&#34;,&#34;MAT252&#34;,&#34;MAT150&#34;,&#34;MAT175&#34;,&#34;CSC235&#34;,&#34;CSC340&#34;,&#34;req&#34;,&#34;Calculus&#34;,&#34;IntermediateCSC&#34;],&#34;to&#34;:[&#34;req&#34;,&#34;req&#34;,&#34;req&#34;,&#34;req&#34;,&#34;Calculus&#34;,&#34;Calculus&#34;,&#34;IntermediateCSC&#34;,&#34;IntermediateCSC&#34;,&#34;Computer Science&#34;,&#34;Computer Science&#34;,&#34;Computer Science&#34;],&#34;label&#34;:[&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;]},&#34;nodesToDataframe&#34;:true,&#34;edgesToDataframe&#34;:true,&#34;options&#34;:{&#34;width&#34;:&#34;100%&#34;,&#34;height&#34;:&#34;100%&#34;,&#34;nodes&#34;:{&#34;shape&#34;:&#34;dot&#34;},&#34;manipulation&#34;:{&#34;enabled&#34;:false}},&#34;groups&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Component&#34;],&#34;width&#34;:null,&#34;height&#34;:null,&#34;idselection&#34;:{&#34;enabled&#34;:false},&#34;byselection&#34;:{&#34;enabled&#34;:false},&#34;main&#34;:null,&#34;submain&#34;:null,&#34;footer&#34;:null,&#34;background&#34;:&#34;rgba(0, 0, 0, 0)&#34;},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-2&#34;&gt;{&#34;x&#34;:{&#34;nodes&#34;:{&#34;id&#34;:[&#34;Computer Science&#34;,&#34;CSC340&#34;,&#34;CSC235&#34;,&#34;CSC270&#34;,&#34;CSC160&#34;,&#34;CSC150&#34;,&#34;MAT252&#34;,&#34;MAT175&#34;,&#34;MAT150&#34;,&#34;IntermediateCSC&#34;,&#34;req&#34;,&#34;Calculus&#34;],&#34;label&#34;:[&#34;Computer Science&#34;,&#34;CSC340&#34;,&#34;CSC235&#34;,&#34;CSC270&#34;,&#34;CSC160&#34;,&#34;CSC150&#34;,&#34;MAT252&#34;,&#34;MAT175&#34;,&#34;MAT150&#34;,&#34;IntermediateCSC&#34;,&#34;req&#34;,&#34;Calculus&#34;],&#34;group&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;]},&#34;edges&#34;:{&#34;from&#34;:[&#34;CSC340&#34;,&#34;CSC235&#34;,&#34;CSC270&#34;,&#34;CSC160&#34;,&#34;CSC150&#34;,&#34;MAT252&#34;,&#34;MAT175&#34;,&#34;MAT150&#34;,&#34;IntermediateCSC&#34;,&#34;req&#34;,&#34;Calculus&#34;],&#34;to&#34;:[&#34;IntermediateCSC&#34;,&#34;IntermediateCSC&#34;,&#34;req&#34;,&#34;req&#34;,&#34;req&#34;,&#34;req&#34;,&#34;Calculus&#34;,&#34;Calculus&#34;,&#34;Computer Science&#34;,&#34;Computer Science&#34;,&#34;Computer Science&#34;],&#34;label&#34;:[&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;]},&#34;nodesToDataframe&#34;:true,&#34;edgesToDataframe&#34;:true,&#34;options&#34;:{&#34;width&#34;:&#34;100%&#34;,&#34;height&#34;:&#34;100%&#34;,&#34;nodes&#34;:{&#34;shape&#34;:&#34;dot&#34;},&#34;manipulation&#34;:{&#34;enabled&#34;:false}},&#34;groups&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Component&#34;],&#34;width&#34;:null,&#34;height&#34;:null,&#34;idselection&#34;:{&#34;enabled&#34;:false},&#34;byselection&#34;:{&#34;enabled&#34;:false},&#34;main&#34;:null,&#34;submain&#34;:null,&#34;footer&#34;:null,&#34;background&#34;:&#34;rgba(0, 0, 0, 0)&#34;},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
 &lt;/div&gt;
 &lt;div id=&#34;computer-studies&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Computer Studies&lt;/h2&gt;
 &lt;div id=&#34;htmlwidget-3&#34; style=&#34;width:672px;height:480px;&#34; class=&#34;visNetwork html-widget&#34;&gt;&lt;/div&gt;
-&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-3&#34;&gt;{&#34;x&#34;:{&#34;nodes&#34;:{&#34;id&#34;:[&#34;Computer Studies&#34;,&#34;AppLab&#34;,&#34;MAT175&#34;,&#34;MAT150&#34;,&#34;CSC270&#34;,&#34;CSC150&#34;,&#34;Lab&#34;,&#34;Calculus&#34;,&#34;req&#34;],&#34;label&#34;:[&#34;Computer Studies&#34;,&#34;AppLab&#34;,&#34;MAT175&#34;,&#34;MAT150&#34;,&#34;CSC270&#34;,&#34;CSC150&#34;,&#34;Lab&#34;,&#34;Calculus&#34;,&#34;req&#34;],&#34;group&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;]},&#34;edges&#34;:{&#34;from&#34;:[&#34;AppLab&#34;,&#34;MAT175&#34;,&#34;MAT150&#34;,&#34;CSC270&#34;,&#34;CSC150&#34;,&#34;Lab&#34;,&#34;Calculus&#34;,&#34;req&#34;],&#34;to&#34;:[&#34;Lab&#34;,&#34;Calculus&#34;,&#34;Calculus&#34;,&#34;req&#34;,&#34;req&#34;,&#34;Computer Studies&#34;,&#34;Computer Studies&#34;,&#34;Computer Studies&#34;],&#34;label&#34;:[&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;]},&#34;nodesToDataframe&#34;:true,&#34;edgesToDataframe&#34;:true,&#34;options&#34;:{&#34;width&#34;:&#34;100%&#34;,&#34;height&#34;:&#34;100%&#34;,&#34;nodes&#34;:{&#34;shape&#34;:&#34;dot&#34;},&#34;manipulation&#34;:{&#34;enabled&#34;:false}},&#34;groups&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Component&#34;],&#34;width&#34;:null,&#34;height&#34;:null,&#34;idselection&#34;:{&#34;enabled&#34;:false},&#34;byselection&#34;:{&#34;enabled&#34;:false},&#34;main&#34;:null,&#34;submain&#34;:null,&#34;footer&#34;:null,&#34;background&#34;:&#34;rgba(0, 0, 0, 0)&#34;},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-3&#34;&gt;{&#34;x&#34;:{&#34;nodes&#34;:{&#34;id&#34;:[&#34;Computer Studies&#34;,&#34;AppLab&#34;,&#34;CSC270&#34;,&#34;CSC150&#34;,&#34;MAT150&#34;,&#34;MAT175&#34;,&#34;Lab&#34;,&#34;req&#34;,&#34;Calculus&#34;],&#34;label&#34;:[&#34;Computer Studies&#34;,&#34;AppLab&#34;,&#34;CSC270&#34;,&#34;CSC150&#34;,&#34;MAT150&#34;,&#34;MAT175&#34;,&#34;Lab&#34;,&#34;req&#34;,&#34;Calculus&#34;],&#34;group&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;]},&#34;edges&#34;:{&#34;from&#34;:[&#34;AppLab&#34;,&#34;CSC270&#34;,&#34;CSC150&#34;,&#34;MAT150&#34;,&#34;MAT175&#34;,&#34;Lab&#34;,&#34;req&#34;,&#34;Calculus&#34;],&#34;to&#34;:[&#34;Lab&#34;,&#34;req&#34;,&#34;req&#34;,&#34;Calculus&#34;,&#34;Calculus&#34;,&#34;Computer Studies&#34;,&#34;Computer Studies&#34;,&#34;Computer Studies&#34;],&#34;label&#34;:[&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;]},&#34;nodesToDataframe&#34;:true,&#34;edgesToDataframe&#34;:true,&#34;options&#34;:{&#34;width&#34;:&#34;100%&#34;,&#34;height&#34;:&#34;100%&#34;,&#34;nodes&#34;:{&#34;shape&#34;:&#34;dot&#34;},&#34;manipulation&#34;:{&#34;enabled&#34;:false}},&#34;groups&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Component&#34;],&#34;width&#34;:null,&#34;height&#34;:null,&#34;idselection&#34;:{&#34;enabled&#34;:false},&#34;byselection&#34;:{&#34;enabled&#34;:false},&#34;main&#34;:null,&#34;submain&#34;:null,&#34;footer&#34;:null,&#34;background&#34;:&#34;rgba(0, 0, 0, 0)&#34;},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
 &lt;/div&gt;
 &lt;div id=&#34;geosciences&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Geosciences&lt;/h2&gt;
 &lt;div id=&#34;htmlwidget-4&#34; style=&#34;width:672px;height:480px;&#34; class=&#34;visNetwork html-widget&#34;&gt;&lt;/div&gt;
-&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-4&#34;&gt;{&#34;x&#34;:{&#34;nodes&#34;:{&#34;id&#34;:[&#34;Geosciences&#34;,&#34;ENV350&#34;,&#34;GEO320&#34;,&#34;PHY271&#34;,&#34;PHY231&#34;,&#34;GEO310&#34;,&#34;ENV160&#34;,&#34;GEO150&#34;,&#34;MAT212&#34;,&#34;MAT150&#34;,&#34;MAT125&#34;,&#34;GEO101&#34;,&#34;takeTwo&#34;,&#34;Core&#34;,&#34;Math&#34;,&#34;req&#34;],&#34;label&#34;:[&#34;Geosciences&#34;,&#34;ENV350&#34;,&#34;GEO320&#34;,&#34;PHY271&#34;,&#34;PHY231&#34;,&#34;GEO310&#34;,&#34;ENV160&#34;,&#34;GEO150&#34;,&#34;MAT212&#34;,&#34;MAT150&#34;,&#34;MAT125&#34;,&#34;GEO101&#34;,&#34;takeTwo&#34;,&#34;Core&#34;,&#34;Math&#34;,&#34;req&#34;],&#34;group&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;]},&#34;edges&#34;:{&#34;from&#34;:[&#34;ENV350&#34;,&#34;GEO320&#34;,&#34;PHY271&#34;,&#34;PHY231&#34;,&#34;GEO310&#34;,&#34;ENV160&#34;,&#34;GEO150&#34;,&#34;MAT212&#34;,&#34;MAT150&#34;,&#34;MAT125&#34;,&#34;GEO101&#34;,&#34;takeTwo&#34;,&#34;Core&#34;,&#34;Math&#34;,&#34;req&#34;],&#34;to&#34;:[&#34;takeTwo&#34;,&#34;takeTwo&#34;,&#34;takeTwo&#34;,&#34;takeTwo&#34;,&#34;takeTwo&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Math&#34;,&#34;Math&#34;,&#34;Math&#34;,&#34;req&#34;,&#34;Geosciences&#34;,&#34;Geosciences&#34;,&#34;Geosciences&#34;,&#34;Geosciences&#34;],&#34;label&#34;:[&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;]},&#34;nodesToDataframe&#34;:true,&#34;edgesToDataframe&#34;:true,&#34;options&#34;:{&#34;width&#34;:&#34;100%&#34;,&#34;height&#34;:&#34;100%&#34;,&#34;nodes&#34;:{&#34;shape&#34;:&#34;dot&#34;},&#34;manipulation&#34;:{&#34;enabled&#34;:false}},&#34;groups&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Component&#34;],&#34;width&#34;:null,&#34;height&#34;:null,&#34;idselection&#34;:{&#34;enabled&#34;:false},&#34;byselection&#34;:{&#34;enabled&#34;:false},&#34;main&#34;:null,&#34;submain&#34;:null,&#34;footer&#34;:null,&#34;background&#34;:&#34;rgba(0, 0, 0, 0)&#34;},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-4&#34;&gt;{&#34;x&#34;:{&#34;nodes&#34;:{&#34;id&#34;:[&#34;Geosciences&#34;,&#34;ENV160&#34;,&#34;GEO150&#34;,&#34;MAT125&#34;,&#34;MAT212&#34;,&#34;MAT150&#34;,&#34;GEO310&#34;,&#34;ENV350&#34;,&#34;GEO320&#34;,&#34;PHY271&#34;,&#34;PHY231&#34;,&#34;GEO101&#34;,&#34;Core&#34;,&#34;Math&#34;,&#34;takeTwo&#34;,&#34;req&#34;],&#34;label&#34;:[&#34;Geosciences&#34;,&#34;ENV160&#34;,&#34;GEO150&#34;,&#34;MAT125&#34;,&#34;MAT212&#34;,&#34;MAT150&#34;,&#34;GEO310&#34;,&#34;ENV350&#34;,&#34;GEO320&#34;,&#34;PHY271&#34;,&#34;PHY231&#34;,&#34;GEO101&#34;,&#34;Core&#34;,&#34;Math&#34;,&#34;takeTwo&#34;,&#34;req&#34;],&#34;group&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;]},&#34;edges&#34;:{&#34;from&#34;:[&#34;ENV160&#34;,&#34;GEO150&#34;,&#34;MAT125&#34;,&#34;MAT212&#34;,&#34;MAT150&#34;,&#34;GEO310&#34;,&#34;ENV350&#34;,&#34;GEO320&#34;,&#34;PHY271&#34;,&#34;PHY231&#34;,&#34;GEO101&#34;,&#34;Core&#34;,&#34;Math&#34;,&#34;takeTwo&#34;,&#34;req&#34;],&#34;to&#34;:[&#34;Core&#34;,&#34;Core&#34;,&#34;Math&#34;,&#34;Math&#34;,&#34;Math&#34;,&#34;takeTwo&#34;,&#34;takeTwo&#34;,&#34;takeTwo&#34;,&#34;takeTwo&#34;,&#34;takeTwo&#34;,&#34;req&#34;,&#34;Geosciences&#34;,&#34;Geosciences&#34;,&#34;Geosciences&#34;,&#34;Geosciences&#34;],&#34;label&#34;:[&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;]},&#34;nodesToDataframe&#34;:true,&#34;edgesToDataframe&#34;:true,&#34;options&#34;:{&#34;width&#34;:&#34;100%&#34;,&#34;height&#34;:&#34;100%&#34;,&#34;nodes&#34;:{&#34;shape&#34;:&#34;dot&#34;},&#34;manipulation&#34;:{&#34;enabled&#34;:false}},&#34;groups&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Component&#34;],&#34;width&#34;:null,&#34;height&#34;:null,&#34;idselection&#34;:{&#34;enabled&#34;:false},&#34;byselection&#34;:{&#34;enabled&#34;:false},&#34;main&#34;:null,&#34;submain&#34;:null,&#34;footer&#34;:null,&#34;background&#34;:&#34;rgba(0, 0, 0, 0)&#34;},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
 &lt;/div&gt;
 &lt;div id=&#34;mathematics&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Mathematics&lt;/h2&gt;
 &lt;div id=&#34;htmlwidget-5&#34; style=&#34;width:672px;height:480px;&#34; class=&#34;visNetwork html-widget&#34;&gt;&lt;/div&gt;
-&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-5&#34;&gt;{&#34;x&#34;:{&#34;nodes&#34;:{&#34;id&#34;:[&#34;Mathematics&#34;,&#34;AppLab&#34;,&#34;MAT280&#34;,&#34;MAT282&#34;,&#34;MAT281&#34;,&#34;MAT283&#34;,&#34;MAT175&#34;,&#34;MAT275&#34;,&#34;MAT441&#34;,&#34;MAT451&#34;,&#34;MAT399T&#34;,&#34;MAT431&#34;,&#34;MAT497&#34;,&#34;MAT498&#34;,&#34;MAT461&#34;,&#34;MAT494&#34;,&#34;MAT499T&#34;,&#34;MAT361&#34;,&#34;MAT352&#34;,&#34;MAT372&#34;,&#34;MAT370&#34;,&#34;MAT311&#34;,&#34;MAT312&#34;,&#34;Lab&#34;,&#34;Proofs&#34;,&#34;Calculus&#34;,&#34;sixCredits&#34;],&#34;label&#34;:[&#34;Mathematics&#34;,&#34;AppLab&#34;,&#34;MAT280&#34;,&#34;MAT282&#34;,&#34;MAT281&#34;,&#34;MAT283&#34;,&#34;MAT175&#34;,&#34;MAT275&#34;,&#34;MAT441&#34;,&#34;MAT451&#34;,&#34;MAT399T&#34;,&#34;MAT431&#34;,&#34;MAT497&#34;,&#34;MAT498&#34;,&#34;MAT461&#34;,&#34;MAT494&#34;,&#34;MAT499T&#34;,&#34;MAT361&#34;,&#34;MAT352&#34;,&#34;MAT372&#34;,&#34;MAT370&#34;,&#34;MAT311&#34;,&#34;MAT312&#34;,&#34;Lab&#34;,&#34;Proofs&#34;,&#34;Calculus&#34;,&#34;sixCredits&#34;],&#34;group&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;]},&#34;edges&#34;:{&#34;from&#34;:[&#34;AppLab&#34;,&#34;MAT280&#34;,&#34;MAT282&#34;,&#34;MAT281&#34;,&#34;MAT283&#34;,&#34;MAT175&#34;,&#34;MAT275&#34;,&#34;MAT441&#34;,&#34;MAT451&#34;,&#34;MAT399T&#34;,&#34;MAT431&#34;,&#34;MAT497&#34;,&#34;MAT498&#34;,&#34;MAT461&#34;,&#34;MAT494&#34;,&#34;MAT499T&#34;,&#34;MAT361&#34;,&#34;MAT352&#34;,&#34;MAT372&#34;,&#34;MAT370&#34;,&#34;MAT311&#34;,&#34;MAT312&#34;,&#34;Lab&#34;,&#34;Proofs&#34;,&#34;Calculus&#34;,&#34;sixCredits&#34;],&#34;to&#34;:[&#34;Lab&#34;,&#34;Proofs&#34;,&#34;Proofs&#34;,&#34;Proofs&#34;,&#34;Proofs&#34;,&#34;Calculus&#34;,&#34;Calculus&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;Mathematics&#34;,&#34;Mathematics&#34;,&#34;Mathematics&#34;,&#34;Mathematics&#34;],&#34;label&#34;:[&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;]},&#34;nodesToDataframe&#34;:true,&#34;edgesToDataframe&#34;:true,&#34;options&#34;:{&#34;width&#34;:&#34;100%&#34;,&#34;height&#34;:&#34;100%&#34;,&#34;nodes&#34;:{&#34;shape&#34;:&#34;dot&#34;},&#34;manipulation&#34;:{&#34;enabled&#34;:false}},&#34;groups&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Component&#34;],&#34;width&#34;:null,&#34;height&#34;:null,&#34;idselection&#34;:{&#34;enabled&#34;:false},&#34;byselection&#34;:{&#34;enabled&#34;:false},&#34;main&#34;:null,&#34;submain&#34;:null,&#34;footer&#34;:null,&#34;background&#34;:&#34;rgba(0, 0, 0, 0)&#34;},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-5&#34;&gt;{&#34;x&#34;:{&#34;nodes&#34;:{&#34;id&#34;:[&#34;Mathematics&#34;,&#34;AppLab&#34;,&#34;MAT499T&#34;,&#34;MAT494&#34;,&#34;MAT461&#34;,&#34;MAT498&#34;,&#34;MAT497&#34;,&#34;MAT311&#34;,&#34;MAT312&#34;,&#34;MAT399T&#34;,&#34;MAT431&#34;,&#34;MAT441&#34;,&#34;MAT451&#34;,&#34;MAT352&#34;,&#34;MAT361&#34;,&#34;MAT370&#34;,&#34;MAT372&#34;,&#34;MAT283&#34;,&#34;MAT280&#34;,&#34;MAT281&#34;,&#34;MAT282&#34;,&#34;MAT275&#34;,&#34;MAT175&#34;,&#34;Lab&#34;,&#34;sixCredits&#34;,&#34;Proofs&#34;,&#34;Calculus&#34;],&#34;label&#34;:[&#34;Mathematics&#34;,&#34;AppLab&#34;,&#34;MAT499T&#34;,&#34;MAT494&#34;,&#34;MAT461&#34;,&#34;MAT498&#34;,&#34;MAT497&#34;,&#34;MAT311&#34;,&#34;MAT312&#34;,&#34;MAT399T&#34;,&#34;MAT431&#34;,&#34;MAT441&#34;,&#34;MAT451&#34;,&#34;MAT352&#34;,&#34;MAT361&#34;,&#34;MAT370&#34;,&#34;MAT372&#34;,&#34;MAT283&#34;,&#34;MAT280&#34;,&#34;MAT281&#34;,&#34;MAT282&#34;,&#34;MAT275&#34;,&#34;MAT175&#34;,&#34;Lab&#34;,&#34;sixCredits&#34;,&#34;Proofs&#34;,&#34;Calculus&#34;],&#34;group&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;]},&#34;edges&#34;:{&#34;from&#34;:[&#34;AppLab&#34;,&#34;MAT499T&#34;,&#34;MAT494&#34;,&#34;MAT461&#34;,&#34;MAT498&#34;,&#34;MAT497&#34;,&#34;MAT311&#34;,&#34;MAT312&#34;,&#34;MAT399T&#34;,&#34;MAT431&#34;,&#34;MAT441&#34;,&#34;MAT451&#34;,&#34;MAT352&#34;,&#34;MAT361&#34;,&#34;MAT370&#34;,&#34;MAT372&#34;,&#34;MAT283&#34;,&#34;MAT280&#34;,&#34;MAT281&#34;,&#34;MAT282&#34;,&#34;MAT275&#34;,&#34;MAT175&#34;,&#34;Lab&#34;,&#34;sixCredits&#34;,&#34;Proofs&#34;,&#34;Calculus&#34;],&#34;to&#34;:[&#34;Lab&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;sixCredits&#34;,&#34;Proofs&#34;,&#34;Proofs&#34;,&#34;Proofs&#34;,&#34;Proofs&#34;,&#34;Calculus&#34;,&#34;Calculus&#34;,&#34;Mathematics&#34;,&#34;Mathematics&#34;,&#34;Mathematics&#34;,&#34;Mathematics&#34;],&#34;label&#34;:[&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;]},&#34;nodesToDataframe&#34;:true,&#34;edgesToDataframe&#34;:true,&#34;options&#34;:{&#34;width&#34;:&#34;100%&#34;,&#34;height&#34;:&#34;100%&#34;,&#34;nodes&#34;:{&#34;shape&#34;:&#34;dot&#34;},&#34;manipulation&#34;:{&#34;enabled&#34;:false}},&#34;groups&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Component&#34;],&#34;width&#34;:null,&#34;height&#34;:null,&#34;idselection&#34;:{&#34;enabled&#34;:false},&#34;byselection&#34;:{&#34;enabled&#34;:false},&#34;main&#34;:null,&#34;submain&#34;:null,&#34;footer&#34;:null,&#34;background&#34;:&#34;rgba(0, 0, 0, 0)&#34;},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
 &lt;/div&gt;
 &lt;div id=&#34;physics&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Physics&lt;/h2&gt;
 &lt;div id=&#34;htmlwidget-6&#34; style=&#34;width:672px;height:480px;&#34; class=&#34;visNetwork html-widget&#34;&gt;&lt;/div&gt;
-&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-6&#34;&gt;{&#34;x&#34;:{&#34;nodes&#34;:{&#34;id&#34;:[&#34;Physics&#34;,&#34;PHY399T&#34;,&#34;PHY330&#34;,&#34;PHY450&#34;,&#34;PHY400&#34;,&#34;PHY496&#34;,&#34;PHY494&#34;,&#34;PHY499T&#34;,&#34;PHY497&#34;,&#34;PHY301&#34;,&#34;PHY313&#34;,&#34;PHY257&#34;,&#34;PHY294&#34;,&#34;PHY299T&#34;,&#34;PHY105&#34;,&#34;PHY100&#34;,&#34;PHY210&#34;,&#34;PHY199T&#34;,&#34;PHY199&#34;,&#34;PHY170&#34;,&#34;PHY231L&#34;,&#34;PHY231&#34;,&#34;PHY230L&#34;,&#34;PHY230&#34;,&#34;PHY240L&#34;,&#34;PHY240&#34;,&#34;PHY232L&#34;,&#34;PHY232&#34;,&#34;PHY272L&#34;,&#34;MAT275&#34;,&#34;MAT175&#34;,&#34;PHY271L&#34;,&#34;PHY272&#34;,&#34;MAT352&#34;,&#34;PHY271&#34;,&#34;sixCredit&#34;,&#34;threeCredit&#34;,&#34;req&#34;],&#34;label&#34;:[&#34;Physics&#34;,&#34;PHY399T&#34;,&#34;PHY330&#34;,&#34;PHY450&#34;,&#34;PHY400&#34;,&#34;PHY496&#34;,&#34;PHY494&#34;,&#34;PHY499T&#34;,&#34;PHY497&#34;,&#34;PHY301&#34;,&#34;PHY313&#34;,&#34;PHY257&#34;,&#34;PHY294&#34;,&#34;PHY299T&#34;,&#34;PHY105&#34;,&#34;PHY100&#34;,&#34;PHY210&#34;,&#34;PHY199T&#34;,&#34;PHY199&#34;,&#34;PHY170&#34;,&#34;PHY231L&#34;,&#34;PHY231&#34;,&#34;PHY230L&#34;,&#34;PHY230&#34;,&#34;PHY240L&#34;,&#34;PHY240&#34;,&#34;PHY232L&#34;,&#34;PHY232&#34;,&#34;PHY272L&#34;,&#34;MAT275&#34;,&#34;MAT175&#34;,&#34;PHY271L&#34;,&#34;PHY272&#34;,&#34;MAT352&#34;,&#34;PHY271&#34;,&#34;sixCredit&#34;,&#34;threeCredit&#34;,&#34;req&#34;],&#34;group&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;]},&#34;edges&#34;:{&#34;from&#34;:[&#34;PHY399T&#34;,&#34;PHY330&#34;,&#34;PHY450&#34;,&#34;PHY400&#34;,&#34;PHY496&#34;,&#34;PHY494&#34;,&#34;PHY499T&#34;,&#34;PHY497&#34;,&#34;PHY301&#34;,&#34;PHY313&#34;,&#34;PHY257&#34;,&#34;PHY294&#34;,&#34;PHY299T&#34;,&#34;PHY301&#34;,&#34;PHY313&#34;,&#34;PHY330&#34;,&#34;PHY399T&#34;,&#34;PHY400&#34;,&#34;PHY450&#34;,&#34;PHY494&#34;,&#34;PHY496&#34;,&#34;PHY497&#34;,&#34;PHY499T&#34;,&#34;PHY105&#34;,&#34;PHY100&#34;,&#34;PHY210&#34;,&#34;PHY199T&#34;,&#34;PHY199&#34;,&#34;PHY170&#34;,&#34;PHY231L&#34;,&#34;PHY231&#34;,&#34;PHY230L&#34;,&#34;PHY230&#34;,&#34;PHY240L&#34;,&#34;PHY240&#34;,&#34;PHY232L&#34;,&#34;PHY232&#34;,&#34;PHY272L&#34;,&#34;MAT275&#34;,&#34;MAT175&#34;,&#34;PHY271L&#34;,&#34;PHY272&#34;,&#34;MAT352&#34;,&#34;PHY271&#34;,&#34;sixCredit&#34;,&#34;threeCredit&#34;,&#34;req&#34;],&#34;to&#34;:[&#34;sixCredit&#34;,&#34;sixCredit&#34;,&#34;sixCredit&#34;,&#34;sixCredit&#34;,&#34;sixCredit&#34;,&#34;sixCredit&#34;,&#34;sixCredit&#34;,&#34;sixCredit&#34;,&#34;sixCredit&#34;,&#34;sixCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;req&#34;,&#34;req&#34;,&#34;req&#34;,&#34;req&#34;,&#34;req&#34;,&#34;req&#34;,&#34;req&#34;,&#34;Physics&#34;,&#34;Physics&#34;,&#34;Physics&#34;],&#34;label&#34;:[&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;]},&#34;nodesToDataframe&#34;:true,&#34;edgesToDataframe&#34;:true,&#34;options&#34;:{&#34;width&#34;:&#34;100%&#34;,&#34;height&#34;:&#34;100%&#34;,&#34;nodes&#34;:{&#34;shape&#34;:&#34;dot&#34;},&#34;manipulation&#34;:{&#34;enabled&#34;:false}},&#34;groups&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Component&#34;],&#34;width&#34;:null,&#34;height&#34;:null,&#34;idselection&#34;:{&#34;enabled&#34;:false},&#34;byselection&#34;:{&#34;enabled&#34;:false},&#34;main&#34;:null,&#34;submain&#34;:null,&#34;footer&#34;:null,&#34;background&#34;:&#34;rgba(0, 0, 0, 0)&#34;},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-6&#34;&gt;{&#34;x&#34;:{&#34;nodes&#34;:{&#34;id&#34;:[&#34;Physics&#34;,&#34;PHY494&#34;,&#34;PHY496&#34;,&#34;PHY497&#34;,&#34;PHY499T&#34;,&#34;PHY313&#34;,&#34;PHY301&#34;,&#34;PHY450&#34;,&#34;PHY400&#34;,&#34;PHY399T&#34;,&#34;PHY330&#34;,&#34;MAT175&#34;,&#34;MAT275&#34;,&#34;PHY272L&#34;,&#34;PHY271&#34;,&#34;MAT352&#34;,&#34;PHY272&#34;,&#34;PHY271L&#34;,&#34;PHY199T&#34;,&#34;PHY210&#34;,&#34;PHY170&#34;,&#34;PHY199&#34;,&#34;PHY231&#34;,&#34;PHY231L&#34;,&#34;PHY230&#34;,&#34;PHY230L&#34;,&#34;PHY240&#34;,&#34;PHY240L&#34;,&#34;PHY232&#34;,&#34;PHY232L&#34;,&#34;PHY299T&#34;,&#34;PHY257&#34;,&#34;PHY294&#34;,&#34;PHY100&#34;,&#34;PHY105&#34;,&#34;sixCredit&#34;,&#34;req&#34;,&#34;threeCredit&#34;],&#34;label&#34;:[&#34;Physics&#34;,&#34;PHY494&#34;,&#34;PHY496&#34;,&#34;PHY497&#34;,&#34;PHY499T&#34;,&#34;PHY313&#34;,&#34;PHY301&#34;,&#34;PHY450&#34;,&#34;PHY400&#34;,&#34;PHY399T&#34;,&#34;PHY330&#34;,&#34;MAT175&#34;,&#34;MAT275&#34;,&#34;PHY272L&#34;,&#34;PHY271&#34;,&#34;MAT352&#34;,&#34;PHY272&#34;,&#34;PHY271L&#34;,&#34;PHY199T&#34;,&#34;PHY210&#34;,&#34;PHY170&#34;,&#34;PHY199&#34;,&#34;PHY231&#34;,&#34;PHY231L&#34;,&#34;PHY230&#34;,&#34;PHY230L&#34;,&#34;PHY240&#34;,&#34;PHY240L&#34;,&#34;PHY232&#34;,&#34;PHY232L&#34;,&#34;PHY299T&#34;,&#34;PHY257&#34;,&#34;PHY294&#34;,&#34;PHY100&#34;,&#34;PHY105&#34;,&#34;sixCredit&#34;,&#34;req&#34;,&#34;threeCredit&#34;],&#34;group&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;]},&#34;edges&#34;:{&#34;from&#34;:[&#34;PHY494&#34;,&#34;PHY496&#34;,&#34;PHY497&#34;,&#34;PHY499T&#34;,&#34;PHY313&#34;,&#34;PHY301&#34;,&#34;PHY450&#34;,&#34;PHY400&#34;,&#34;PHY399T&#34;,&#34;PHY330&#34;,&#34;MAT175&#34;,&#34;MAT275&#34;,&#34;PHY272L&#34;,&#34;PHY271&#34;,&#34;MAT352&#34;,&#34;PHY272&#34;,&#34;PHY271L&#34;,&#34;PHY400&#34;,&#34;PHY399T&#34;,&#34;PHY330&#34;,&#34;PHY313&#34;,&#34;PHY497&#34;,&#34;PHY496&#34;,&#34;PHY494&#34;,&#34;PHY450&#34;,&#34;PHY499T&#34;,&#34;PHY199T&#34;,&#34;PHY210&#34;,&#34;PHY170&#34;,&#34;PHY199&#34;,&#34;PHY231&#34;,&#34;PHY231L&#34;,&#34;PHY230&#34;,&#34;PHY230L&#34;,&#34;PHY240&#34;,&#34;PHY240L&#34;,&#34;PHY232&#34;,&#34;PHY232L&#34;,&#34;PHY299T&#34;,&#34;PHY301&#34;,&#34;PHY257&#34;,&#34;PHY294&#34;,&#34;PHY100&#34;,&#34;PHY105&#34;,&#34;sixCredit&#34;,&#34;req&#34;,&#34;threeCredit&#34;],&#34;to&#34;:[&#34;sixCredit&#34;,&#34;sixCredit&#34;,&#34;sixCredit&#34;,&#34;sixCredit&#34;,&#34;sixCredit&#34;,&#34;sixCredit&#34;,&#34;sixCredit&#34;,&#34;sixCredit&#34;,&#34;sixCredit&#34;,&#34;sixCredit&#34;,&#34;req&#34;,&#34;req&#34;,&#34;req&#34;,&#34;req&#34;,&#34;req&#34;,&#34;req&#34;,&#34;req&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;Physics&#34;,&#34;Physics&#34;,&#34;Physics&#34;],&#34;label&#34;:[&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;]},&#34;nodesToDataframe&#34;:true,&#34;edgesToDataframe&#34;:true,&#34;options&#34;:{&#34;width&#34;:&#34;100%&#34;,&#34;height&#34;:&#34;100%&#34;,&#34;nodes&#34;:{&#34;shape&#34;:&#34;dot&#34;},&#34;manipulation&#34;:{&#34;enabled&#34;:false}},&#34;groups&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Component&#34;],&#34;width&#34;:null,&#34;height&#34;:null,&#34;idselection&#34;:{&#34;enabled&#34;:false},&#34;byselection&#34;:{&#34;enabled&#34;:false},&#34;main&#34;:null,&#34;submain&#34;:null,&#34;footer&#34;:null,&#34;background&#34;:&#34;rgba(0, 0, 0, 0)&#34;},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
 &lt;/div&gt;
 &lt;div id=&#34;physical-science&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Physical Science&lt;/h2&gt;
 &lt;div id=&#34;htmlwidget-7&#34; style=&#34;width:672px;height:480px;&#34; class=&#34;visNetwork html-widget&#34;&gt;&lt;/div&gt;
-&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-7&#34;&gt;{&#34;x&#34;:{&#34;nodes&#34;:{&#34;id&#34;:[&#34;Physical Science&#34;,&#34;PHY499T&#34;,&#34;PHY497&#34;,&#34;PHY399T&#34;,&#34;PHY330&#34;,&#34;PHY313&#34;,&#34;PHY301&#34;,&#34;PHY496&#34;,&#34;PHY494&#34;,&#34;PHY450&#34;,&#34;PHY400&#34;,&#34;GEO410L&#34;,&#34;GEO410&#34;,&#34;PHY100&#34;,&#34;GEO494&#34;,&#34;PHY170&#34;,&#34;PHY105&#34;,&#34;PHY199T&#34;,&#34;PHY199&#34;,&#34;CHE499T&#34;,&#34;CHE497&#34;,&#34;GEO101&#34;,&#34;CHE499T.1&#34;,&#34;GEO150&#34;,&#34;GEO101L&#34;,&#34;GEO320&#34;,&#34;GEO310&#34;,&#34;PHY240L&#34;,&#34;CHE124L&#34;,&#34;CHE124&#34;,&#34;CHE399T.1&#34;,&#34;CHE399T&#34;,&#34;CHE401&#34;,&#34;CHE399T.2&#34;,&#34;CHE412&#34;,&#34;CHE401L&#34;,&#34;CHE420&#34;,&#34;CHE412L&#34;,&#34;CHE464&#34;,&#34;CHE420L&#34;,&#34;CHE465&#34;,&#34;CHE464L&#34;,&#34;CHE490&#34;,&#34;CHE465L&#34;,&#34;CHE495&#34;,&#34;CHE494&#34;,&#34;CHE141&#34;,&#34;CHE142&#34;,&#34;CHE199T&#34;,&#34;CHE252&#34;,&#34;CHE252L&#34;,&#34;CHE294&#34;,&#34;CHE299T&#34;,&#34;CHE301&#34;,&#34;CHE301L&#34;,&#34;CHE302&#34;,&#34;CHE302L&#34;,&#34;CHE352&#34;,&#34;CHE352L&#34;,&#34;CHE394&#34;,&#34;CHE395&#34;,&#34;CHE397&#34;,&#34;PHY240&#34;,&#34;PHY232L&#34;,&#34;PHY232&#34;,&#34;PHY231L&#34;,&#34;PHY231&#34;,&#34;PHY230L&#34;,&#34;PHY230&#34;,&#34;PHY210&#34;,&#34;PHY299T&#34;,&#34;PHY294&#34;,&#34;PHY272L&#34;,&#34;PHY272&#34;,&#34;PHY271L&#34;,&#34;PHY271&#34;,&#34;PHY257&#34;,&#34;MAT150&#34;,&#34;threeCredit&#34;,&#34;req&#34;,&#34;takeTwo&#34;],&#34;label&#34;:[&#34;Physical Science&#34;,&#34;PHY499T&#34;,&#34;PHY497&#34;,&#34;PHY399T&#34;,&#34;PHY330&#34;,&#34;PHY313&#34;,&#34;PHY301&#34;,&#34;PHY496&#34;,&#34;PHY494&#34;,&#34;PHY450&#34;,&#34;PHY400&#34;,&#34;GEO410L&#34;,&#34;GEO410&#34;,&#34;PHY100&#34;,&#34;GEO494&#34;,&#34;PHY170&#34;,&#34;PHY105&#34;,&#34;PHY199T&#34;,&#34;PHY199&#34;,&#34;CHE499T&#34;,&#34;CHE497&#34;,&#34;GEO101&#34;,&#34;CHE499T.1&#34;,&#34;GEO150&#34;,&#34;GEO101L&#34;,&#34;GEO320&#34;,&#34;GEO310&#34;,&#34;PHY240L&#34;,&#34;CHE124L&#34;,&#34;CHE124&#34;,&#34;CHE399T.1&#34;,&#34;CHE399T&#34;,&#34;CHE401&#34;,&#34;CHE399T.2&#34;,&#34;CHE412&#34;,&#34;CHE401L&#34;,&#34;CHE420&#34;,&#34;CHE412L&#34;,&#34;CHE464&#34;,&#34;CHE420L&#34;,&#34;CHE465&#34;,&#34;CHE464L&#34;,&#34;CHE490&#34;,&#34;CHE465L&#34;,&#34;CHE495&#34;,&#34;CHE494&#34;,&#34;CHE141&#34;,&#34;CHE142&#34;,&#34;CHE199T&#34;,&#34;CHE252&#34;,&#34;CHE252L&#34;,&#34;CHE294&#34;,&#34;CHE299T&#34;,&#34;CHE301&#34;,&#34;CHE301L&#34;,&#34;CHE302&#34;,&#34;CHE302L&#34;,&#34;CHE352&#34;,&#34;CHE352L&#34;,&#34;CHE394&#34;,&#34;CHE395&#34;,&#34;CHE397&#34;,&#34;PHY240&#34;,&#34;PHY232L&#34;,&#34;PHY232&#34;,&#34;PHY231L&#34;,&#34;PHY231&#34;,&#34;PHY230L&#34;,&#34;PHY230&#34;,&#34;PHY210&#34;,&#34;PHY299T&#34;,&#34;PHY294&#34;,&#34;PHY272L&#34;,&#34;PHY272&#34;,&#34;PHY271L&#34;,&#34;PHY271&#34;,&#34;PHY257&#34;,&#34;MAT150&#34;,&#34;threeCredit&#34;,&#34;req&#34;,&#34;takeTwo&#34;],&#34;group&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;]},&#34;edges&#34;:{&#34;from&#34;:[&#34;PHY499T&#34;,&#34;PHY497&#34;,&#34;PHY399T&#34;,&#34;PHY330&#34;,&#34;PHY313&#34;,&#34;PHY301&#34;,&#34;PHY496&#34;,&#34;PHY494&#34;,&#34;PHY450&#34;,&#34;PHY400&#34;,&#34;GEO410L&#34;,&#34;GEO410&#34;,&#34;PHY100&#34;,&#34;GEO494&#34;,&#34;PHY170&#34;,&#34;PHY105&#34;,&#34;PHY199T&#34;,&#34;PHY199&#34;,&#34;CHE499T&#34;,&#34;CHE497&#34;,&#34;GEO101&#34;,&#34;CHE499T.1&#34;,&#34;GEO150&#34;,&#34;GEO101L&#34;,&#34;GEO320&#34;,&#34;GEO310&#34;,&#34;PHY240L&#34;,&#34;CHE124L&#34;,&#34;CHE124&#34;,&#34;CHE399T.1&#34;,&#34;CHE399T&#34;,&#34;CHE401&#34;,&#34;CHE399T.2&#34;,&#34;CHE412&#34;,&#34;CHE401L&#34;,&#34;CHE420&#34;,&#34;CHE412L&#34;,&#34;CHE464&#34;,&#34;CHE420L&#34;,&#34;CHE465&#34;,&#34;CHE464L&#34;,&#34;CHE490&#34;,&#34;CHE465L&#34;,&#34;CHE495&#34;,&#34;CHE494&#34;,&#34;CHE141&#34;,&#34;CHE142&#34;,&#34;CHE199T&#34;,&#34;CHE252&#34;,&#34;CHE252L&#34;,&#34;CHE294&#34;,&#34;CHE299T&#34;,&#34;CHE301&#34;,&#34;CHE301L&#34;,&#34;CHE302&#34;,&#34;CHE302L&#34;,&#34;CHE352&#34;,&#34;CHE352L&#34;,&#34;CHE394&#34;,&#34;CHE395&#34;,&#34;CHE397&#34;,&#34;PHY240&#34;,&#34;PHY232L&#34;,&#34;PHY232&#34;,&#34;PHY231L&#34;,&#34;PHY231&#34;,&#34;PHY230L&#34;,&#34;PHY230&#34;,&#34;PHY210&#34;,&#34;PHY299T&#34;,&#34;PHY294&#34;,&#34;PHY272L&#34;,&#34;PHY272&#34;,&#34;PHY271L&#34;,&#34;PHY271&#34;,&#34;PHY257&#34;,&#34;MAT150&#34;,&#34;PHY272L&#34;,&#34;PHY232L&#34;,&#34;PHY271&#34;,&#34;PHY271L&#34;,&#34;PHY272&#34;,&#34;CHE142&#34;,&#34;PHY231&#34;,&#34;PHY231L&#34;,&#34;PHY232&#34;,&#34;CHE141&#34;,&#34;threeCredit&#34;,&#34;req&#34;,&#34;takeTwo&#34;],&#34;to&#34;:[&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;req&#34;,&#34;takeTwo&#34;,&#34;takeTwo&#34;,&#34;takeTwo&#34;,&#34;takeTwo&#34;,&#34;takeTwo&#34;,&#34;takeTwo&#34;,&#34;takeTwo&#34;,&#34;takeTwo&#34;,&#34;takeTwo&#34;,&#34;takeTwo&#34;,&#34;Physical Science&#34;,&#34;Physical Science&#34;,&#34;Physical Science&#34;],&#34;label&#34;:[&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;]},&#34;nodesToDataframe&#34;:true,&#34;edgesToDataframe&#34;:true,&#34;options&#34;:{&#34;width&#34;:&#34;100%&#34;,&#34;height&#34;:&#34;100%&#34;,&#34;nodes&#34;:{&#34;shape&#34;:&#34;dot&#34;},&#34;manipulation&#34;:{&#34;enabled&#34;:false}},&#34;groups&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Component&#34;],&#34;width&#34;:null,&#34;height&#34;:null,&#34;idselection&#34;:{&#34;enabled&#34;:false},&#34;byselection&#34;:{&#34;enabled&#34;:false},&#34;main&#34;:null,&#34;submain&#34;:null,&#34;footer&#34;:null,&#34;background&#34;:&#34;rgba(0, 0, 0, 0)&#34;},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-7&#34;&gt;{&#34;x&#34;:{&#34;nodes&#34;:{&#34;id&#34;:[&#34;Physical Science&#34;,&#34;MAT150&#34;,&#34;CHE141&#34;,&#34;PHY272L&#34;,&#34;PHY271&#34;,&#34;PHY232L&#34;,&#34;PHY272&#34;,&#34;PHY271L&#34;,&#34;PHY231&#34;,&#34;CHE142&#34;,&#34;PHY232&#34;,&#34;PHY231L&#34;,&#34;PHY299T&#34;,&#34;PHY294&#34;,&#34;PHY313&#34;,&#34;PHY301&#34;,&#34;PHY399T&#34;,&#34;PHY330&#34;,&#34;PHY240&#34;,&#34;PHY257&#34;,&#34;PHY240L&#34;,&#34;PHY400&#34;,&#34;PHY450&#34;,&#34;PHY494&#34;,&#34;PHY496&#34;,&#34;PHY497&#34;,&#34;PHY499T&#34;,&#34;GEO101&#34;,&#34;CHE499T.1&#34;,&#34;CHE499T&#34;,&#34;CHE497&#34;,&#34;CHE495&#34;,&#34;CHE301&#34;,&#34;CHE299T&#34;,&#34;CHE294&#34;,&#34;CHE252L&#34;,&#34;CHE352&#34;,&#34;CHE302L&#34;,&#34;CHE302&#34;,&#34;CHE301L&#34;,&#34;CHE397&#34;,&#34;CHE395&#34;,&#34;CHE394&#34;,&#34;CHE352L&#34;,&#34;CHE401&#34;,&#34;CHE399T.2&#34;,&#34;CHE399T.1&#34;,&#34;CHE399T&#34;,&#34;CHE124L&#34;,&#34;CHE124&#34;,&#34;CHE199T&#34;,&#34;CHE252&#34;,&#34;GEO150&#34;,&#34;GEO101L&#34;,&#34;GEO320&#34;,&#34;GEO310&#34;,&#34;GEO410L&#34;,&#34;GEO410&#34;,&#34;PHY100&#34;,&#34;GEO494&#34;,&#34;PHY170&#34;,&#34;PHY105&#34;,&#34;PHY199T&#34;,&#34;PHY199&#34;,&#34;PHY230&#34;,&#34;PHY210&#34;,&#34;PHY230L&#34;,&#34;CHE401L&#34;,&#34;CHE412&#34;,&#34;CHE412L&#34;,&#34;CHE420&#34;,&#34;CHE420L&#34;,&#34;CHE464&#34;,&#34;CHE464L&#34;,&#34;CHE465&#34;,&#34;CHE465L&#34;,&#34;CHE490&#34;,&#34;CHE494&#34;,&#34;req&#34;,&#34;takeTwo&#34;,&#34;threeCredit&#34;],&#34;label&#34;:[&#34;Physical Science&#34;,&#34;MAT150&#34;,&#34;CHE141&#34;,&#34;PHY272L&#34;,&#34;PHY271&#34;,&#34;PHY232L&#34;,&#34;PHY272&#34;,&#34;PHY271L&#34;,&#34;PHY231&#34;,&#34;CHE142&#34;,&#34;PHY232&#34;,&#34;PHY231L&#34;,&#34;PHY299T&#34;,&#34;PHY294&#34;,&#34;PHY313&#34;,&#34;PHY301&#34;,&#34;PHY399T&#34;,&#34;PHY330&#34;,&#34;PHY240&#34;,&#34;PHY257&#34;,&#34;PHY240L&#34;,&#34;PHY400&#34;,&#34;PHY450&#34;,&#34;PHY494&#34;,&#34;PHY496&#34;,&#34;PHY497&#34;,&#34;PHY499T&#34;,&#34;GEO101&#34;,&#34;CHE499T.1&#34;,&#34;CHE499T&#34;,&#34;CHE497&#34;,&#34;CHE495&#34;,&#34;CHE301&#34;,&#34;CHE299T&#34;,&#34;CHE294&#34;,&#34;CHE252L&#34;,&#34;CHE352&#34;,&#34;CHE302L&#34;,&#34;CHE302&#34;,&#34;CHE301L&#34;,&#34;CHE397&#34;,&#34;CHE395&#34;,&#34;CHE394&#34;,&#34;CHE352L&#34;,&#34;CHE401&#34;,&#34;CHE399T.2&#34;,&#34;CHE399T.1&#34;,&#34;CHE399T&#34;,&#34;CHE124L&#34;,&#34;CHE124&#34;,&#34;CHE199T&#34;,&#34;CHE252&#34;,&#34;GEO150&#34;,&#34;GEO101L&#34;,&#34;GEO320&#34;,&#34;GEO310&#34;,&#34;GEO410L&#34;,&#34;GEO410&#34;,&#34;PHY100&#34;,&#34;GEO494&#34;,&#34;PHY170&#34;,&#34;PHY105&#34;,&#34;PHY199T&#34;,&#34;PHY199&#34;,&#34;PHY230&#34;,&#34;PHY210&#34;,&#34;PHY230L&#34;,&#34;CHE401L&#34;,&#34;CHE412&#34;,&#34;CHE412L&#34;,&#34;CHE420&#34;,&#34;CHE420L&#34;,&#34;CHE464&#34;,&#34;CHE464L&#34;,&#34;CHE465&#34;,&#34;CHE465L&#34;,&#34;CHE490&#34;,&#34;CHE494&#34;,&#34;req&#34;,&#34;takeTwo&#34;,&#34;threeCredit&#34;],&#34;group&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;]},&#34;edges&#34;:{&#34;from&#34;:[&#34;MAT150&#34;,&#34;CHE141&#34;,&#34;PHY272L&#34;,&#34;PHY271&#34;,&#34;PHY232L&#34;,&#34;PHY272&#34;,&#34;PHY271L&#34;,&#34;PHY231&#34;,&#34;CHE142&#34;,&#34;PHY232&#34;,&#34;PHY231L&#34;,&#34;PHY272L&#34;,&#34;PHY272&#34;,&#34;PHY299T&#34;,&#34;PHY294&#34;,&#34;PHY313&#34;,&#34;PHY301&#34;,&#34;PHY399T&#34;,&#34;PHY330&#34;,&#34;PHY232&#34;,&#34;PHY231L&#34;,&#34;PHY240&#34;,&#34;PHY232L&#34;,&#34;PHY257&#34;,&#34;PHY240L&#34;,&#34;PHY271L&#34;,&#34;PHY271&#34;,&#34;PHY400&#34;,&#34;PHY450&#34;,&#34;PHY494&#34;,&#34;PHY496&#34;,&#34;PHY497&#34;,&#34;PHY499T&#34;,&#34;GEO101&#34;,&#34;CHE499T.1&#34;,&#34;CHE499T&#34;,&#34;CHE497&#34;,&#34;CHE495&#34;,&#34;CHE301&#34;,&#34;CHE299T&#34;,&#34;CHE294&#34;,&#34;CHE252L&#34;,&#34;CHE352&#34;,&#34;CHE302L&#34;,&#34;CHE302&#34;,&#34;CHE301L&#34;,&#34;CHE397&#34;,&#34;CHE395&#34;,&#34;CHE394&#34;,&#34;CHE352L&#34;,&#34;CHE401&#34;,&#34;CHE399T.2&#34;,&#34;CHE399T.1&#34;,&#34;CHE399T&#34;,&#34;CHE124L&#34;,&#34;CHE124&#34;,&#34;CHE199T&#34;,&#34;CHE252&#34;,&#34;CHE141&#34;,&#34;CHE142&#34;,&#34;GEO150&#34;,&#34;GEO101L&#34;,&#34;GEO320&#34;,&#34;GEO310&#34;,&#34;GEO410L&#34;,&#34;GEO410&#34;,&#34;PHY100&#34;,&#34;GEO494&#34;,&#34;PHY170&#34;,&#34;PHY105&#34;,&#34;PHY199T&#34;,&#34;PHY199&#34;,&#34;PHY230&#34;,&#34;PHY210&#34;,&#34;PHY231&#34;,&#34;PHY230L&#34;,&#34;CHE401L&#34;,&#34;CHE412&#34;,&#34;CHE412L&#34;,&#34;CHE420&#34;,&#34;CHE420L&#34;,&#34;CHE464&#34;,&#34;CHE464L&#34;,&#34;CHE465&#34;,&#34;CHE465L&#34;,&#34;CHE490&#34;,&#34;CHE494&#34;,&#34;req&#34;,&#34;takeTwo&#34;,&#34;threeCredit&#34;],&#34;to&#34;:[&#34;req&#34;,&#34;takeTwo&#34;,&#34;takeTwo&#34;,&#34;takeTwo&#34;,&#34;takeTwo&#34;,&#34;takeTwo&#34;,&#34;takeTwo&#34;,&#34;takeTwo&#34;,&#34;takeTwo&#34;,&#34;takeTwo&#34;,&#34;takeTwo&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;threeCredit&#34;,&#34;Physical Science&#34;,&#34;Physical Science&#34;,&#34;Physical Science&#34;],&#34;label&#34;:[&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;]},&#34;nodesToDataframe&#34;:true,&#34;edgesToDataframe&#34;:true,&#34;options&#34;:{&#34;width&#34;:&#34;100%&#34;,&#34;height&#34;:&#34;100%&#34;,&#34;nodes&#34;:{&#34;shape&#34;:&#34;dot&#34;},&#34;manipulation&#34;:{&#34;enabled&#34;:false}},&#34;groups&#34;:[&#34;Minor&#34;,&#34;Course&#34;,&#34;Component&#34;],&#34;width&#34;:null,&#34;height&#34;:null,&#34;idselection&#34;:{&#34;enabled&#34;:false},&#34;byselection&#34;:{&#34;enabled&#34;:false},&#34;main&#34;:null,&#34;submain&#34;:null,&#34;footer&#34;:null,&#34;background&#34;:&#34;rgba(0, 0, 0, 0)&#34;},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
 &lt;/div&gt;
 &lt;div id=&#34;closing-thoughts&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Closing Thoughts&lt;/h2&gt;
@@ -37782,13 +38361,16 @@ minorVis &amp;lt;- function(minorName){
       <pubDate>Sat, 05 May 2018 00:00:00 +0000</pubDate>
       
       <guid>/post/2018-05-05-counting-class/</guid>
-      <description>&lt;p&gt;At the College of Idaho, there’s been discussion about visualizing the curriculum as well as understanding the curriculum. Naturally this interests me as a chance to wallow in some complicated data (students are required to complete a major and 3 minors across 4 “peaks” rather than complete courses from a traditional “core”). I thought using R and a Neo4j graph database would be useful (something to look forward to) - but first I needed to get data from the catalogue!&lt;/p&gt;
+      <description>&lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;p&gt;At the College of Idaho, there’s been discussion about visualizing the curriculum as well as understanding the curriculum. Naturally this interests me as a chance to wallow in some complicated data (students are required to complete a major and 3 minors across 4 “peaks” rather than complete courses from a traditional “core”). I thought using R and a Neo4j graph database would be useful (something to look forward to) - but first I needed to get data from the catalogue!&lt;/p&gt;
 &lt;div id=&#34;web-scraping&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;Web Scraping&lt;/h1&gt;
 &lt;p&gt;Web scraping is one the essential data science skills that I’m not as fluent in as I would like to be, so getting the course data from the catalogue is a nice chance to hone my skills. The &lt;code&gt;rvest&lt;/code&gt; package (from Hadley Wickham) is a great tool for web scraping in R and combines well with &lt;code&gt;stringr&lt;/code&gt; text manipulation functions and the &lt;code&gt;SelectorGadget&lt;/code&gt; chrome extension.&lt;/p&gt;
 &lt;p&gt;We’ll start by getting a list of all subjects in the catalogue, with links to the subject page which has the class list in that subject.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;base_url &amp;lt;- &amp;quot;http://collegeofidaho.smartcatalogiq.com&amp;quot;
-base_url_ext &amp;lt;- &amp;quot;/en/current/Undergraduate-Catalog/Courses&amp;quot;
+base_url_ext &amp;lt;- &amp;quot;/en/2017-2018/Undergraduate-Catalog/Courses&amp;quot;
 
 #read base page
 base_html &amp;lt;- read_html(paste0(base_url,base_url_ext))
@@ -37832,7 +38414,7 @@ ACC
 Accounting
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-&lt;a href=&#34;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting&#34; class=&#34;uri&#34;&gt;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting&lt;/a&gt;
+&lt;a href=&#34;http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ACC-Accounting&#34; class=&#34;uri&#34;&gt;http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ACC-Accounting&lt;/a&gt;
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -37843,7 +38425,7 @@ ART
 Art
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-&lt;a href=&#34;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ART-Art&#34; class=&#34;uri&#34;&gt;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ART-Art&lt;/a&gt;
+&lt;a href=&#34;http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ART-Art&#34; class=&#34;uri&#34;&gt;http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ART-Art&lt;/a&gt;
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -37854,7 +38436,7 @@ ASN
 Asian Studies
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-&lt;a href=&#34;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ASN-Asian-Studies&#34; class=&#34;uri&#34;&gt;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ASN-Asian-Studies&lt;/a&gt;
+&lt;a href=&#34;http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ASN-Asian-Studies&#34; class=&#34;uri&#34;&gt;http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ASN-Asian-Studies&lt;/a&gt;
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -37865,7 +38447,7 @@ ATH
 Anthropology
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-&lt;a href=&#34;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ATH-Anthropology&#34; class=&#34;uri&#34;&gt;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ATH-Anthropology&lt;/a&gt;
+&lt;a href=&#34;http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ATH-Anthropology&#34; class=&#34;uri&#34;&gt;http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ATH-Anthropology&lt;/a&gt;
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -37876,7 +38458,7 @@ ATHSOC
 Anthropology Sociology
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-&lt;a href=&#34;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ATHSOC-Anthropology-Sociology&#34; class=&#34;uri&#34;&gt;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ATHSOC-Anthropology-Sociology&lt;/a&gt;
+&lt;a href=&#34;http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ATHSOC-Anthropology-Sociology&#34; class=&#34;uri&#34;&gt;http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ATHSOC-Anthropology-Sociology&lt;/a&gt;
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -37887,7 +38469,7 @@ BIO
 Biology
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-&lt;a href=&#34;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/BIO-Biology&#34; class=&#34;uri&#34;&gt;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/BIO-Biology&lt;/a&gt;
+&lt;a href=&#34;http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/BIO-Biology&#34; class=&#34;uri&#34;&gt;http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/BIO-Biology&lt;/a&gt;
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
@@ -37970,7 +38552,7 @@ ACC
 Financial Accounting
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-&lt;a href=&#34;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting/200/ACC-221&#34; class=&#34;uri&#34;&gt;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting/200/ACC-221&lt;/a&gt;
+&lt;a href=&#34;http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ACC-Accounting/200/ACC-221&#34; class=&#34;uri&#34;&gt;http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ACC-Accounting/200/ACC-221&lt;/a&gt;
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
 200
@@ -37987,7 +38569,7 @@ ACC
 Managerial Accounting
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-&lt;a href=&#34;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting/200/ACC-222&#34; class=&#34;uri&#34;&gt;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting/200/ACC-222&lt;/a&gt;
+&lt;a href=&#34;http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ACC-Accounting/200/ACC-222&#34; class=&#34;uri&#34;&gt;http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ACC-Accounting/200/ACC-222&lt;/a&gt;
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
 200
@@ -38004,7 +38586,7 @@ ACC
 Intermediate Accounting I
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-&lt;a href=&#34;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting/300/ACC-318&#34; class=&#34;uri&#34;&gt;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting/300/ACC-318&lt;/a&gt;
+&lt;a href=&#34;http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ACC-Accounting/300/ACC-318&#34; class=&#34;uri&#34;&gt;http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ACC-Accounting/300/ACC-318&lt;/a&gt;
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
 300
@@ -38021,7 +38603,7 @@ ACC
 Intermediate Accounting II
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-&lt;a href=&#34;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting/300/ACC-320&#34; class=&#34;uri&#34;&gt;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting/300/ACC-320&lt;/a&gt;
+&lt;a href=&#34;http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ACC-Accounting/300/ACC-320&#34; class=&#34;uri&#34;&gt;http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ACC-Accounting/300/ACC-320&lt;/a&gt;
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
 300
@@ -38038,7 +38620,7 @@ ACC
 Electronic Accounting &amp;amp; Analysis
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-&lt;a href=&#34;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting/300/ACC-323&#34; class=&#34;uri&#34;&gt;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting/300/ACC-323&lt;/a&gt;
+&lt;a href=&#34;http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ACC-Accounting/300/ACC-323&#34; class=&#34;uri&#34;&gt;http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ACC-Accounting/300/ACC-323&lt;/a&gt;
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
 300
@@ -38055,7 +38637,7 @@ ACC
 Auditing
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-&lt;a href=&#34;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting/400/ACC-423&#34; class=&#34;uri&#34;&gt;http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting/400/ACC-423&lt;/a&gt;
+&lt;a href=&#34;http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ACC-Accounting/400/ACC-423&#34; class=&#34;uri&#34;&gt;http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ACC-Accounting/400/ACC-423&lt;/a&gt;
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
 400
@@ -38067,7 +38649,7 @@ Auditing
 &lt;/div&gt;
 &lt;div id=&#34;the-counts&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;The Counts&lt;/h1&gt;
-&lt;p&gt;I should mention that this data is all from the current (2017-2018) catalogue, so it doesn’t reflect courses added, removed, or changed during this academic year. The most basic question is how many classes does CofI offer? Well, the 43 subjects offer 1034 courses, but how are they distributed across subject and level?&lt;/p&gt;
+&lt;p&gt;I should mention that this data is all from the current (2017-2018) catalogue, so it doesn’t reflect courses added, removed, or changed during this academic year. The most basic question is how many classes does CofI offer? Well, the 43 subjects offer 1029 courses, but how are they distributed across subject and level?&lt;/p&gt;
 &lt;p&gt;First, let’s group by subject to see which subjects offer the most and least courses.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;group_by(classes, sub) %&amp;gt;% 
   summarise(Count = n()) %&amp;gt;% 
@@ -38245,7 +38827,7 @@ Count
 100
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-174
+173
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -38253,7 +38835,7 @@ Count
 200
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-224
+222
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -38261,7 +38843,7 @@ Count
 300
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-415
+413
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -38640,6 +39222,17 @@ CHE
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
+BUS
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4146
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
 ENG
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
@@ -38647,17 +39240,6 @@ ENG
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 0.4098
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-BUS
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-400
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.4048
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -38717,6 +39299,17 @@ THE
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
+BUS
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3902
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
 HHP
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
@@ -38724,17 +39317,6 @@ HHP
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 0.3864
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-BUS
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-300
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.3810
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -38811,7 +39393,7 @@ ART
 300
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-0.3333
+0.3415
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -38926,6 +39508,17 @@ ATH
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
+MAT
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2941
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
 CHI
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
@@ -38959,13 +39552,13 @@ MS
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-MAT
+ART
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
 100
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-0.2703
+0.2683
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -38973,10 +39566,10 @@ MAT
 MAT
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-200
+100
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-0.2703
+0.2647
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -38988,17 +39581,6 @@ PHI
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 0.2632
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-ART
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-100
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.2619
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -39080,17 +39662,6 @@ SPE
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-MAT
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-300
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.2432
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
 PSY
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
@@ -39103,6 +39674,17 @@ PSY
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
 ATH
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2353
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+MAT
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
 400
@@ -39127,21 +39709,10 @@ SPA
 MAT
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-400
+300
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-0.2162
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-ART
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-200
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.2143
+0.2059
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -39234,13 +39805,13 @@ BIO
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-PHY
+ART
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-400
+200
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-0.1935
+0.1951
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -39251,7 +39822,18 @@ ART
 400
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-0.1905
+0.1951
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+PHY
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1935
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -39685,17 +40267,6 @@ LSP
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-BUS
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-200
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.1190
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
 POE
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
@@ -39790,7 +40361,18 @@ BUS
 100
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-0.0952
+0.0976
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+BUS
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0976
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -41000,16 +41582,6 @@ gather(confMats, key=Type, value=Count, -c(ner, mdl, mdlType)) %&amp;gt;% ggplot
 &lt;p&gt;Clearly, there’s something in the &lt;em&gt;ner&lt;/em&gt; 1500,1700,1800, and 2300 training sets that really helps logistic models but not other model types. This is something to look into.&lt;/p&gt;
 &lt;p&gt;However, I’m still left wondering &lt;em&gt;What is the best ratio of classes in a training set?&lt;/em&gt;&lt;/p&gt;
 &lt;/div&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Emergent Reducibility</title>
-      <link>/project/emergent-reducibility/</link>
-      <pubDate>Thu, 28 Dec 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/project/emergent-reducibility/</guid>
-      <description>&lt;p&gt;Project details&lt;/p&gt;
 </description>
     </item>
     

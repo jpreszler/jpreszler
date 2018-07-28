@@ -5,6 +5,15 @@
     
     <url>
     
+      <loc>/post/2018-07-28-cat-evolve/</loc>
+      <lastmod>2018-07-28T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/post/2018-07-24-recount-class/</loc>
       <lastmod>2018-07-24T00:00:00+00:00</lastmod>
     </url>
@@ -234,6 +243,16 @@
     <url>
     
       <loc>/categories/</loc>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/curriculum/</loc>
+      <lastmod>2018-07-28T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
