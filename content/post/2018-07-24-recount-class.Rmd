@@ -2,7 +2,7 @@
 title: "Re-Counting Classes"
 author: "Jason Preszler"
 date: 2018-07-24
-tags: ["R", "scrape", "rvest", "reproducibility"]
+tags: ["R", "scrape", "rvest", "reproducibility", "curriculum"]
 output: html_document
 ---
 
@@ -16,6 +16,8 @@ library(purrr)
 library(knitr)
 library(kableExtra)
 ```
+**Edit 7/27/2018** I realized that MFL's name change to WLC didn't change the prefix of their courses, this broke my scrapper. Below is an updated post that deals with this.
+
 
 Back in early May, I wrote a post about scraping the College of Idaho catalog: [Counting Classes](2018-05-05-counting-class.html). Below if the same post (boring...) except that the "current catalog" has been updated. This is really a demonstration of **reproducibility**, the upstream data has changed and ideally all my code still works.
 
@@ -25,9 +27,9 @@ subjectText <- subjectText[79:122]
 #keep url for each subject also
 sub_url <- html_attr(subjectLinks, 'href')[79:122]
 ```
-you're right! The link positions on the page changed slightly, but everything else works. Go ahead and compare the two.
+you're right! The link positions on the page changed slightly, partly because of MFL changing their department name to WLC. However, they didn't change the prefixes of the courses, so I'll need to change the `get_class_links` function. The change required regular expressions, which I'm growing to love because of how clean they are with `stringr` it helps me overcome the PERL nightmares of my youth.
 
-##Begin Original
+##Begin Updated Original
 
 At the College of Idaho, there's been discussion about visualizing the curriculum as well as understanding the curriculum. Naturally this interests me as a chance to wallow in some complicated data (students are required to complete a major and 3 minors across 4 "peaks" rather than complete courses from a traditional "core"). I thought using R and a Neo4j graph database would be useful (something to look forward to) - but first I needed to get data from the catalogue!
 
@@ -75,7 +77,7 @@ get_class_list <- function(i){
   #only keep links for classes, each subject has 
   #classes starting in a different position
   classDF <- classDF %>% filter(str_detect(list,
-                                  paste0(subDF$sub[i],'-')))
+                                  "[:upper:]{2,3}-"))
 
     #We'll split on 1st space, discard everything after it and use
   #what's before it to build the required DF

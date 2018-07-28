@@ -323,14 +323,15 @@
         <script src="/rmarkdown-libs/kePrint/kePrint.js"></script>
 
 
+<p><strong>Edit 7/27/2018</strong> I realized that MFL’s name change to WLC didn’t change the prefix of their courses, this broke my scrapper. Below is an updated post that deals with this.</p>
 <p>Back in early May, I wrote a post about scraping the College of Idaho catalog: <a href="2018-05-05-counting-class.html">Counting Classes</a>. Below if the same post (boring…) except that the “current catalog” has been updated. This is really a demonstration of <strong>reproducibility</strong>, the upstream data has changed and ideally all my code still works.</p>
 <p>There are however, some problems - look at the old post and try to guess. If you guessed the hard-coded indices of</p>
 <pre class="r"><code>subjectText &lt;- subjectText[79:122]
 #keep url for each subject also
 sub_url &lt;- html_attr(subjectLinks, &#39;href&#39;)[79:122]</code></pre>
-<p>you’re right! The link positions on the page changed slightly, but everything else works. Go ahead and compare the two.</p>
-<div id="begin-original" class="section level2">
-<h2>Begin Original</h2>
+<p>you’re right! The link positions on the page changed slightly, partly because of MFL changing their department name to WLC. However, they didn’t change the prefixes of the courses, so I’ll need to change the <code>get_class_links</code> function. The change required regular expressions, which I’m growing to love because of how clean they are with <code>stringr</code> it helps me overcome the PERL nightmares of my youth.</p>
+<div id="begin-updated-original" class="section level2">
+<h2>Begin Updated Original</h2>
 <p>At the College of Idaho, there’s been discussion about visualizing the curriculum as well as understanding the curriculum. Naturally this interests me as a chance to wallow in some complicated data (students are required to complete a major and 3 minors across 4 “peaks” rather than complete courses from a traditional “core”). I thought using R and a Neo4j graph database would be useful (something to look forward to) - but first I needed to get data from the catalogue!</p>
 </div>
 <div id="web-scraping" class="section level1">
@@ -454,7 +455,7 @@ Anthropology Sociology
   #only keep links for classes, each subject has 
   #classes starting in a different position
   classDF &lt;- classDF %&gt;% filter(str_detect(list,
-                                  paste0(subDF$sub[i],&#39;-&#39;)))
+                                  &quot;[:upper:]{2,3}-&quot;))
 
     #We&#39;ll split on 1st space, discard everything after it and use
   #what&#39;s before it to build the required DF
@@ -617,7 +618,7 @@ Electronic Accounting &amp; Analysis
 </div>
 <div id="the-counts" class="section level1">
 <h1>The Counts</h1>
-<p>I should mention that this data is all from the current (2017-2018) catalogue, so it doesn’t reflect courses added, removed, or changed during this academic year. The most basic question is how many classes does CofI offer? Well, the 43 subjects offer 1019 courses, but how are they distributed across subject and level?</p>
+<p>I should mention that this data is all from the current (2017-2018) catalogue, so it doesn’t reflect courses added, removed, or changed during this academic year. The most basic question is how many classes does CofI offer? Well, the 44 subjects offer 1026 courses, but how are they distributed across subject and level?</p>
 <p>First, let’s group by subject to see which subjects offer the most and least courses.</p>
 <pre class="r"><code>group_by(classes, sub) %&gt;% 
   summarise(Count = n()) %&gt;% 
@@ -795,7 +796,7 @@ Count
 100
 </td>
 <td style="text-align:right;">
-164
+163
 </td>
 </tr>
 <tr>
@@ -803,7 +804,7 @@ Count
 200
 </td>
 <td style="text-align:right;">
-230
+232
 </td>
 </tr>
 <tr>
@@ -811,7 +812,7 @@ Count
 300
 </td>
 <td style="text-align:right;">
-414
+413
 </td>
 </tr>
 <tr>
@@ -819,7 +820,7 @@ Count
 400
 </td>
 <td style="text-align:right;">
-210
+217
 </td>
 </tr>
 </tbody>
@@ -944,6 +945,17 @@ ARH
 </td>
 <td style="text-align:right;">
 0.7500
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+MFL
+</td>
+<td style="text-align:left;">
+400
+</td>
+<td style="text-align:right;">
+0.7273
 </td>
 </tr>
 <tr>
@@ -1179,17 +1191,6 @@ PSY
 </tr>
 <tr>
 <td style="text-align:left;">
-CSC
-</td>
-<td style="text-align:left;">
-400
-</td>
-<td style="text-align:right;">
-0.4375
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 BUS
 </td>
 <td style="text-align:left;">
@@ -1219,6 +1220,17 @@ ENG
 </td>
 <td style="text-align:right;">
 0.4032
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CSC
+</td>
+<td style="text-align:left;">
+400
+</td>
+<td style="text-align:right;">
+0.4000
 </td>
 </tr>
 <tr>
@@ -1520,6 +1532,17 @@ GER
 </tr>
 <tr>
 <td style="text-align:left;">
+MAT
+</td>
+<td style="text-align:left;">
+200
+</td>
+<td style="text-align:right;">
+0.2857
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
 MS
 </td>
 <td style="text-align:left;">
@@ -1542,24 +1565,13 @@ PSY
 </tr>
 <tr>
 <td style="text-align:left;">
-MAT
-</td>
-<td style="text-align:left;">
-100
-</td>
-<td style="text-align:right;">
-0.2632
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-MAT
+CSC
 </td>
 <td style="text-align:left;">
 200
 </td>
 <td style="text-align:right;">
-0.2632
+0.2667
 </td>
 </tr>
 <tr>
@@ -1575,18 +1587,29 @@ PHI
 </tr>
 <tr>
 <td style="text-align:left;">
-ARH
+MAT
 </td>
 <td style="text-align:left;">
-200
+100
 </td>
 <td style="text-align:right;">
-0.2500
+0.2571
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-CSC
+MAT
+</td>
+<td style="text-align:left;">
+400
+</td>
+<td style="text-align:right;">
+0.2571
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ARH
 </td>
 <td style="text-align:left;">
 200
@@ -1674,28 +1697,6 @@ SPE
 </tr>
 <tr>
 <td style="text-align:left;">
-MAT
-</td>
-<td style="text-align:left;">
-300
-</td>
-<td style="text-align:right;">
-0.2368
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-MAT
-</td>
-<td style="text-align:left;">
-400
-</td>
-<td style="text-align:right;">
-0.2368
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 ATH
 </td>
 <td style="text-align:left;">
@@ -1703,6 +1704,17 @@ ATH
 </td>
 <td style="text-align:right;">
 0.2353
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CSC
+</td>
+<td style="text-align:left;">
+100
+</td>
+<td style="text-align:right;">
+0.2000
 </td>
 </tr>
 <tr>
@@ -1722,6 +1734,17 @@ HSC
 </td>
 <td style="text-align:left;">
 400
+</td>
+<td style="text-align:right;">
+0.2000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+MAT
+</td>
+<td style="text-align:left;">
+300
 </td>
 <td style="text-align:right;">
 0.2000
@@ -1828,13 +1851,13 @@ ENV
 </tr>
 <tr>
 <td style="text-align:left;">
-CSC
+MFL
 </td>
 <td style="text-align:left;">
-100
+200
 </td>
 <td style="text-align:right;">
-0.1875
+0.1818
 </td>
 </tr>
 <tr>
@@ -2125,6 +2148,17 @@ ACC
 </tr>
 <tr>
 <td style="text-align:left;">
+CSC
+</td>
+<td style="text-align:left;">
+300
+</td>
+<td style="text-align:right;">
+0.1333
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
 REL
 </td>
 <td style="text-align:left;">
@@ -2154,17 +2188,6 @@ PHY
 </td>
 <td style="text-align:right;">
 0.1290
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CSC
-</td>
-<td style="text-align:left;">
-300
-</td>
-<td style="text-align:right;">
-0.1250
 </td>
 </tr>
 <tr>
@@ -2345,6 +2368,17 @@ BUS
 </tr>
 <tr>
 <td style="text-align:left;">
+MFL
+</td>
+<td style="text-align:left;">
+300
+</td>
+<td style="text-align:right;">
+0.0909
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
 BIO
 </td>
 <td style="text-align:left;">
@@ -2470,6 +2504,8 @@ wordcloud(words=wordDF$word, freq=wordDF$freq,
   
   <a class="btn btn-primary btn-outline" href="/tags/reproducibility">reproducibility</a>
   
+  <a class="btn btn-primary btn-outline" href="/tags/curriculum">curriculum</a>
+  
 </div>
 
 
@@ -2488,11 +2524,11 @@ wordcloud(words=wordDF$word, freq=wordDF$freq,
     
     <li><a href="/post/2018-05-05-counting-class/">Counting Classes: The Basics</a></li>
     
-    <li><a href="/post/2018-06-28-dt/">DT: When Tables are the Product</a></li>
-    
     <li><a href="/post/2018-06-18-neo4j-majors/">Maps Majors in Neo4J</a></li>
     
     <li><a href="/post/2018-06-16-neo4j-demo/">Maps Minors in Neo4J</a></li>
+    
+    <li><a href="/post/2018-06-28-dt/">DT: When Tables are the Product</a></li>
     
     <li><a href="/post/2018-04-01-sql-rmd/">SQL in RMarkdown!</a></li>
     

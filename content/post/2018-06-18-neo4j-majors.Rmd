@@ -2,7 +2,7 @@
 title: "Maps Majors in Neo4J"
 author: "Jason Preszler"
 date: 2018-06-18
-tags: ["R","Neo4j","visNetwork"]
+tags: ["R","Neo4j","visNetwork", "curriculum"]
 output: html_document
 ---
 

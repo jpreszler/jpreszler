@@ -2,7 +2,7 @@
 title: "Counting Classes: The Basics"
 author: "Jason Preszler"
 date: 2018-05-05
-tags: ["R", "scrape", "rvest"]
+tags: ["R", "scrape", "rvest", "curriculum"]
 output: html_document
 ---
 
@@ -26,7 +26,7 @@ Web scraping is one the essential data science skills that I'm not as fluent in 
 We'll start by getting a list of all subjects in the catalogue, with links to the subject page which has the class list in that subject.
 ```{r subScrape}
 base_url <- "http://collegeofidaho.smartcatalogiq.com"
-base_url_ext <- "/en/current/Undergraduate-Catalog/Courses"
+base_url_ext <- "/en/2017-2018/Undergraduate-Catalog/Courses"
 
 #read base page
 base_html <- read_html(paste0(base_url,base_url_ext))

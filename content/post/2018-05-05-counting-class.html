@@ -1,11 +1,13 @@
 ---
+draft: yes
 title: "Counting Classes: The Basics"
 author: "Jason Preszler"
 date: 2018-05-05
-tags: ["R", "scrape", "rvest"]
+tags: ["R", "scrape", "rvest", "curriculum"]
 output: html_document
 ---
 
+<script src="/rmarkdown-libs/kePrint/kePrint.js"></script>
 
 
 <p>At the College of Idaho, there’s been discussion about visualizing the curriculum as well as understanding the curriculum. Naturally this interests me as a chance to wallow in some complicated data (students are required to complete a major and 3 minors across 4 “peaks” rather than complete courses from a traditional “core”). I thought using R and a Neo4j graph database would be useful (something to look forward to) - but first I needed to get data from the catalogue!</p>
@@ -14,7 +16,7 @@ output: html_document
 <p>Web scraping is one the essential data science skills that I’m not as fluent in as I would like to be, so getting the course data from the catalogue is a nice chance to hone my skills. The <code>rvest</code> package (from Hadley Wickham) is a great tool for web scraping in R and combines well with <code>stringr</code> text manipulation functions and the <code>SelectorGadget</code> chrome extension.</p>
 <p>We’ll start by getting a list of all subjects in the catalogue, with links to the subject page which has the class list in that subject.</p>
 <pre class="r"><code>base_url &lt;- &quot;http://collegeofidaho.smartcatalogiq.com&quot;
-base_url_ext &lt;- &quot;/en/current/Undergraduate-Catalog/Courses&quot;
+base_url_ext &lt;- &quot;/en/2017-2018/Undergraduate-Catalog/Courses&quot;
 
 #read base page
 base_html &lt;- read_html(paste0(base_url,base_url_ext))
@@ -58,7 +60,7 @@ ACC
 Accounting
 </td>
 <td style="text-align:left;">
-<a href="http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting" class="uri">http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting</a>
+<a href="http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ACC-Accounting" class="uri">http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ACC-Accounting</a>
 </td>
 </tr>
 <tr>
@@ -69,7 +71,7 @@ ART
 Art
 </td>
 <td style="text-align:left;">
-<a href="http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ART-Art" class="uri">http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ART-Art</a>
+<a href="http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ART-Art" class="uri">http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ART-Art</a>
 </td>
 </tr>
 <tr>
@@ -80,7 +82,7 @@ ASN
 Asian Studies
 </td>
 <td style="text-align:left;">
-<a href="http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ASN-Asian-Studies" class="uri">http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ASN-Asian-Studies</a>
+<a href="http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ASN-Asian-Studies" class="uri">http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ASN-Asian-Studies</a>
 </td>
 </tr>
 <tr>
@@ -91,7 +93,7 @@ ATH
 Anthropology
 </td>
 <td style="text-align:left;">
-<a href="http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ATH-Anthropology" class="uri">http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ATH-Anthropology</a>
+<a href="http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ATH-Anthropology" class="uri">http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ATH-Anthropology</a>
 </td>
 </tr>
 <tr>
@@ -102,7 +104,7 @@ ATHSOC
 Anthropology Sociology
 </td>
 <td style="text-align:left;">
-<a href="http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ATHSOC-Anthropology-Sociology" class="uri">http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ATHSOC-Anthropology-Sociology</a>
+<a href="http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ATHSOC-Anthropology-Sociology" class="uri">http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ATHSOC-Anthropology-Sociology</a>
 </td>
 </tr>
 <tr>
@@ -113,7 +115,7 @@ BIO
 Biology
 </td>
 <td style="text-align:left;">
-<a href="http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/BIO-Biology" class="uri">http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/BIO-Biology</a>
+<a href="http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/BIO-Biology" class="uri">http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/BIO-Biology</a>
 </td>
 </tr>
 </tbody>
@@ -196,7 +198,7 @@ ACC
 Financial Accounting
 </td>
 <td style="text-align:left;">
-<a href="http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting/200/ACC-221" class="uri">http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting/200/ACC-221</a>
+<a href="http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ACC-Accounting/200/ACC-221" class="uri">http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ACC-Accounting/200/ACC-221</a>
 </td>
 <td style="text-align:left;">
 200
@@ -213,7 +215,7 @@ ACC
 Managerial Accounting
 </td>
 <td style="text-align:left;">
-<a href="http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting/200/ACC-222" class="uri">http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting/200/ACC-222</a>
+<a href="http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ACC-Accounting/200/ACC-222" class="uri">http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ACC-Accounting/200/ACC-222</a>
 </td>
 <td style="text-align:left;">
 200
@@ -230,7 +232,7 @@ ACC
 Intermediate Accounting I
 </td>
 <td style="text-align:left;">
-<a href="http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting/300/ACC-318" class="uri">http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting/300/ACC-318</a>
+<a href="http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ACC-Accounting/300/ACC-318" class="uri">http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ACC-Accounting/300/ACC-318</a>
 </td>
 <td style="text-align:left;">
 300
@@ -247,7 +249,7 @@ ACC
 Intermediate Accounting II
 </td>
 <td style="text-align:left;">
-<a href="http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting/300/ACC-320" class="uri">http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting/300/ACC-320</a>
+<a href="http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ACC-Accounting/300/ACC-320" class="uri">http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ACC-Accounting/300/ACC-320</a>
 </td>
 <td style="text-align:left;">
 300
@@ -264,7 +266,7 @@ ACC
 Electronic Accounting &amp; Analysis
 </td>
 <td style="text-align:left;">
-<a href="http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting/300/ACC-323" class="uri">http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting/300/ACC-323</a>
+<a href="http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ACC-Accounting/300/ACC-323" class="uri">http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ACC-Accounting/300/ACC-323</a>
 </td>
 <td style="text-align:left;">
 300
@@ -281,7 +283,7 @@ ACC
 Auditing
 </td>
 <td style="text-align:left;">
-<a href="http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting/400/ACC-423" class="uri">http://collegeofidaho.smartcatalogiq.com/en/current/Undergraduate-Catalog/Courses/ACC-Accounting/400/ACC-423</a>
+<a href="http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ACC-Accounting/400/ACC-423" class="uri">http://collegeofidaho.smartcatalogiq.com/en/2017-2018/Undergraduate-Catalog/Courses/ACC-Accounting/400/ACC-423</a>
 </td>
 <td style="text-align:left;">
 400
@@ -293,7 +295,7 @@ Auditing
 </div>
 <div id="the-counts" class="section level1">
 <h1>The Counts</h1>
-<p>I should mention that this data is all from the current (2017-2018) catalogue, so it doesn’t reflect courses added, removed, or changed during this academic year. The most basic question is how many classes does CofI offer? Well, the 43 subjects offer 1034 courses, but how are they distributed across subject and level?</p>
+<p>I should mention that this data is all from the current (2017-2018) catalogue, so it doesn’t reflect courses added, removed, or changed during this academic year. The most basic question is how many classes does CofI offer? Well, the 43 subjects offer 1029 courses, but how are they distributed across subject and level?</p>
 <p>First, let’s group by subject to see which subjects offer the most and least courses.</p>
 <pre class="r"><code>group_by(classes, sub) %&gt;% 
   summarise(Count = n()) %&gt;% 
@@ -471,7 +473,7 @@ Count
 100
 </td>
 <td style="text-align:right;">
-174
+173
 </td>
 </tr>
 <tr>
@@ -479,7 +481,7 @@ Count
 200
 </td>
 <td style="text-align:right;">
-224
+222
 </td>
 </tr>
 <tr>
@@ -487,7 +489,7 @@ Count
 300
 </td>
 <td style="text-align:right;">
-415
+413
 </td>
 </tr>
 <tr>
@@ -866,6 +868,17 @@ CHE
 </tr>
 <tr>
 <td style="text-align:left;">
+BUS
+</td>
+<td style="text-align:left;">
+400
+</td>
+<td style="text-align:right;">
+0.4146
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
 ENG
 </td>
 <td style="text-align:left;">
@@ -873,17 +886,6 @@ ENG
 </td>
 <td style="text-align:right;">
 0.4098
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-BUS
-</td>
-<td style="text-align:left;">
-400
-</td>
-<td style="text-align:right;">
-0.4048
 </td>
 </tr>
 <tr>
@@ -943,6 +945,17 @@ THE
 </tr>
 <tr>
 <td style="text-align:left;">
+BUS
+</td>
+<td style="text-align:left;">
+300
+</td>
+<td style="text-align:right;">
+0.3902
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
 HHP
 </td>
 <td style="text-align:left;">
@@ -950,17 +963,6 @@ HHP
 </td>
 <td style="text-align:right;">
 0.3864
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-BUS
-</td>
-<td style="text-align:left;">
-300
-</td>
-<td style="text-align:right;">
-0.3810
 </td>
 </tr>
 <tr>
@@ -1037,7 +1039,7 @@ ART
 300
 </td>
 <td style="text-align:right;">
-0.3333
+0.3415
 </td>
 </tr>
 <tr>
@@ -1152,6 +1154,17 @@ ATH
 </tr>
 <tr>
 <td style="text-align:left;">
+MAT
+</td>
+<td style="text-align:left;">
+200
+</td>
+<td style="text-align:right;">
+0.2941
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
 CHI
 </td>
 <td style="text-align:left;">
@@ -1185,13 +1198,13 @@ MS
 </tr>
 <tr>
 <td style="text-align:left;">
-MAT
+ART
 </td>
 <td style="text-align:left;">
 100
 </td>
 <td style="text-align:right;">
-0.2703
+0.2683
 </td>
 </tr>
 <tr>
@@ -1199,10 +1212,10 @@ MAT
 MAT
 </td>
 <td style="text-align:left;">
-200
+100
 </td>
 <td style="text-align:right;">
-0.2703
+0.2647
 </td>
 </tr>
 <tr>
@@ -1214,17 +1227,6 @@ PHI
 </td>
 <td style="text-align:right;">
 0.2632
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-ART
-</td>
-<td style="text-align:left;">
-100
-</td>
-<td style="text-align:right;">
-0.2619
 </td>
 </tr>
 <tr>
@@ -1306,17 +1308,6 @@ SPE
 </tr>
 <tr>
 <td style="text-align:left;">
-MAT
-</td>
-<td style="text-align:left;">
-300
-</td>
-<td style="text-align:right;">
-0.2432
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 PSY
 </td>
 <td style="text-align:left;">
@@ -1329,6 +1320,17 @@ PSY
 <tr>
 <td style="text-align:left;">
 ATH
+</td>
+<td style="text-align:left;">
+400
+</td>
+<td style="text-align:right;">
+0.2353
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+MAT
 </td>
 <td style="text-align:left;">
 400
@@ -1353,21 +1355,10 @@ SPA
 MAT
 </td>
 <td style="text-align:left;">
-400
+300
 </td>
 <td style="text-align:right;">
-0.2162
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-ART
-</td>
-<td style="text-align:left;">
-200
-</td>
-<td style="text-align:right;">
-0.2143
+0.2059
 </td>
 </tr>
 <tr>
@@ -1460,13 +1451,13 @@ BIO
 </tr>
 <tr>
 <td style="text-align:left;">
-PHY
+ART
 </td>
 <td style="text-align:left;">
-400
+200
 </td>
 <td style="text-align:right;">
-0.1935
+0.1951
 </td>
 </tr>
 <tr>
@@ -1477,7 +1468,18 @@ ART
 400
 </td>
 <td style="text-align:right;">
-0.1905
+0.1951
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PHY
+</td>
+<td style="text-align:left;">
+400
+</td>
+<td style="text-align:right;">
+0.1935
 </td>
 </tr>
 <tr>
@@ -1911,17 +1913,6 @@ LSP
 </tr>
 <tr>
 <td style="text-align:left;">
-BUS
-</td>
-<td style="text-align:left;">
-200
-</td>
-<td style="text-align:right;">
-0.1190
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 POE
 </td>
 <td style="text-align:left;">
@@ -2016,7 +2007,18 @@ BUS
 100
 </td>
 <td style="text-align:right;">
-0.0952
+0.0976
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+BUS
+</td>
+<td style="text-align:left;">
+200
+</td>
+<td style="text-align:right;">
+0.0976
 </td>
 </tr>
 <tr>
