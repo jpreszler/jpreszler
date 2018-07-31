@@ -13,7 +13,7 @@
   <meta name="description" content="Assistant Professor - Math, Statistics, and Computer Science">
 
   
-  <link rel="alternate" hreflang="en-us" href="/tags/r/">
+  <link rel="alternate" hreflang="en-us" href="/tags/dplyr/">
 
   
   
@@ -72,13 +72,13 @@
   <link rel="icon" type="image/png" href="/img/icon.png">
   <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
 
-  <link rel="canonical" href="/tags/r/">
+  <link rel="canonical" href="/tags/dplyr/">
 
   <meta property="twitter:card" content="summary_large_image">
   
   <meta property="og:site_name" content="Jason I. Preszler">
-  <meta property="og:url" content="/tags/r/">
-  <meta property="og:title" content="R | Jason I. Preszler">
+  <meta property="og:url" content="/tags/dplyr/">
+  <meta property="og:title" content="Dplyr | Jason I. Preszler">
   <meta property="og:description" content="Assistant Professor - Math, Statistics, and Computer Science">
   <meta property="og:locale" content="en-us">
   
@@ -87,7 +87,7 @@
 
   
 
-  <title>R | Jason I. Preszler</title>
+  <title>Dplyr | Jason I. Preszler</title>
 
 </head>
 <body id="top" data-spy="scroll" data-target="#toc" data-offset="71" >
@@ -250,7 +250,7 @@
 
 <div class="universal-wrapper">
 
-  <h1>R</h1>
+  <h1>Dplyr</h1>
 
   
 
@@ -266,106 +266,8 @@ Then came plyr and the dplyr and my life has never been the same. The major verb
     </div>
   </div>
   
-  <div>
-    <h2><a href="/post/2018-07-24-recount-class/">Re-Counting Classes</a></h2>
-    <div class="article-style">
-      
-      Edit 7/27/2018 I realized that MFL’s name change to WLC didn’t change the prefix of their courses, this broke my scrapper. Below is an updated post that deals with this.
-Back in early May, I wrote a post about scraping the College of Idaho catalog: Counting Classes. Below if the same post (boring…) except that the “current catalog” has been updated. This is really a demonstration of reproducibility, the upstream data has changed and ideally all my code still works.
-      
-    </div>
-  </div>
-  
-  <div>
-    <h2><a href="/post/2018-06-28-dt/">DT: When Tables are the Product</a></h2>
-    <div class="article-style">
-      
-      In RMarkdown documents I often have a need to display tables, which I usually try to keep small with only the most useful information displayed. However, a recent project made me look for a better way to share tabular data with non-data-scientists. The answer was R’s DT package, which allows for very powerful displays of tabular data.
-Today’s data will be a summary of enrollment data from the College of Idaho:
-      
-    </div>
-  </div>
-  
-  <div>
-    <h2><a href="/post/2018-06-18-neo4j-majors/">Maps Majors in Neo4J</a></h2>
-    <div class="article-style">
-      
-      UPDATE (6/20/2018) The cypher query for Table 3 only used components with “optional” courses so the capstone and topics compnents of the Math/CS major weren’t included in table 3.
-UPDATE (6/19/2018) The original version of this post used incorrectly loaded data that caused to “Core” of every major to have the same classes attached to it. This was noticed by my colleague Dave Rosoff and has been corrected.
-      
-    </div>
-  </div>
-  
-  <div>
-    <h2><a href="/post/2018-06-16-neo4j-demo/">Maps Minors in Neo4J</a></h2>
-    <div class="article-style">
-      
-      A college curriculum seems like something that is a natural fit for a graph database. My last post collected data from the College of Idaho’s online catalog, using that and some information about majors and minors I’ve populated a graph database in Neo4j. In this post I’ll show how to do some basic queries that return tabular data as well as graph data using .
-Graph DB Basics For those who haven’t had much discrete math or computer science, a graph is a collection of nodes (aka vertices) and edges that connect nodes.
-      
-    </div>
-  </div>
-  
-  <div>
-    <h2><a href="/post/2018-05-05-counting-class/">Counting Classes: The Basics</a></h2>
-    <div class="article-style">
-      
-      At the College of Idaho, there’s been discussion about visualizing the curriculum as well as understanding the curriculum. Naturally this interests me as a chance to wallow in some complicated data (students are required to complete a major and 3 minors across 4 “peaks” rather than complete courses from a traditional “core”). I thought using R and a Neo4j graph database would be useful (something to look forward to) - but first I needed to get data from the catalogue!
-      
-    </div>
-  </div>
-  
-  <div>
-    <h2><a href="/post/2018-04-01-sql-rmd/">SQL in RMarkdown!</a></h2>
-    <div class="article-style">
-      
-      This semester I’m teaching Applied Databases for the first time and have been struggling with some notes and handouts for students; as well as simple, easy to use database interfaces that work well across platforms. I love RMarkdown, and today realized that knitr has an SQL code engine!
-Basic Syntax I often give handouts on SQL statements as we learn about them, so I need a nice way to show commands.
-      
-    </div>
-  </div>
-  
-  <div>
-    <h2><a href="/post/2018-3-11-run-tacoma1/">Running Tacoma: Maps</a></h2>
-    <div class="article-style">
-      
-      When I lived in Tacoma, I was running quite a bit. Since I moved away my training has become much more irregular, but I thought it would be interesting to take the Tacoma data from my current Garmin Forerunner 220 a take a look.
-Data Prep The Garmin stores data in .fit format, but gpsbabel can translate to a nicely structured GPX file, which is what I’ll start with here. The XML package in R has some nice features to easily parse xml files (GPX is GPS data in a special XML schema).
-      
-    </div>
-  </div>
-  
-  <div>
-    <h2><a href="/post/2018-01-27-acs-map/">Idaho ACS Mapping</a></h2>
-    <div class="article-style">
-      
-      Recently some diversity stats have been circulated around the College of Idaho, and as new Idahoan I wondered about the general diversity (or lack thereof) in Idaho. I remembered seeing this post a while back about mapping in R, so I went to work.
-Shapefiles First, we need shapefiles for both the Idaho country boundaries and census tracts, which will give finer detail for data. These can be downloaded from the [US Census Bureau] (<a href="https://www" target="_blank">https://www</a>.
-      
-    </div>
-  </div>
-  
-  <div>
-    <h2><a href="/post/2018-01-15-stock-rw/">Stock Random Walks</a></h2>
-    <div class="article-style">
-      
-      Introduction Recently a student in another course came to my office looking for someone “who could explain the Monte Carlo simulation” to her. I was caught a bit off-guard since (a) it was 10 minutes before my geometry class and (b) there is no single Monte Carlo simulation.
-After a brief discussion, I found out she wanted to predict stock prices using Monte Carlo simulation, but she thought that the Monte Carlo simulation provided the prediction - she couldn’t say how the actual predictions were being made which is the crucial part.
-      
-    </div>
-  </div>
-  
 
   
-<nav>
-  <ul class="pager">
-    
-    
-    <li><a href="/tags/r/page/2/">&gt;</a></li>
-    
-  </ul>
-</nav>
-
 
 
 </div>

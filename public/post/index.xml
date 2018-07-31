@@ -13,6 +13,16 @@
     
     
     <item>
+      <title>Lesser Known Verbs: top_n</title>
+      <link>/post/2018-07-30-top_n/</link>
+      <pubDate>Mon, 30 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-07-30-top_n/</guid>
+      <description>I’ve been using R since 2006. That predates RStudio and the tidyverse. I remember the struggle of keeping track of the variants of apply and often fiddling with them to get code to work.
+Then came plyr and the dplyr and my life has never been the same. The major verbs of dplyr include select, filter, mutate, group_by, summarise, and arrange; and if you are doing data analysis in R then you should be fluent in them.</description>
+    </item>
+    
+    <item>
       <title>Catalog Evolution</title>
       <link>/post/2018-07-28-cat-evolve/</link>
       <pubDate>Sat, 28 Jul 2018 00:00:00 +0000</pubDate>

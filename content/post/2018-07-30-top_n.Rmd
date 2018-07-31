@@ -1,0 +1,49 @@
+---
+title: 'Lesser Known Verbs: top_n'
+author: "Jason Preszler"
+date: 2018-07-30
+output: html_document
+tags: ["R","dplyr"]
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(knitr)
+```
+
+I've been using R since 2006. That predates RStudio and the `tidyverse`. I remember the struggle of keeping track of the variants of `apply` and often fiddling with them to get code to work.
+
+Then came `plyr` and the `dplyr` and my life has never been the same. The major verbs of `dplyr` include `select`, `filter`, `mutate`, `group_by`, `summarise`, and `arrange`; and if you are doing data analysis in R then you should be fluent in them. These are far from an exhaustive list of `dplyr`'s verbs though, and I recently discovered one that solves a problem I've encountered a few times: `top_n`.
+
+## The Problem
+Recently I was analyzing some student data on an exam that had students from multiple section and their performance on on the exam. Since students could take the course multiple times, I only wanted to include the row with the best score. Clearly, grouping by student was needed, and `summarise` can get the max of one column but it won't leave the other columns unchanged (it would apply and aggreation function to them). Instead `top_n` saves the day. 
+
+## An Example
+To avoid voilating FERPA, I'll manufacture some data:
+
+```{r makeData, warning=FALSE, message=FALSE}
+student_id <- c(1:6, seq(1,10, by=2))
+section <- sample(c("A","B","C"), length(student_id), replace=TRUE)
+score <- round(rnorm(11, 25, 5), 2)
+question1 <- round(runif(1,0,5),0)
+question2 <- round(runif(1,0,5),0)
+question3 <- round(runif(1,0,5),0)
+question4 <- round(runif(1,0,5),0)
+question5 <- round(runif(1,0,5),0)
+
+dat <- data.frame(student_id, section, score, question1, question2, question3, question4, question5)
+
+kable(dat)
+```
+
+So, we have a small dataset with repeated `student_id` and we want to have no repeated students and keep the row (including question data) for the maximum score of any repeated student.
+
+Here's the `dplyr` one-liner:
+```{r topn}
+dat %>% group_by(student_id) %>%
+  top_n(1, score) %>% kable()
+```
+
+## Conclusion
+As mentioned in `top_n` documentation, it's just a wrapper for `filter` and `min_rank`, so like most (all?) of `dplyr` it's possible to avoid, but once you know about it why would you?
