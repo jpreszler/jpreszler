@@ -348,7 +348,7 @@ library(RColorBrewer) #Colors!!</code></pre>
 devtools::install_github(&quot;mattflor/chorddiag&quot;)
 #definitely load
 library(chorddiag)</code></pre>
-<p>Of course, we’ll also need some data, I’ll be using a data set of “anonymized” records of students major/minors degree info from the College of Idaho, which I had in another project: <a href="https://github.com/jpreszler/peak-neo4j/misc/maps-minor-historical-cleaned.csv">data</a>. I’ve read it in with <code>read.csv()</code> and dropped 2 columns:</p>
+<p>Of course, we’ll also need some data, I’ll be using a data set of “anonymized” records of students major/minors degree info from the College of Idaho, which I had in another project: <a href="https://github.com/jpreszler/peak-neo4j/blob/master/misc/maps-minor-historical-cleaned.csv">data</a>. I’ve read it in with <code>read.csv()</code> and dropped 2 columns:</p>
 <pre class="r"><code>head(mmh) %&gt;% knitr::kable()</code></pre>
 <table>
 <thead>
@@ -480,7 +480,7 @@ head(mmhl) %&gt;% knitr::kable()</code></pre>
 </div>
 <div id="improving-colors" class="section level2">
 <h2>Improving Colors</h2>
-<p>Removing the tick marks is easy (set option <code>showTicks=FALSE</code>), but coming up with lots of colors is a bit harder. The table has dimensions 8, 20, so we would like 28 colors, and this isn’t even all possible combinations that C of I students have obtained!</p>
+<p>Removing the tick marks is easy (set option <code>showTicks=FALSE</code>), but coming up with lots of colors is a bit harder. The table has dimensions 8, 20, so we would 28 colors, and this isn’t even all possible combinations that C of I students have obtained!</p>
 <p>To get a large list of relatively distinct colors, we can do this by squishing the “qualitative” colors palettes from color brewer together. This gives 74 colors with only a little repetition:</p>
 <pre class="r"><code>qual_cols = brewer.pal.info[brewer.pal.info$category == &#39;qual&#39;,]
 many_colors = unlist(mapply(brewer.pal, qual_cols$maxcolors, rownames(qual_cols)))</code></pre>

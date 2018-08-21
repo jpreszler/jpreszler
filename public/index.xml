@@ -44,7 +44,7 @@ library(RColorBrewer) #Colors!!&lt;/code&gt;&lt;/pre&gt;
 devtools::install_github(&amp;quot;mattflor/chorddiag&amp;quot;)
 #definitely load
 library(chorddiag)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Of course, we’ll also need some data, I’ll be using a data set of “anonymized” records of students major/minors degree info from the College of Idaho, which I had in another project: &lt;a href=&#34;https://github.com/jpreszler/peak-neo4j/misc/maps-minor-historical-cleaned.csv&#34;&gt;data&lt;/a&gt;. I’ve read it in with &lt;code&gt;read.csv()&lt;/code&gt; and dropped 2 columns:&lt;/p&gt;
+&lt;p&gt;Of course, we’ll also need some data, I’ll be using a data set of “anonymized” records of students major/minors degree info from the College of Idaho, which I had in another project: &lt;a href=&#34;https://github.com/jpreszler/peak-neo4j/blob/master/misc/maps-minor-historical-cleaned.csv&#34;&gt;data&lt;/a&gt;. I’ve read it in with &lt;code&gt;read.csv()&lt;/code&gt; and dropped 2 columns:&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;head(mmh) %&amp;gt;% knitr::kable()&lt;/code&gt;&lt;/pre&gt;
 &lt;table&gt;
 &lt;thead&gt;
@@ -176,7 +176,7 @@ head(mmhl) %&amp;gt;% knitr::kable()&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 &lt;div id=&#34;improving-colors&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Improving Colors&lt;/h2&gt;
-&lt;p&gt;Removing the tick marks is easy (set option &lt;code&gt;showTicks=FALSE&lt;/code&gt;), but coming up with lots of colors is a bit harder. The table has dimensions 8, 20, so we would like 28 colors, and this isn’t even all possible combinations that C of I students have obtained!&lt;/p&gt;
+&lt;p&gt;Removing the tick marks is easy (set option &lt;code&gt;showTicks=FALSE&lt;/code&gt;), but coming up with lots of colors is a bit harder. The table has dimensions 8, 20, so we would 28 colors, and this isn’t even all possible combinations that C of I students have obtained!&lt;/p&gt;
 &lt;p&gt;To get a large list of relatively distinct colors, we can do this by squishing the “qualitative” colors palettes from color brewer together. This gives 74 colors with only a little repetition:&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;qual_cols = brewer.pal.info[brewer.pal.info$category == &amp;#39;qual&amp;#39;,]
 many_colors = unlist(mapply(brewer.pal, qual_cols$maxcolors, rownames(qual_cols)))&lt;/code&gt;&lt;/pre&gt;

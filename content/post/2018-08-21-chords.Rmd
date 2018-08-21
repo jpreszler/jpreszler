@@ -51,7 +51,7 @@ devtools::install_github("mattflor/chorddiag")
 library(chorddiag)
 ```
 
-Of course, we'll also need some data, I'll be using a data set of "anonymized" records of students major/minors degree info from the College of Idaho, which I had in another project: [data](https://github.com/jpreszler/peak-neo4j/misc/maps-minor-historical-cleaned.csv). I've read it in with `read.csv()` and dropped 2 columns:
+Of course, we'll also need some data, I'll be using a data set of "anonymized" records of students major/minors degree info from the College of Idaho, which I had in another project: [data](https://github.com/jpreszler/peak-neo4j/blob/master/misc/maps-minor-historical-cleaned.csv). I've read it in with `read.csv()` and dropped 2 columns:
 ```{r }
 head(mmh) %>% knitr::kable()
 ```
@@ -80,7 +80,7 @@ majMinTab <- xtabs(~MAJOR+minor, data = mmhl[mmhl$Grad.Year==2017,],
 The `type="bipartite"` allows us to pass a non-square matrix to `chorddiag` since we only need links between two sets of groups (majors and minors). This isn't bad, but the default color options only allow about 16 groups (8 from the `dark2` palette and 8 form the `grey2` palette). Also the tick marks seem unnecessary. 
 
 ## Improving Colors
-Removing the tick marks is easy (set option `showTicks=FALSE`), but coming up with lots of colors is a bit harder. The table has dimensions `r dim(majMinTab)`, so we would like `r sum(dim(majMinTab))` colors, and this isn't even all possible combinations that C of I students have obtained!
+Removing the tick marks is easy (set option `showTicks=FALSE`), but coming up with lots of colors is a bit harder. The table has dimensions `r dim(majMinTab)`, so we would `r sum(dim(majMinTab))` colors, and this isn't even all possible combinations that C of I students have obtained!
 
 To get a large list of relatively distinct colors, we can do this by squishing the "qualitative" colors palettes from color brewer together. This gives 74 colors with only a little repetition:
 ```{r eval = FALSE}
