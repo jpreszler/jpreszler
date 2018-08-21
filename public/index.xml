@@ -11,6 +11,197 @@
     <atom:link href="/" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>What a Tangled Web We Weave...</title>
+      <link>/post/2018-08-21-chords/</link>
+      <pubDate>Tue, 21 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-08-21-chords/</guid>
+      <description>&lt;script src=&#34;/rmarkdown-libs/htmlwidgets/htmlwidgets.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;/rmarkdown-libs/d3/d3.min.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;/rmarkdown-libs/d3-tip/index.js&#34;&gt;&lt;/script&gt;
+&lt;link href=&#34;/rmarkdown-libs/chorddiag/chorddiag.css&#34; rel=&#34;stylesheet&#34; /&gt;
+&lt;script src=&#34;/rmarkdown-libs/chorddiag/chorddiag.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;/rmarkdown-libs/chorddiag-binding/chorddiag.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;chorddiag(
+  xtabs(~MAJOR+minor, data = mmhl[mmhl$Grad.Year == 2017,],
+        drop.unused.levels = TRUE),
+  showTicks = FALSE, groupColors = many_colors, type = &amp;quot;bipartite&amp;quot;
+)&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;htmlwidget-1&#34; style=&#34;width:672px;height:480px;&#34; class=&#34;chorddiag html-widget&#34;&gt;&lt;/div&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-1&#34;&gt;{&#34;x&#34;:{&#34;matrix&#34;:[[0,0,0,0,0,0,0,0,2,2,0,1,0,0,2,0,0,0,0,0,5,0,1,1,4,1,3,1],[0,0,0,0,0,0,0,0,1,0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,1,0,1,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,1,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,1],[0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,1,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,1,0],[0,0,0,0,0,0,0,0,1,2,0,0,1,2,0,4,0,0,1,0,0,1,0,1,3,0,1,0],[0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0],[2,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[2,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,1,0,0,1,1,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[2,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,1,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[5,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[4,1,1,0,1,1,3,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[3,1,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],&#34;options&#34;:{&#34;type&#34;:&#34;bipartite&#34;,&#34;width&#34;:null,&#34;height&#34;:null,&#34;margin&#34;:100,&#34;showGroupnames&#34;:true,&#34;groupNames&#34;:[&#34;BUS&#34;,&#34;CHE&#34;,&#34;HEA&#34;,&#34;HIS&#34;,&#34;MAT&#34;,&#34;MATCS&#34;,&#34;MATPH&#34;,&#34;THE&#34;,&#34;ais&#34;,&#34;artde&#34;,&#34;bus&#34;,&#34;criju&#34;,&#34;crw&#34;,&#34;csc&#34;,&#34;csd&#34;,&#34;dueng&#34;,&#34;ed10&#34;,&#34;fre&#34;,&#34;his&#34;,&#34;hpmed&#34;,&#34;matap&#34;,&#34;phi&#34;,&#34;phsci&#34;,&#34;poec&#34;,&#34;psy&#34;,&#34;relst&#34;,&#34;spa&#34;,&#34;vstdy&#34;],&#34;groupColors&#34;:[&#34;#7FC97F&#34;,&#34;#BEAED4&#34;,&#34;#FDC086&#34;,&#34;#FFFF99&#34;,&#34;#386CB0&#34;,&#34;#F0027F&#34;,&#34;#BF5B17&#34;,&#34;#666666&#34;,&#34;#1B9E77&#34;,&#34;#D95F02&#34;,&#34;#7570B3&#34;,&#34;#E7298A&#34;,&#34;#66A61E&#34;,&#34;#E6AB02&#34;,&#34;#A6761D&#34;,&#34;#666666&#34;,&#34;#A6CEE3&#34;,&#34;#1F78B4&#34;,&#34;#B2DF8A&#34;,&#34;#33A02C&#34;,&#34;#FB9A99&#34;,&#34;#E31A1C&#34;,&#34;#FDBF6F&#34;,&#34;#FF7F00&#34;,&#34;#CAB2D6&#34;,&#34;#6A3D9A&#34;,&#34;#FFFF99&#34;,&#34;#B15928&#34;,&#34;#FBB4AE&#34;,&#34;#B3CDE3&#34;,&#34;#CCEBC5&#34;,&#34;#DECBE4&#34;,&#34;#FED9A6&#34;,&#34;#FFFFCC&#34;,&#34;#E5D8BD&#34;,&#34;#FDDAEC&#34;,&#34;#F2F2F2&#34;,&#34;#B3E2CD&#34;,&#34;#FDCDAC&#34;,&#34;#CBD5E8&#34;,&#34;#F4CAE4&#34;,&#34;#E6F5C9&#34;,&#34;#FFF2AE&#34;,&#34;#F1E2CC&#34;,&#34;#CCCCCC&#34;,&#34;#E41A1C&#34;,&#34;#377EB8&#34;,&#34;#4DAF4A&#34;,&#34;#984EA3&#34;,&#34;#FF7F00&#34;,&#34;#FFFF33&#34;,&#34;#A65628&#34;,&#34;#F781BF&#34;,&#34;#999999&#34;,&#34;#66C2A5&#34;,&#34;#FC8D62&#34;,&#34;#8DA0CB&#34;,&#34;#E78AC3&#34;,&#34;#A6D854&#34;,&#34;#FFD92F&#34;,&#34;#E5C494&#34;,&#34;#B3B3B3&#34;,&#34;#8DD3C7&#34;,&#34;#FFFFB3&#34;,&#34;#BEBADA&#34;,&#34;#FB8072&#34;,&#34;#80B1D3&#34;,&#34;#FDB462&#34;,&#34;#B3DE69&#34;,&#34;#FCCDE5&#34;,&#34;#D9D9D9&#34;,&#34;#BC80BD&#34;,&#34;#CCEBC5&#34;,&#34;#FFED6F&#34;],&#34;groupThickness&#34;:0.1,&#34;groupPadding&#34;:0.0349065850398866,&#34;groupnamePadding&#34;:[30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30],&#34;groupnameFontsize&#34;:18,&#34;groupedgeColor&#34;:null,&#34;chordedgeColor&#34;:&#34;#808080&#34;,&#34;categoryNames&#34;:[&#34;MAJOR&#34;,&#34;minor&#34;],&#34;categorynamePadding&#34;:100,&#34;categorynameFontsize&#34;:28,&#34;showTicks&#34;:false,&#34;tickInterval&#34;:0.1,&#34;ticklabelFontsize&#34;:10,&#34;fadeLevel&#34;:0.1,&#34;showTooltips&#34;:true,&#34;showZeroTooltips&#34;:true,&#34;tooltipNames&#34;:[&#34;BUS&#34;,&#34;CHE&#34;,&#34;HEA&#34;,&#34;HIS&#34;,&#34;MAT&#34;,&#34;MATCS&#34;,&#34;MATPH&#34;,&#34;THE&#34;,&#34;ais&#34;,&#34;artde&#34;,&#34;bus&#34;,&#34;criju&#34;,&#34;crw&#34;,&#34;csc&#34;,&#34;csd&#34;,&#34;dueng&#34;,&#34;ed10&#34;,&#34;fre&#34;,&#34;his&#34;,&#34;hpmed&#34;,&#34;matap&#34;,&#34;phi&#34;,&#34;phsci&#34;,&#34;poec&#34;,&#34;psy&#34;,&#34;relst&#34;,&#34;spa&#34;,&#34;vstdy&#34;],&#34;tooltipFontsize&#34;:12,&#34;tooltipUnit&#34;:&#34;&#34;,&#34;tooltipGroupConnector&#34;:&#34; &amp;#x25B6; &#34;,&#34;precision&#34;:&#34;null&#34;,&#34;clickAction&#34;:null,&#34;clickGroupAction&#34;:null}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;p&gt;The point of this post is to illustrate how to make the above “chord diagram” using the &lt;code&gt;chorddiag&lt;/code&gt; package which leverages D3.js from R. The above visual shows students major/minor combinations who graduated in 2017 from the College of Idaho with at least one minor connected to my department: MAPS. Lower case abbreviations are minors, upper case are majors. Be sure to hover over chords, sectors, or labels to get the full D3.js effect. Also each major can be up to triple counted since students typically earn a major and 3 minors and we’re only plotting the pairings.&lt;/p&gt;
+&lt;div id=&#34;getting-ready&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Getting Ready&lt;/h2&gt;
+&lt;p&gt;To do this, we’ll need several common packages:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(dplyr) #pipes, mutate, select
+library(tidyr) #gather
+library(stringr) #string processing
+library(RColorBrewer) #Colors!!&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We’ll also need the excellent &lt;a href=&#34;https://github.com/mattflor/chorddiag&#34;&gt;chorddiag&lt;/a&gt; package, available via github:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;#install if needed
+devtools::install_github(&amp;quot;mattflor/chorddiag&amp;quot;)
+#definitely load
+library(chorddiag)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Of course, we’ll also need some data, I’ll be using a data set of “anonymized” records of students major/minors degree info from the College of Idaho, which I had in another project: &lt;a href=&#34;https://github.com/jpreszler/peak-neo4j/misc/maps-minor-historical-cleaned.csv&#34;&gt;data&lt;/a&gt;. I’ve read it in with &lt;code&gt;read.csv()&lt;/code&gt; and dropped 2 columns:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;head(mmh) %&amp;gt;% knitr::kable()&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;right&#34;&gt;Grad.Year&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;Degree&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;Major1&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;Minor1&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;Minor2&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;Minor3&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;2012&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;BA&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;BUS&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;MAT&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;NA&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;NA&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;2012&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;BA&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;PSY&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;PHY&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;CRW&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;CSC&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;2011&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;BA&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;MUS&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;EDS&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;MAT&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;NA&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;2011&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;BA&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;ACCT&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;MAT&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;NA&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;NA&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;2011&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;BS&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;MAT&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;CHE&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;PHY&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;NA&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;2013&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;BS&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;MATPH&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;CSC&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;NA&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;NA&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Since students at C of I get a major and 3 minors (in place of a set general education core), we’ll have to reshape this and clean it up a bit.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;reshape-and-first-plot&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Reshape and First Plot&lt;/h2&gt;
+&lt;p&gt;We want to just look at major/minor pairs, so we’re going to gather the minors together, change case and trim spaces:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;mmhl &amp;lt;- gather(mmh, key=mNum, value = minor, 
+               -c(Grad.Year, Major1, Degree)) %&amp;gt;% 
+  select(-mNum) %&amp;gt;% 
+  mutate(minor = str_to_lower(str_trim(minor, side = &amp;quot;both&amp;quot;))) %&amp;gt;%
+  rename(MAJOR = Major1)
+
+head(mmhl) %&amp;gt;% knitr::kable()&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;right&#34;&gt;Grad.Year&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;Degree&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;MAJOR&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;minor&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;2012&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;BA&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;BUS&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;mat&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;2012&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;BA&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;PSY&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;phy&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;2011&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;BA&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;MUS&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;eds&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;2011&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;BA&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;ACCT&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;mat&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;2011&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;BS&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;MAT&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;che&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;2013&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;BS&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;MATPH&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;csc&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Let’s try a plot to see how it looks. Chord diagrams need a matrix or contingency table though, so we make that and then plot.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;majMinTab &amp;lt;- xtabs(~MAJOR+minor, data = mmhl[mmhl$Grad.Year==2017,],
+                   drop.unused.levels = TRUE)
+#chorddiag(majMinTab, type=&amp;quot;bipartite&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The &lt;code&gt;type=&amp;quot;bipartite&amp;quot;&lt;/code&gt; allows us to pass a non-square matrix to &lt;code&gt;chorddiag&lt;/code&gt; since we only need links between two sets of groups (majors and minors). This isn’t bad, but the default color options only allow about 16 groups (8 from the &lt;code&gt;dark2&lt;/code&gt; palette and 8 form the &lt;code&gt;grey2&lt;/code&gt; palette). Also the tick marks seem unnecessary.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;improving-colors&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Improving Colors&lt;/h2&gt;
+&lt;p&gt;Removing the tick marks is easy (set option &lt;code&gt;showTicks=FALSE&lt;/code&gt;), but coming up with lots of colors is a bit harder. The table has dimensions 8, 20, so we would like 28 colors, and this isn’t even all possible combinations that C of I students have obtained!&lt;/p&gt;
+&lt;p&gt;To get a large list of relatively distinct colors, we can do this by squishing the “qualitative” colors palettes from color brewer together. This gives 74 colors with only a little repetition:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;qual_cols = brewer.pal.info[brewer.pal.info$category == &amp;#39;qual&amp;#39;,]
+many_colors = unlist(mapply(brewer.pal, qual_cols$maxcolors, rownames(qual_cols)))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now &lt;code&gt;many_colors&lt;/code&gt; has a large color palette for us to make our plot:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;chorddiag(
+  xtabs(~MAJOR+minor, data = mmhl[mmhl$Grad.Year == 2017,],
+        drop.unused.levels = TRUE),
+  showTicks = FALSE, groupColors = many_colors, type = &amp;quot;bipartite&amp;quot;
+)&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;htmlwidget-2&#34; style=&#34;width:672px;height:480px;&#34; class=&#34;chorddiag html-widget&#34;&gt;&lt;/div&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-2&#34;&gt;{&#34;x&#34;:{&#34;matrix&#34;:[[0,0,0,0,0,0,0,0,2,2,0,1,0,0,2,0,0,0,0,0,5,0,1,1,4,1,3,1],[0,0,0,0,0,0,0,0,1,0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,1,0,1,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,1,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,1],[0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,1,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,1,0],[0,0,0,0,0,0,0,0,1,2,0,0,1,2,0,4,0,0,1,0,0,1,0,1,3,0,1,0],[0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0],[2,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[2,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,1,0,0,1,1,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[2,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,1,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[5,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[4,1,1,0,1,1,3,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[3,1,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],&#34;options&#34;:{&#34;type&#34;:&#34;bipartite&#34;,&#34;width&#34;:null,&#34;height&#34;:null,&#34;margin&#34;:100,&#34;showGroupnames&#34;:true,&#34;groupNames&#34;:[&#34;BUS&#34;,&#34;CHE&#34;,&#34;HEA&#34;,&#34;HIS&#34;,&#34;MAT&#34;,&#34;MATCS&#34;,&#34;MATPH&#34;,&#34;THE&#34;,&#34;ais&#34;,&#34;artde&#34;,&#34;bus&#34;,&#34;criju&#34;,&#34;crw&#34;,&#34;csc&#34;,&#34;csd&#34;,&#34;dueng&#34;,&#34;ed10&#34;,&#34;fre&#34;,&#34;his&#34;,&#34;hpmed&#34;,&#34;matap&#34;,&#34;phi&#34;,&#34;phsci&#34;,&#34;poec&#34;,&#34;psy&#34;,&#34;relst&#34;,&#34;spa&#34;,&#34;vstdy&#34;],&#34;groupColors&#34;:[&#34;#7FC97F&#34;,&#34;#BEAED4&#34;,&#34;#FDC086&#34;,&#34;#FFFF99&#34;,&#34;#386CB0&#34;,&#34;#F0027F&#34;,&#34;#BF5B17&#34;,&#34;#666666&#34;,&#34;#1B9E77&#34;,&#34;#D95F02&#34;,&#34;#7570B3&#34;,&#34;#E7298A&#34;,&#34;#66A61E&#34;,&#34;#E6AB02&#34;,&#34;#A6761D&#34;,&#34;#666666&#34;,&#34;#A6CEE3&#34;,&#34;#1F78B4&#34;,&#34;#B2DF8A&#34;,&#34;#33A02C&#34;,&#34;#FB9A99&#34;,&#34;#E31A1C&#34;,&#34;#FDBF6F&#34;,&#34;#FF7F00&#34;,&#34;#CAB2D6&#34;,&#34;#6A3D9A&#34;,&#34;#FFFF99&#34;,&#34;#B15928&#34;,&#34;#FBB4AE&#34;,&#34;#B3CDE3&#34;,&#34;#CCEBC5&#34;,&#34;#DECBE4&#34;,&#34;#FED9A6&#34;,&#34;#FFFFCC&#34;,&#34;#E5D8BD&#34;,&#34;#FDDAEC&#34;,&#34;#F2F2F2&#34;,&#34;#B3E2CD&#34;,&#34;#FDCDAC&#34;,&#34;#CBD5E8&#34;,&#34;#F4CAE4&#34;,&#34;#E6F5C9&#34;,&#34;#FFF2AE&#34;,&#34;#F1E2CC&#34;,&#34;#CCCCCC&#34;,&#34;#E41A1C&#34;,&#34;#377EB8&#34;,&#34;#4DAF4A&#34;,&#34;#984EA3&#34;,&#34;#FF7F00&#34;,&#34;#FFFF33&#34;,&#34;#A65628&#34;,&#34;#F781BF&#34;,&#34;#999999&#34;,&#34;#66C2A5&#34;,&#34;#FC8D62&#34;,&#34;#8DA0CB&#34;,&#34;#E78AC3&#34;,&#34;#A6D854&#34;,&#34;#FFD92F&#34;,&#34;#E5C494&#34;,&#34;#B3B3B3&#34;,&#34;#8DD3C7&#34;,&#34;#FFFFB3&#34;,&#34;#BEBADA&#34;,&#34;#FB8072&#34;,&#34;#80B1D3&#34;,&#34;#FDB462&#34;,&#34;#B3DE69&#34;,&#34;#FCCDE5&#34;,&#34;#D9D9D9&#34;,&#34;#BC80BD&#34;,&#34;#CCEBC5&#34;,&#34;#FFED6F&#34;],&#34;groupThickness&#34;:0.1,&#34;groupPadding&#34;:0.0349065850398866,&#34;groupnamePadding&#34;:[30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30],&#34;groupnameFontsize&#34;:18,&#34;groupedgeColor&#34;:null,&#34;chordedgeColor&#34;:&#34;#808080&#34;,&#34;categoryNames&#34;:[&#34;MAJOR&#34;,&#34;minor&#34;],&#34;categorynamePadding&#34;:100,&#34;categorynameFontsize&#34;:28,&#34;showTicks&#34;:false,&#34;tickInterval&#34;:0.1,&#34;ticklabelFontsize&#34;:10,&#34;fadeLevel&#34;:0.1,&#34;showTooltips&#34;:true,&#34;showZeroTooltips&#34;:true,&#34;tooltipNames&#34;:[&#34;BUS&#34;,&#34;CHE&#34;,&#34;HEA&#34;,&#34;HIS&#34;,&#34;MAT&#34;,&#34;MATCS&#34;,&#34;MATPH&#34;,&#34;THE&#34;,&#34;ais&#34;,&#34;artde&#34;,&#34;bus&#34;,&#34;criju&#34;,&#34;crw&#34;,&#34;csc&#34;,&#34;csd&#34;,&#34;dueng&#34;,&#34;ed10&#34;,&#34;fre&#34;,&#34;his&#34;,&#34;hpmed&#34;,&#34;matap&#34;,&#34;phi&#34;,&#34;phsci&#34;,&#34;poec&#34;,&#34;psy&#34;,&#34;relst&#34;,&#34;spa&#34;,&#34;vstdy&#34;],&#34;tooltipFontsize&#34;:12,&#34;tooltipUnit&#34;:&#34;&#34;,&#34;tooltipGroupConnector&#34;:&#34; &amp;#x25B6; &#34;,&#34;precision&#34;:&#34;null&#34;,&#34;clickAction&#34;:null,&#34;clickGroupAction&#34;:null}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;p&gt;I think it’s interesting to see the change over time, here’s the same plot using 2016 data:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;chorddiag(
+  xtabs(~MAJOR+minor, data = mmhl[mmhl$Grad.Year == 2016,],
+        drop.unused.levels = TRUE),
+  showTicks = FALSE, groupColors = many_colors, type = &amp;quot;bipartite&amp;quot;
+)&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;htmlwidget-3&#34; style=&#34;width:672px;height:480px;&#34; class=&#34;chorddiag html-widget&#34;&gt;&lt;/div&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-3&#34;&gt;{&#34;x&#34;:{&#34;matrix&#34;:[[0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0],[0,0,0,0,0,0,0,0,0,0,2,1,0,0,0,0,3,0,0,1,0,1,0,3,0,0,0,0,0,4,0,2,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,5,0,2,1,0,1,0,0,0,1,0,1,0,1,5,1,0,0,1],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0],[1,0,2,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,3,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,3,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,1,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,0,4,0,0,0,5,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,1,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],&#34;options&#34;:{&#34;type&#34;:&#34;bipartite&#34;,&#34;width&#34;:null,&#34;height&#34;:null,&#34;margin&#34;:100,&#34;showGroupnames&#34;:true,&#34;groupNames&#34;:[&#34;ACCT&#34;,&#34;ATH&#34;,&#34;BUS&#34;,&#34;HIS&#34;,&#34;IPE&#34;,&#34;MATCS&#34;,&#34;MATPH&#34;,&#34;MUS&#34;,&#34;PSY&#34;,&#34;THE&#34;,&#34;artde&#34;,&#34;ath&#34;,&#34;brits&#34;,&#34;bus&#34;,&#34;chean&#34;,&#34;csc&#34;,&#34;csd&#34;,&#34;dueng&#34;,&#34;elit&#34;,&#34;enhum&#34;,&#34;fre&#34;,&#34;his&#34;,&#34;mat&#34;,&#34;matap&#34;,&#34;mus&#34;,&#34;muspe&#34;,&#34;phi&#34;,&#34;phsci&#34;,&#34;poec&#34;,&#34;psy&#34;,&#34;relst&#34;,&#34;spa&#34;,&#34;sperh&#34;,&#34;vstdy&#34;],&#34;groupColors&#34;:[&#34;#7FC97F&#34;,&#34;#BEAED4&#34;,&#34;#FDC086&#34;,&#34;#FFFF99&#34;,&#34;#386CB0&#34;,&#34;#F0027F&#34;,&#34;#BF5B17&#34;,&#34;#666666&#34;,&#34;#1B9E77&#34;,&#34;#D95F02&#34;,&#34;#7570B3&#34;,&#34;#E7298A&#34;,&#34;#66A61E&#34;,&#34;#E6AB02&#34;,&#34;#A6761D&#34;,&#34;#666666&#34;,&#34;#A6CEE3&#34;,&#34;#1F78B4&#34;,&#34;#B2DF8A&#34;,&#34;#33A02C&#34;,&#34;#FB9A99&#34;,&#34;#E31A1C&#34;,&#34;#FDBF6F&#34;,&#34;#FF7F00&#34;,&#34;#CAB2D6&#34;,&#34;#6A3D9A&#34;,&#34;#FFFF99&#34;,&#34;#B15928&#34;,&#34;#FBB4AE&#34;,&#34;#B3CDE3&#34;,&#34;#CCEBC5&#34;,&#34;#DECBE4&#34;,&#34;#FED9A6&#34;,&#34;#FFFFCC&#34;,&#34;#E5D8BD&#34;,&#34;#FDDAEC&#34;,&#34;#F2F2F2&#34;,&#34;#B3E2CD&#34;,&#34;#FDCDAC&#34;,&#34;#CBD5E8&#34;,&#34;#F4CAE4&#34;,&#34;#E6F5C9&#34;,&#34;#FFF2AE&#34;,&#34;#F1E2CC&#34;,&#34;#CCCCCC&#34;,&#34;#E41A1C&#34;,&#34;#377EB8&#34;,&#34;#4DAF4A&#34;,&#34;#984EA3&#34;,&#34;#FF7F00&#34;,&#34;#FFFF33&#34;,&#34;#A65628&#34;,&#34;#F781BF&#34;,&#34;#999999&#34;,&#34;#66C2A5&#34;,&#34;#FC8D62&#34;,&#34;#8DA0CB&#34;,&#34;#E78AC3&#34;,&#34;#A6D854&#34;,&#34;#FFD92F&#34;,&#34;#E5C494&#34;,&#34;#B3B3B3&#34;,&#34;#8DD3C7&#34;,&#34;#FFFFB3&#34;,&#34;#BEBADA&#34;,&#34;#FB8072&#34;,&#34;#80B1D3&#34;,&#34;#FDB462&#34;,&#34;#B3DE69&#34;,&#34;#FCCDE5&#34;,&#34;#D9D9D9&#34;,&#34;#BC80BD&#34;,&#34;#CCEBC5&#34;,&#34;#FFED6F&#34;],&#34;groupThickness&#34;:0.1,&#34;groupPadding&#34;:0.0349065850398866,&#34;groupnamePadding&#34;:[30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30],&#34;groupnameFontsize&#34;:18,&#34;groupedgeColor&#34;:null,&#34;chordedgeColor&#34;:&#34;#808080&#34;,&#34;categoryNames&#34;:[&#34;MAJOR&#34;,&#34;minor&#34;],&#34;categorynamePadding&#34;:100,&#34;categorynameFontsize&#34;:28,&#34;showTicks&#34;:false,&#34;tickInterval&#34;:0.1,&#34;ticklabelFontsize&#34;:10,&#34;fadeLevel&#34;:0.1,&#34;showTooltips&#34;:true,&#34;showZeroTooltips&#34;:true,&#34;tooltipNames&#34;:[&#34;ACCT&#34;,&#34;ATH&#34;,&#34;BUS&#34;,&#34;HIS&#34;,&#34;IPE&#34;,&#34;MATCS&#34;,&#34;MATPH&#34;,&#34;MUS&#34;,&#34;PSY&#34;,&#34;THE&#34;,&#34;artde&#34;,&#34;ath&#34;,&#34;brits&#34;,&#34;bus&#34;,&#34;chean&#34;,&#34;csc&#34;,&#34;csd&#34;,&#34;dueng&#34;,&#34;elit&#34;,&#34;enhum&#34;,&#34;fre&#34;,&#34;his&#34;,&#34;mat&#34;,&#34;matap&#34;,&#34;mus&#34;,&#34;muspe&#34;,&#34;phi&#34;,&#34;phsci&#34;,&#34;poec&#34;,&#34;psy&#34;,&#34;relst&#34;,&#34;spa&#34;,&#34;sperh&#34;,&#34;vstdy&#34;],&#34;tooltipFontsize&#34;:12,&#34;tooltipUnit&#34;:&#34;&#34;,&#34;tooltipGroupConnector&#34;:&#34; &amp;#x25B6; &#34;,&#34;precision&#34;:&#34;null&#34;,&#34;clickAction&#34;:null,&#34;clickGroupAction&#34;:null}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;p&gt;Perhaps we could animate over the years… But I should finish my second year evaluation first.&lt;/p&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Lesser Known Verbs: top_n</title>
       <link>/post/2018-07-30-top_n/</link>
       <pubDate>Mon, 30 Jul 2018 00:00:00 +0000</pubDate>
@@ -41363,95 +41554,6 @@ invRect$code &amp;lt;- &amp;quot;Inverted&amp;quot;
 rbind.data.frame(rectangle, invRect) %&amp;gt;% 
   ggplot(aes(x=x,y=y, col=code)) + geom_point(size=1) + xlim(c(-2,7)) + ylim(c(-2,3))&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2018-01-07-inversions_files/figure-html/thirdInv-1.png&#34; width=&#34;672&#34; /&gt; Inversions aren’t a simple to predict as rotations and translations. I encourage you to experiment a bit: try other shapes, lines, or just collections of points. Do inversions preserve anything geometrically meaningful?&lt;/p&gt;
-&lt;/div&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>GGPlot and Geometric Transformations</title>
-      <link>/post/2018-01-06-ggplot-and-geometric-transformations/</link>
-      <pubDate>Sat, 06 Jan 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/post/2018-01-06-ggplot-and-geometric-transformations/</guid>
-      <description>&lt;p&gt;I’m currently teaching a Geometry course, and wished there was an easy way to illustrate geometric transformations for my students. I’m sure they’ll agree I’m not a great artist.&lt;/p&gt;
-&lt;p&gt;Since R is my preferred way to draw any picture, I thought “Let’s use GGPlot to show transformations!”&lt;/p&gt;
-&lt;p&gt;For those not versed in geometry, we would like to easily visualize translations (shifts along a vector), rotations, and dilations of points (or collections of points) in the complex plane. Reflections can be achieved via a combination of rotation and translation. Another important transformation, inversion, will be done in the next post.&lt;/p&gt;
-&lt;div id=&#34;functions-for-the-transformations&#34; class=&#34;section level1&#34;&gt;
-&lt;h1&gt;Functions for the transformations&lt;/h1&gt;
-&lt;p&gt;I’m going to write separate functions for the real and imaginary parts of the result of each transformation, this is to make things easy to produce dataframes to send to ggplot. There are more efficient ways to do this, but I want all functions to have a consistent input/output structure so applying transformations and graphing the results is easy.&lt;/p&gt;
-&lt;div id=&#34;translations&#34; class=&#34;section level2&#34;&gt;
-&lt;h2&gt;Translations&lt;/h2&gt;
-&lt;p&gt;Mathematically, a translation in the complex plane is a function that adds a fixed number to the input. The inputs tx and ty are the real and imaginary parts of the point we’re translating by.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;translateR &amp;lt;- function(x,y,tx,ty){return (x+tx)}
-translateI &amp;lt;- function(x,y,tx,ty){return (y+ty)}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;div id=&#34;rotations-and-dilations&#34; class=&#34;section level2&#34;&gt;
-&lt;h2&gt;Rotations and Dilations&lt;/h2&gt;
-&lt;p&gt;Mathematically, multiplying by a complex number rotates (about the origin) by it’s argument and dilates by it’s modulus. Similarly to above, rx and ry are the real and imaginary parts of the number we multiply by to achieve the rotation/dilation (ry=0 will be just a dilation).&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;rotateR &amp;lt;- function(x,y,rx,ry){return (x*rx-y*ry)}
-rotateI &amp;lt;- function(x,y,rx,ry){return (x*ry+y*rx)}&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Rotations about a point other then the origin can be accomplished by applying a translation to the origin, rotation about the origin, and then translating back.&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div id=&#34;illustrating-the-transformations&#34; class=&#34;section level1&#34;&gt;
-&lt;h1&gt;Illustrating the transformations&lt;/h1&gt;
-&lt;p&gt;To clearly show a transformation, let’s start with a collection on points in the complex plane:&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;rectangle &amp;lt;- data.frame(x = c(rep(seq(from=0, to=2, by=.1),2), rep(0,11),rep(2,11)),
-                  y=c(rep(0,21),rep(1,21),rep(seq(0,1,by=.1),2)))
-rectangle$code &amp;lt;- &amp;quot;Original&amp;quot;
-
-library(ggplot2)
-ggplot(rectangle, aes(x=x,y=y))+geom_point(size=1)+xlim(c(-5,5))+ylim(c(-5,5))&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2018-01-06-ggplot-and-geometric-transformations_files/figure-html/makeSquare-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;p&gt;Now let’s try a translation by &lt;span class=&#34;math inline&#34;&gt;\(-1-2i\)&lt;/span&gt;.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;trRectangle &amp;lt;- data.frame(x = translateR(rectangle$x, rectangle$y, -1,-2), 
-                          y=translateI(rectangle$x, rectangle$y, -1,-2))
-trRectangle$code &amp;lt;- &amp;quot;Translate&amp;quot;
-
-library(dplyr)
-
-rbind.data.frame(rectangle, trRectangle) %&amp;gt;%
-  ggplot(aes(x=x,y=y,col=code))+geom_point(size=1)+
-  xlim(c(-5,5))+ylim(c(-5,5))&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2018-01-06-ggplot-and-geometric-transformations_files/figure-html/applyTrans-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;p&gt;And a rotation by &lt;span class=&#34;math inline&#34;&gt;\(\frac{2+3i}{\sqrt{13}}\)&lt;/span&gt; (why pick nice numbers?):&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;rotRectangle &amp;lt;- data.frame(x = rotateR(rectangle$x, rectangle$y, 2/sqrt(13),3/sqrt(13)), 
-                           y=rotateI(rectangle$x, rectangle$y, 2/sqrt(13),3/sqrt(13)))
-rotRectangle$code &amp;lt;- &amp;quot;Rotation&amp;quot;
-
-library(dplyr)
-
-rbind.data.frame(rectangle, rotRectangle) %&amp;gt;%
-  ggplot(aes(x=x,y=y,col=code))+geom_point(size=1)+
-  xlim(c(-5,5))+ylim(c(-5,5))&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2018-01-06-ggplot-and-geometric-transformations_files/figure-html/applyRot-1.png&#34; width=&#34;672&#34; /&gt; We can also perform more complicated transformations. Let’s rotate about the original rectangle’s top right corner &lt;span class=&#34;math inline&#34;&gt;\(2+i\)&lt;/span&gt; by &lt;span class=&#34;math inline&#34;&gt;\(\frac{\pi}{4}\)&lt;/span&gt;, and double the size. This means we first move &lt;span class=&#34;math inline&#34;&gt;\((2,1)\)&lt;/span&gt; to the origin, rotate/dilate, then move back.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;#translate to origin
-glRect &amp;lt;- data.frame(x=translateR(rectangle$x, rectangle$y, -2,-1), 
-                     y=translateI(rectangle$x, rectangle$y, -2,-1))
-
-
-#rotate and dilate by 2e^{i*pi/4} = sqrt(2)+isqrt(2)
-#
-#We&amp;#39;re doing this in one line since both the real and imaginary
-#rotations change and use the original coordinates. Two lines 
-#would produce very different transformation.
-glRect[,1:2] &amp;lt;- c(rotateR(glRect$x, glRect$y, sqrt(2), sqrt(2)) ,
-                  rotateI(glRect$x, glRect$y, sqrt(2),sqrt(2)))
-
-#Now translate back 
-glRect$x &amp;lt;- translateR(glRect$x, glRect$y, 2,1)
-glRect$y &amp;lt;- translateI(glRect$x, glRect$y, 2,1)
-
-#add code for graph
-glRect$code &amp;lt;-&amp;quot;Transformed&amp;quot;
-
-#and graph
-rbind.data.frame(rectangle, glRect) %&amp;gt;%
-  ggplot(aes(x=x,y=y,col=code))+geom_point(size=1)+
-  xlim(c(-5,5))+ylim(c(-5,5))&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2018-01-06-ggplot-and-geometric-transformations_files/figure-html/rotTrans-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;p&gt;The combination of rotation and translation can also produce a reflection about any line.&lt;/p&gt;
-&lt;p&gt;Next up, inversions…&lt;/p&gt;
 &lt;/div&gt;
 </description>
     </item>
