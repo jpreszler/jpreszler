@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Jmm on Jason I. Preszler</title>
+    <link>/tags/jmm/</link>
+    <description>Recent content in Jmm on Jason I. Preszler</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; 2017 Jason Preszler</copyright>
+    <lastBuildDate>Sun, 11 Jan 2015 00:00:00 -0700</lastBuildDate>
+    
+	<atom:link href="/tags/jmm/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>An Infinite Family of Cubic Polynomials with Depth 1 Emergent Reducibility</title>
+      <link>/talk/jmm-2015/</link>
+      <pubDate>Sun, 11 Jan 2015 00:00:00 -0700</pubDate>
+      
+      <guid>/talk/jmm-2015/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

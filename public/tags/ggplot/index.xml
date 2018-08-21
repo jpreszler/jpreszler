@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Ggplot on Jason I. Preszler</title>
+    <link>/tags/ggplot/</link>
+    <description>Recent content in Ggplot on Jason I. Preszler</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; 2017 Jason Preszler</copyright>
+    <lastBuildDate>Sun, 11 Mar 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/ggplot/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Running Tacoma: Maps</title>
+      <link>/post/2018-3-11-run-tacoma1/</link>
+      <pubDate>Sun, 11 Mar 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-3-11-run-tacoma1/</guid>
+      <description>When I lived in Tacoma, I was running quite a bit. Since I moved away my training has become much more irregular, but I thought it would be interesting to take the Tacoma data from my current Garmin Forerunner 220 a take a look.
+Data Prep The Garmin stores data in .fit format, but gpsbabel can translate to a nicely structured GPX file, which is what I’ll start with here. The XML package in R has some nice features to easily parse xml files (GPX is GPS data in a special XML schema).</description>
+    </item>
+    
+    <item>
+      <title>Idaho ACS Mapping</title>
+      <link>/post/2018-01-27-acs-map/</link>
+      <pubDate>Sat, 27 Jan 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-01-27-acs-map/</guid>
+      <description>Recently some diversity stats have been circulated around the College of Idaho, and as new Idahoan I wondered about the general diversity (or lack thereof) in Idaho. I remembered seeing this post a while back about mapping in R, so I went to work.
+Shapefiles First, we need shapefiles for both the Idaho country boundaries and census tracts, which will give finer detail for data. These can be downloaded from the [US Census Bureau] (https://www.</description>
+    </item>
+    
+    <item>
+      <title>Stock Random Walks</title>
+      <link>/post/2018-01-15-stock-rw/</link>
+      <pubDate>Mon, 15 Jan 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-01-15-stock-rw/</guid>
+      <description>Introduction Recently a student in another course came to my office looking for someone “who could explain the Monte Carlo simulation” to her. I was caught a bit off-guard since (a) it was 10 minutes before my geometry class and (b) there is no single Monte Carlo simulation.
+After a brief discussion, I found out she wanted to predict stock prices using Monte Carlo simulation, but she thought that the Monte Carlo simulation provided the prediction - she couldn’t say how the actual predictions were being made which is the crucial part.</description>
+    </item>
+    
+    <item>
+      <title>GGPlot and Geometric Transformations II: Inversions</title>
+      <link>/post/2018-01-07-inversions/</link>
+      <pubDate>Sun, 07 Jan 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-01-07-inversions/</guid>
+      <description>This is the second part of two posts about using ggplot to visualize geometric transformations in the complex plane.
+Inversions For this post we’ll focus on inversions, having already covered rotations, translations, and reflections. An inversion can be thought of as a reflection across a circle, the the inside of the circle gets flipped to fill the plane outside the circle and the outside is flipped into the circle. This is a more complicated transformation, both to visualize and to perform mathematically, but is essential to geometry.</description>
+    </item>
+    
+    <item>
+      <title>GGPlot and Geometric Transformations</title>
+      <link>/post/2018-01-06-ggplot-and-geometric-transformations/</link>
+      <pubDate>Sat, 06 Jan 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-01-06-ggplot-and-geometric-transformations/</guid>
+      <description>I’m currently teaching a Geometry course, and wished there was an easy way to illustrate geometric transformations for my students. I’m sure they’ll agree I’m not a great artist.
+Since R is my preferred way to draw any picture, I thought “Let’s use GGPlot to show transformations!”
+For those not versed in geometry, we would like to easily visualize translations (shifts along a vector), rotations, and dilations of points (or collections of points) in the complex plane.</description>
+    </item>
+    
+  </channel>
+</rss>

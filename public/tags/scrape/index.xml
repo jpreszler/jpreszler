@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Scrape on Jason I. Preszler</title>
+    <link>/tags/scrape/</link>
+    <description>Recent content in Scrape on Jason I. Preszler</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; 2017 Jason Preszler</copyright>
+    <lastBuildDate>Tue, 24 Jul 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/scrape/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Re-Counting Classes</title>
+      <link>/post/2018-07-24-recount-class/</link>
+      <pubDate>Tue, 24 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-07-24-recount-class/</guid>
+      <description>Edit 7/27/2018 I realized that MFL’s name change to WLC didn’t change the prefix of their courses, this broke my scrapper. Below is an updated post that deals with this.
+Back in early May, I wrote a post about scraping the College of Idaho catalog: Counting Classes. Below if the same post (boring…) except that the “current catalog” has been updated. This is really a demonstration of reproducibility, the upstream data has changed and ideally all my code still works.</description>
+    </item>
+    
+    <item>
+      <title>Counting Classes: The Basics</title>
+      <link>/post/2018-05-05-counting-class/</link>
+      <pubDate>Sat, 05 May 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-05-05-counting-class/</guid>
+      <description>At the College of Idaho, there’s been discussion about visualizing the curriculum as well as understanding the curriculum. Naturally this interests me as a chance to wallow in some complicated data (students are required to complete a major and 3 minors across 4 “peaks” rather than complete courses from a traditional “core”). I thought using R and a Neo4j graph database would be useful (something to look forward to) - but first I needed to get data from the catalogue!</description>
+    </item>
+    
+  </channel>
+</rss>

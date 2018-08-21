@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Dplyr on Jason I. Preszler</title>
+    <link>/tags/dplyr/</link>
+    <description>Recent content in Dplyr on Jason I. Preszler</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; 2017 Jason Preszler</copyright>
+    <lastBuildDate>Mon, 30 Jul 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/dplyr/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Lesser Known Verbs: top_n</title>
+      <link>/post/2018-07-30-top_n/</link>
+      <pubDate>Mon, 30 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-07-30-top_n/</guid>
+      <description>I’ve been using R since 2006. That predates RStudio and the tidyverse. I remember the struggle of keeping track of the variants of apply and often fiddling with them to get code to work.
+Then came plyr and the dplyr and my life has never been the same. The major verbs of dplyr include select, filter, mutate, group_by, summarise, and arrange; and if you are doing data analysis in R then you should be fluent in them.</description>
+    </item>
+    
+  </channel>
+</rss>

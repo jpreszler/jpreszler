@@ -1,0 +1,110 @@
+---
+title: "What a Tangled Web We Weave..."
+author: "Jason Preszler"
+date: 08-21-2018
+output: html_document
+tags: ["R", "chorddiag", "curriculum", "D3.js"]
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(RColorBrewer)
+library(chorddiag)
+
+mmh <- read.csv("~/github-web/peak-neo4j/misc/maps-minor-historical-cleaned.csv", header = TRUE) %>% select(-c(Major2, Concentration))
+
+mmhl <- gather(mmh, key=mNum, value = minor, -c(Grad.Year, Major1, Degree)) %>% mutate(minor = str_to_lower(str_trim(minor, side = "both"))) %>% rename(MAJOR = Major1)
+
+
+qual_cols = brewer.pal.info[brewer.pal.info$category == 'qual',]
+many_colors = unlist(mapply(brewer.pal, qual_cols$maxcolors, rownames(qual_cols)))
+```
+
+```{r end}
+chorddiag(
+  xtabs(~MAJOR+minor, data = mmhl[mmhl$Grad.Year == 2017,],
+        drop.unused.levels = TRUE),
+  showTicks = FALSE, groupColors = many_colors, type = "bipartite"
+)
+```
+
+The point of this post is to illustrate how to make the above "chord diagram" using the `chorddiag` package which leverages D3.js from R. The above visual shows students major/minor combinations who graduated in 2017 from the College of Idaho with at least one minor connected to my department: MAPS. Lower case abbreviations are minors, upper case are majors. Be sure to hover over chords, sectors, or labels to get the full D3.js effect. Also each major can be up to triple counted since students typically earn a major and 3 minors and we're only plotting the pairings.
+
+## Getting Ready
+To do this, we'll need several common packages:
+```{r eval=FALSE}
+library(dplyr) #pipes, mutate, select
+library(tidyr) #gather
+library(stringr) #string processing
+library(RColorBrewer) #Colors!!
+```
+
+We'll also need the excellent [chorddiag](https://github.com/mattflor/chorddiag) package, available via github:
+```{r eval=FALSE}
+#install if needed
+devtools::install_github("mattflor/chorddiag")
+#definitely load
+library(chorddiag)
+```
+
+Of course, we'll also need some data, I'll be using a data set of "anonymized" records of students major/minors degree info from the College of Idaho, which I had in another project: [data](https://github.com/jpreszler/peak-neo4j/misc/maps-minor-historical-cleaned.csv). I've read it in with `read.csv()` and dropped 2 columns:
+```{r }
+head(mmh) %>% knitr::kable()
+```
+
+Since students at C of I get a major and 3 minors (in place of a set general education core), we'll have to reshape this and clean it up a bit.
+
+## Reshape and First Plot
+We want to just look at major/minor pairs, so we're going to gather the minors together, change case and trim spaces:
+```{r }
+mmhl <- gather(mmh, key=mNum, value = minor, 
+               -c(Grad.Year, Major1, Degree)) %>% 
+  select(-mNum) %>% 
+  mutate(minor = str_to_lower(str_trim(minor, side = "both"))) %>%
+  rename(MAJOR = Major1)
+
+head(mmhl) %>% knitr::kable()
+```
+
+Let's try a plot to see how it looks. Chord diagrams need a matrix or contingency table though, so we make that and then plot.
+```{r}
+majMinTab <- xtabs(~MAJOR+minor, data = mmhl[mmhl$Grad.Year==2017,],
+                   drop.unused.levels = TRUE)
+chorddiag(majMinTab, type="bipartite")
+```
+
+The `type="bipartite"` allows us to pass a non-square matrix to `chorddiag` since we only need links between two sets of groups (majors and minors). This isn't bad, but the default color options only allow about 16 groups (8 from the `dark2` palette and 8 form the `grey2` palette). Also the tick marks seem unnecessary. 
+
+## Improving Colors
+Removing the tick marks is easy (set option `showTicks=FALSE`), but coming up with lots of colors is a bit harder. The table has dimensions `r dim(majMinTab)`, so we would like `r sum(dim(majMinTab))` colors, and this isn't even all possible combinations that C of I students have obtained!
+
+To get a large list of relatively distinct colors, we can do this by squishing the "qualitative" colors palettes from color brewer together. This gives 74 colors with only a little repetition:
+```{r eval = FALSE}
+qual_cols = brewer.pal.info[brewer.pal.info$category == 'qual',]
+many_colors = unlist(mapply(brewer.pal, qual_cols$maxcolors, rownames(qual_cols)))
+```
+
+Now `many_colors` has a large color palette for us to make our plot:
+```{r}
+chorddiag(
+  xtabs(~MAJOR+minor, data = mmhl[mmhl$Grad.Year == 2017,],
+        drop.unused.levels = TRUE),
+  showTicks = FALSE, groupColors = many_colors, type = "bipartite"
+)
+```
+
+I think it's interesting to see the change over time, here's the same plot using 2016 data:
+
+```{r}
+chorddiag(
+  xtabs(~MAJOR+minor, data = mmhl[mmhl$Grad.Year == 2016,],
+        drop.unused.levels = TRUE),
+  showTicks = FALSE, groupColors = many_colors, type = "bipartite"
+)
+```
+
+Perhaps we could animate over the years... But I should finish my second year evaluation first.

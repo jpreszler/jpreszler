@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Emergent-reducibility on Jason I. Preszler</title>
+    <link>/tags/emergent-reducibility/</link>
+    <description>Recent content in Emergent-reducibility on Jason I. Preszler</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; 2017 Jason Preszler</copyright>
+    <lastBuildDate>Fri, 01 Jun 2018 08:24:06 -0700</lastBuildDate>
+    
+	<atom:link href="/tags/emergent-reducibility/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Machine Learning Meets Pure Mathematics</title>
+      <link>/talk/asa-sr-2018/</link>
+      <pubDate>Fri, 01 Jun 2018 08:24:06 -0700</pubDate>
+      
+      <guid>/talk/asa-sr-2018/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Visualizing Classifier Peformance</title>
+      <link>/talk/maps-312018/</link>
+      <pubDate>Thu, 01 Mar 2018 08:24:06 -0700</pubDate>
+      
+      <guid>/talk/maps-312018/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Thoughts on Severe Class Imbalance </title>
+      <link>/post/2018-01-01/</link>
+      <pubDate>Tue, 02 Jan 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-01-01/</guid>
+      <description>Besides lots of family time and the creation of this blog/website, this is what I’ve been thinking about over the winter break.
+Background As part of my research in emergent reducibility, I’ve had to face a binary classification situation with severe class imbalance. Among brute-force searches, it seems that there’s roughly 1 case of emergent reducibility (what I’m looking for) for every 1 million irreducible cubic polynomials. It is known that there are infinitely many cubic polynomials with emergent reducibility.</description>
+    </item>
+    
+    <item>
+      <title>An Infinite Family of Cubic Polynomials with Depth 1 Emergent Reducibility</title>
+      <link>/talk/jmm-2015/</link>
+      <pubDate>Sun, 11 Jan 2015 00:00:00 -0700</pubDate>
+      
+      <guid>/talk/jmm-2015/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

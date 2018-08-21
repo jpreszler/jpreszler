@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>R on Jason I. Preszler</title>
+    <link>/tags/r/</link>
+    <description>Recent content in R on Jason I. Preszler</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; 2017 Jason Preszler</copyright>
+    <lastBuildDate>Mon, 30 Jul 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/r/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Lesser Known Verbs: top_n</title>
+      <link>/post/2018-07-30-top_n/</link>
+      <pubDate>Mon, 30 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-07-30-top_n/</guid>
+      <description>I’ve been using R since 2006. That predates RStudio and the tidyverse. I remember the struggle of keeping track of the variants of apply and often fiddling with them to get code to work.
+Then came plyr and the dplyr and my life has never been the same. The major verbs of dplyr include select, filter, mutate, group_by, summarise, and arrange; and if you are doing data analysis in R then you should be fluent in them.</description>
+    </item>
+    
+    <item>
+      <title>Re-Counting Classes</title>
+      <link>/post/2018-07-24-recount-class/</link>
+      <pubDate>Tue, 24 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-07-24-recount-class/</guid>
+      <description>Edit 7/27/2018 I realized that MFL’s name change to WLC didn’t change the prefix of their courses, this broke my scrapper. Below is an updated post that deals with this.
+Back in early May, I wrote a post about scraping the College of Idaho catalog: Counting Classes. Below if the same post (boring…) except that the “current catalog” has been updated. This is really a demonstration of reproducibility, the upstream data has changed and ideally all my code still works.</description>
+    </item>
+    
+    <item>
+      <title>DT: When Tables are the Product</title>
+      <link>/post/2018-06-28-dt/</link>
+      <pubDate>Thu, 28 Jun 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-06-28-dt/</guid>
+      <description>In RMarkdown documents I often have a need to display tables, which I usually try to keep small with only the most useful information displayed. However, a recent project made me look for a better way to share tabular data with non-data-scientists. The answer was R’s DT package, which allows for very powerful displays of tabular data.
+Today’s data will be a summary of enrollment data from the College of Idaho:</description>
+    </item>
+    
+    <item>
+      <title>Maps Majors in Neo4J</title>
+      <link>/post/2018-06-18-neo4j-majors/</link>
+      <pubDate>Mon, 18 Jun 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-06-18-neo4j-majors/</guid>
+      <description>UPDATE (6/20/2018) The cypher query for Table 3 only used components with “optional” courses so the capstone and topics compnents of the Math/CS major weren’t included in table 3.
+UPDATE (6/19/2018) The original version of this post used incorrectly loaded data that caused to “Core” of every major to have the same classes attached to it. This was noticed by my colleague Dave Rosoff and has been corrected.</description>
+    </item>
+    
+    <item>
+      <title>Maps Minors in Neo4J</title>
+      <link>/post/2018-06-16-neo4j-demo/</link>
+      <pubDate>Fri, 15 Jun 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-06-16-neo4j-demo/</guid>
+      <description>A college curriculum seems like something that is a natural fit for a graph database. My last post collected data from the College of Idaho’s online catalog, using that and some information about majors and minors I’ve populated a graph database in Neo4j. In this post I’ll show how to do some basic queries that return tabular data as well as graph data using .
+Graph DB Basics For those who haven’t had much discrete math or computer science, a graph is a collection of nodes (aka vertices) and edges that connect nodes.</description>
+    </item>
+    
+    <item>
+      <title>Counting Classes: The Basics</title>
+      <link>/post/2018-05-05-counting-class/</link>
+      <pubDate>Sat, 05 May 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-05-05-counting-class/</guid>
+      <description>At the College of Idaho, there’s been discussion about visualizing the curriculum as well as understanding the curriculum. Naturally this interests me as a chance to wallow in some complicated data (students are required to complete a major and 3 minors across 4 “peaks” rather than complete courses from a traditional “core”). I thought using R and a Neo4j graph database would be useful (something to look forward to) - but first I needed to get data from the catalogue!</description>
+    </item>
+    
+    <item>
+      <title>SQL in RMarkdown!</title>
+      <link>/post/2018-04-01-sql-rmd/</link>
+      <pubDate>Sun, 01 Apr 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-04-01-sql-rmd/</guid>
+      <description>This semester I’m teaching Applied Databases for the first time and have been struggling with some notes and handouts for students; as well as simple, easy to use database interfaces that work well across platforms. I love RMarkdown, and today realized that knitr has an SQL code engine!
+Basic Syntax I often give handouts on SQL statements as we learn about them, so I need a nice way to show commands.</description>
+    </item>
+    
+    <item>
+      <title>Running Tacoma: Maps</title>
+      <link>/post/2018-3-11-run-tacoma1/</link>
+      <pubDate>Sun, 11 Mar 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-3-11-run-tacoma1/</guid>
+      <description>When I lived in Tacoma, I was running quite a bit. Since I moved away my training has become much more irregular, but I thought it would be interesting to take the Tacoma data from my current Garmin Forerunner 220 a take a look.
+Data Prep The Garmin stores data in .fit format, but gpsbabel can translate to a nicely structured GPX file, which is what I’ll start with here. The XML package in R has some nice features to easily parse xml files (GPX is GPS data in a special XML schema).</description>
+    </item>
+    
+    <item>
+      <title>Idaho ACS Mapping</title>
+      <link>/post/2018-01-27-acs-map/</link>
+      <pubDate>Sat, 27 Jan 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-01-27-acs-map/</guid>
+      <description>Recently some diversity stats have been circulated around the College of Idaho, and as new Idahoan I wondered about the general diversity (or lack thereof) in Idaho. I remembered seeing this post a while back about mapping in R, so I went to work.
+Shapefiles First, we need shapefiles for both the Idaho country boundaries and census tracts, which will give finer detail for data. These can be downloaded from the [US Census Bureau] (https://www.</description>
+    </item>
+    
+    <item>
+      <title>Stock Random Walks</title>
+      <link>/post/2018-01-15-stock-rw/</link>
+      <pubDate>Mon, 15 Jan 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-01-15-stock-rw/</guid>
+      <description>Introduction Recently a student in another course came to my office looking for someone “who could explain the Monte Carlo simulation” to her. I was caught a bit off-guard since (a) it was 10 minutes before my geometry class and (b) there is no single Monte Carlo simulation.
+After a brief discussion, I found out she wanted to predict stock prices using Monte Carlo simulation, but she thought that the Monte Carlo simulation provided the prediction - she couldn’t say how the actual predictions were being made which is the crucial part.</description>
+    </item>
+    
+    <item>
+      <title>Thoughts on Severe Class Imbalance </title>
+      <link>/post/2018-01-01/</link>
+      <pubDate>Tue, 02 Jan 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-01-01/</guid>
+      <description>Besides lots of family time and the creation of this blog/website, this is what I’ve been thinking about over the winter break.
+Background As part of my research in emergent reducibility, I’ve had to face a binary classification situation with severe class imbalance. Among brute-force searches, it seems that there’s roughly 1 case of emergent reducibility (what I’m looking for) for every 1 million irreducible cubic polynomials. It is known that there are infinitely many cubic polynomials with emergent reducibility.</description>
+    </item>
+    
+    <item>
+      <title>What a Tangled Web We Weave...</title>
+      <link>/post/2018-08-21-chords/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-08-21-chords/</guid>
+      <description>chorddiag( xtabs(~MAJOR+minor, data = mmhl[mmhl$Grad.Year == 2017,], drop.unused.levels = TRUE), showTicks = FALSE, groupColors = many_colors, type = &amp;quot;bipartite&amp;quot; )  {&#34;x&#34;:{&#34;matrix&#34;:[[0,0,0,0,0,0,0,0,2,2,0,1,0,0,2,0,0,0,0,0,5,0,1,1,4,1,3,1],[0,0,0,0,0,0,0,0,1,0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,1,0,1,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,1,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,1],[0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,1,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,1,0],[0,0,0,0,0,0,0,0,1,2,0,0,1,2,0,4,0,0,1,0,0,1,0,1,3,0,1,0],[0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0],[2,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[2,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,1,0,0,1,1,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[2,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,1,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[5,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[4,1,1,0,1,1,3,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[3,1,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],&#34;options&#34;:{&#34;type&#34;:&#34;bipartite&#34;,&#34;width&#34;:null,&#34;height&#34;:null,&#34;margin&#34;:100,&#34;showGroupnames&#34;:true,&#34;groupNames&#34;:[&#34;BUS&#34;,&#34;CHE&#34;,&#34;HEA&#34;,&#34;HIS&#34;,&#34;MAT&#34;,&#34;MATCS&#34;,&#34;MATPH&#34;,&#34;THE&#34;,&#34;ais&#34;,&#34;artde&#34;,&#34;bus&#34;,&#34;criju&#34;,&#34;crw&#34;,&#34;csc&#34;,&#34;csd&#34;,&#34;dueng&#34;,&#34;ed10&#34;,&#34;fre&#34;,&#34;his&#34;,&#34;hpmed&#34;,&#34;matap&#34;,&#34;phi&#34;,&#34;phsci&#34;,&#34;poec&#34;,&#34;psy&#34;,&#34;relst&#34;,&#34;spa&#34;,&#34;vstdy&#34;],&#34;groupColors&#34;:[&#34;#7FC97F&#34;,&#34;#BEAED4&#34;,&#34;#FDC086&#34;,&#34;#FFFF99&#34;,&#34;#386CB0&#34;,&#34;#F0027F&#34;,&#34;#BF5B17&#34;,&#34;#666666&#34;,&#34;#1B9E77&#34;,&#34;#D95F02&#34;,&#34;#7570B3&#34;,&#34;#E7298A&#34;,&#34;#66A61E&#34;,&#34;#E6AB02&#34;,&#34;#A6761D&#34;,&#34;#666666&#34;,&#34;#A6CEE3&#34;,&#34;#1F78B4&#34;,&#34;#B2DF8A&#34;,&#34;#33A02C&#34;,&#34;#FB9A99&#34;,&#34;#E31A1C&#34;,&#34;#FDBF6F&#34;,&#34;#FF7F00&#34;,&#34;#CAB2D6&#34;,&#34;#6A3D9A&#34;,&#34;#FFFF99&#34;,&#34;#B15928&#34;,&#34;#FBB4AE&#34;,&#34;#B3CDE3&#34;,&#34;#CCEBC5&#34;,&#34;#DECBE4&#34;,&#34;#FED9A6&#34;,&#34;#FFFFCC&#34;,&#34;#E5D8BD&#34;,&#34;#FDDAEC&#34;,&#34;#F2F2F2&#34;,&#34;#B3E2CD&#34;,&#34;#FDCDAC&#34;,&#34;#CBD5E8&#34;,&#34;#F4CAE4&#34;,&#34;#E6F5C9&#34;,&#34;#FFF2AE&#34;,&#34;#F1E2CC&#34;,&#34;#CCCCCC&#34;,&#34;#E41A1C&#34;,&#34;#377EB8&#34;,&#34;#4DAF4A&#34;,&#34;#984EA3&#34;,&#34;#FF7F00&#34;,&#34;#FFFF33&#34;,&#34;#A65628&#34;,&#34;#F781BF&#34;,&#34;#999999&#34;,&#34;#66C2A5&#34;,&#34;#FC8D62&#34;,&#34;#8DA0CB&#34;,&#34;#E78AC3&#34;,&#34;#A6D854&#34;,&#34;#FFD92F&#34;,&#34;#E5C494&#34;,&#34;#B3B3B3&#34;,&#34;#8DD3C7&#34;,&#34;#FFFFB3&#34;,&#34;#BEBADA&#34;,&#34;#FB8072&#34;,&#34;#80B1D3&#34;,&#34;#FDB462&#34;,&#34;#B3DE69&#34;,&#34;#FCCDE5&#34;,&#34;#D9D9D9&#34;,&#34;#BC80BD&#34;,&#34;#CCEBC5&#34;,&#34;#FFED6F&#34;],&#34;groupThickness&#34;:0.1,&#34;groupPadding&#34;:0.0349065850398866,&#34;groupnamePadding&#34;:[30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30],&#34;groupnameFontsize&#34;:18,&#34;groupedgeColor&#34;:null,&#34;chordedgeColor&#34;:&#34;#808080&#34;,&#34;categoryNames&#34;:[&#34;MAJOR&#34;,&#34;minor&#34;],&#34;categorynamePadding&#34;:100,&#34;categorynameFontsize&#34;:28,&#34;showTicks&#34;:false,&#34;tickInterval&#34;:0.1,&#34;ticklabelFontsize&#34;:10,&#34;fadeLevel&#34;:0.1,&#34;showTooltips&#34;:true,&#34;showZeroTooltips&#34;:true,&#34;tooltipNames&#34;:[&#34;BUS&#34;,&#34;CHE&#34;,&#34;HEA&#34;,&#34;HIS&#34;,&#34;MAT&#34;,&#34;MATCS&#34;,&#34;MATPH&#34;,&#34;THE&#34;,&#34;ais&#34;,&#34;artde&#34;,&#34;bus&#34;,&#34;criju&#34;,&#34;crw&#34;,&#34;csc&#34;,&#34;csd&#34;,&#34;dueng&#34;,&#34;ed10&#34;,&#34;fre&#34;,&#34;his&#34;,&#34;hpmed&#34;,&#34;matap&#34;,&#34;phi&#34;,&#34;phsci&#34;,&#34;poec&#34;,&#34;psy&#34;,&#34;relst&#34;,&#34;spa&#34;,&#34;vstdy&#34;],&#34;tooltipFontsize&#34;:12,&#34;tooltipUnit&#34;:&#34;&#34;,&#34;tooltipGroupConnector&#34;:&#34; &amp;#x25B6; &#34;,&#34;precision&#34;:&#34;null&#34;,&#34;clickAction&#34;:null,&#34;clickGroupAction&#34;:null}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]} The point of this post is to illustrate how to make the above “chord diagram” using the chorddiag package which leverages D3.js from R. The above visual shows students major/minor combinations who graduated in 2017 from the College of Idaho with at least one minor connected to my department: MAPS.</description>
+    </item>
+    
+  </channel>
+</rss>

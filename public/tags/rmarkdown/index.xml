@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>RMarkdown on Jason I. Preszler</title>
+    <link>/tags/rmarkdown/</link>
+    <description>Recent content in RMarkdown on Jason I. Preszler</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; 2017 Jason Preszler</copyright>
+    <lastBuildDate>Thu, 28 Jun 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/rmarkdown/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>DT: When Tables are the Product</title>
+      <link>/post/2018-06-28-dt/</link>
+      <pubDate>Thu, 28 Jun 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-06-28-dt/</guid>
+      <description>In RMarkdown documents I often have a need to display tables, which I usually try to keep small with only the most useful information displayed. However, a recent project made me look for a better way to share tabular data with non-data-scientists. The answer was R’s DT package, which allows for very powerful displays of tabular data.
+Today’s data will be a summary of enrollment data from the College of Idaho:</description>
+    </item>
+    
+    <item>
+      <title>SQL in RMarkdown!</title>
+      <link>/post/2018-04-01-sql-rmd/</link>
+      <pubDate>Sun, 01 Apr 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-04-01-sql-rmd/</guid>
+      <description>This semester I’m teaching Applied Databases for the first time and have been struggling with some notes and handouts for students; as well as simple, easy to use database interfaces that work well across platforms. I love RMarkdown, and today realized that knitr has an SQL code engine!
+Basic Syntax I often give handouts on SQL statements as we learn about them, so I need a nice way to show commands.</description>
+    </item>
+    
+  </channel>
+</rss>

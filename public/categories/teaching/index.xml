@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Teaching on Jason I. Preszler</title>
+    <link>/categories/teaching/</link>
+    <description>Recent content in Teaching on Jason I. Preszler</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; 2017 Jason Preszler</copyright>
+    <lastBuildDate>Sat, 06 Jan 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/categories/teaching/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>GGPlot and Geometric Transformations</title>
+      <link>/post/2018-01-06-ggplot-and-geometric-transformations/</link>
+      <pubDate>Sat, 06 Jan 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-01-06-ggplot-and-geometric-transformations/</guid>
+      <description>I’m currently teaching a Geometry course, and wished there was an easy way to illustrate geometric transformations for my students. I’m sure they’ll agree I’m not a great artist.
+Since R is my preferred way to draw any picture, I thought “Let’s use GGPlot to show transformations!”
+For those not versed in geometry, we would like to easily visualize translations (shifts along a vector), rotations, and dilations of points (or collections of points) in the complex plane.</description>
+    </item>
+    
+  </channel>
+</rss>

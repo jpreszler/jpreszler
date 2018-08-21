@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>2 on Jason I. Preszler</title>
+    <link>/publication_types/2/</link>
+    <description>Recent content in 2 on Jason I. Preszler</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; 2017 Jason Preszler</copyright>
+    <lastBuildDate>Wed, 01 Mar 2017 00:00:00 -0700</lastBuildDate>
+    
+	<atom:link href="/publication_types/2/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>An Infinite Family of Cubics with Emergent Reducibility at Depth 1</title>
+      <link>/publication/infinite-cubics/</link>
+      <pubDate>Wed, 01 Mar 2017 00:00:00 -0700</pubDate>
+      
+      <guid>/publication/infinite-cubics/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>
