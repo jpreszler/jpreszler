@@ -132,7 +132,7 @@ knitr::kable(head(mlbNormP))&lt;/code&gt;&lt;/pre&gt;
     }) 
 
 ggplot()+
-  geom_density_ridges(data=mlbNorm, 
+  geom_density_ridges(data=mlbNorm2, 
                       aes(y=Ht, x=WtNorm, group=Ht), fill=&amp;quot;red&amp;quot;, alpha=.3) + 
   geom_density_ridges(data=mlb, 
                       aes(x=Weight, y=Height, group=Height), 
