@@ -5,6 +5,15 @@
     
     <url>
     
+      <loc>/post/2018-10-01-norm-ridge/</loc>
+      <lastmod>2018-10-03T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/post/2018-08-21-chords/</loc>
       <lastmod>2018-08-21T00:00:00+00:00</lastmod>
     </url>
@@ -350,7 +359,7 @@
     <url>
     
       <loc>/tags/ggplot/</loc>
-      <lastmod>2018-03-11T00:00:00+00:00</lastmod>
+      <lastmod>2018-10-03T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -459,8 +468,18 @@
     
     <url>
     
+      <loc>/tags/purrr/</loc>
+      <lastmod>2018-10-03T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/tags/r/</loc>
-      <lastmod>2018-08-21T00:00:00+00:00</lastmod>
+      <lastmod>2018-10-03T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     

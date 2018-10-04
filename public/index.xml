@@ -11,6 +11,139 @@
     <atom:link href="/" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Ridges of Normality</title>
+      <link>/post/2018-10-01-norm-ridge/</link>
+      <pubDate>Wed, 03 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-10-01-norm-ridge/</guid>
+      <description>&lt;p&gt;One of the classic assumptions of the linear regression models is that, conditioned on the explanatory variables, the response variable should be normally distributed. While teaching this the other day, I had a flash of insight into how to visualize this - ridge-line plots!&lt;/p&gt;
+&lt;div id=&#34;data&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Data&lt;/h2&gt;
+&lt;p&gt;I’ve been using Matloff’s &lt;em&gt;Statistical Regression and Classification&lt;/em&gt; book, which uses the &lt;code&gt;mlb&lt;/code&gt; dataset from his &lt;code&gt;freqparcoord&lt;/code&gt; package. This has data on heights, weights, ages, positions, and teams of over 1000 major league baseball players. We’ll focus on just height and weight for now. Let’s load the packages we’ll need and the data and look at a simple scatter plot.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(freqparcoord)
+library(dplyr)
+library(purrr)
+library(ggplot2)
+library(ggridges)
+data(mlb)
+
+ggplot(mlb, aes(x=Height, y=Weight))+
+  geom_point(alpha=.2)+
+  ggtitle(&amp;quot;Heights and Weights of MLB Players&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-10-01-norm-ridge_files/figure-html/unnamed-chunk-1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Because height is only measured to the inch, the data is naturally “grouped” which helps see the conditioning we’ll need.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;first-try-at-normality&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;First Try at Normality&lt;/h2&gt;
+&lt;p&gt;The first thing I tried in class was to use a side-by-side boxplot that we had constructed earlier in the semester. This uses a familiar visualization to see the distribution of weights for each height - but even symmetric boxplots don’t ensure normality. Here’s the graph:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot(mlb, aes(x=Height, y=Weight, group=Height))+
+  geom_boxplot()+
+  ggtitle(&amp;quot;Boxplots of Weights for each Height of MLB Player&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-10-01-norm-ridge_files/figure-html/unnamed-chunk-2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;second-try-at-normality&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Second Try at Normality&lt;/h2&gt;
+&lt;p&gt;While we were discussing the normality (or lack of it) in the boxplots, I thought about using a ridge-line plot so I brought this up in class:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot(mlb, aes(y=Height, x=Weight, group=Height))+
+  geom_density_ridges()+
+  ggtitle(&amp;quot;Ridgeline Plot of MLB Players Weights for each Height&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-10-01-norm-ridge_files/figure-html/unnamed-chunk-3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;This has the advantage of showing the sample distribution. Few if any of my students had seen such a plot, but seemed to understand what it was showing. I remarked that these seemed pretty normal, for real sample data, right at the end of class and at least one student looked concerned about that.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;comparing-with-a-normal-sample&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Comparing with a Normal Sample&lt;/h2&gt;
+&lt;p&gt;To show how normal the data is, I decided to generate sample normal data (via &lt;code&gt;rnorm&lt;/code&gt;) with the same mean and standard deviation of weights for each height. First, let’s build the dataframe of conditional means and standard deviations (homoscedasticity is another issue):&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;mlbNormP &amp;lt;- group_by(mlb, Height) %&amp;gt;% 
+  summarise(mean=mean(Weight), sd = sd(Weight), n=n()) %&amp;gt;%
+  filter(n&amp;gt;4)
+
+knitr::kable(head(mlbNormP))&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;right&#34;&gt;Height&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;mean&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;sd&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;n&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;68&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;173.8571&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;22.08641&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;7&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;69&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;179.9474&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;15.32055&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;19&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;70&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;183.0980&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;13.54143&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;51&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;71&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;190.3596&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;16.43461&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;89&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;72&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;192.5600&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;17.56349&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;150&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;73&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;196.7716&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;16.41249&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;162&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;I’ve filtered out heights with less than 4 players, mainly for aesthetic purposes. Now for each row of this dataframe, we want to generate a random sample of normally distributed data. This is where &lt;code&gt;purrr::pmap_dfr&lt;/code&gt; comes in - which will &lt;code&gt;map&lt;/code&gt; (tidyverse version of &lt;code&gt;apply&lt;/code&gt;) a function onto a list of input vectors in parallel and bind the results into a dataframe along rows.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;mlbNorm&amp;lt;-pmap_dfr(
+  list(
+    x=mlbNormP$Height, y=mlbNormP$mean, 
+    z=mlbNormP$sd, w = mlbNormP$n),
+  function(x,y,z,w){
+    data.frame(Ht=rep(x,100), WtNorm=rnorm(100, y, z))
+    }) &lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Here I’m not using the size of our sample of each height, instead using 100 for each height. Now let’s plot both ridge-lines, and color based on the observed (blue) or generated (red) data.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot()+
+  geom_density_ridges(data=mlbNorm, 
+                      aes(y=Ht, x=WtNorm, group=Ht), fill=&amp;quot;red&amp;quot;, alpha=.3) + 
+  geom_density_ridges(data=mlb, 
+                      aes(x=Weight, y=Height, group=Height), 
+                      fill=&amp;quot;blue&amp;quot;, alpha=.3)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-10-01-norm-ridge_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Alternatively, we can take advantage of the size of each sample of observed data:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;mlbNorm2&amp;lt;-pmap_dfr(
+  list(
+    x=mlbNormP$Height, y=mlbNormP$mean, 
+    z=mlbNormP$sd, w = mlbNormP$n),
+  function(x,y,z,w){
+    data.frame(Ht=rep(x,w), WtNorm=rnorm(w, y, z))
+    }) 
+
+ggplot()+
+  geom_density_ridges(data=mlbNorm, 
+                      aes(y=Ht, x=WtNorm, group=Ht), fill=&amp;quot;red&amp;quot;, alpha=.3) + 
+  geom_density_ridges(data=mlb, 
+                      aes(x=Weight, y=Height, group=Height), 
+                      fill=&amp;quot;blue&amp;quot;, alpha=.3)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-10-01-norm-ridge_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;In either case, the generated random normal data is very similar to the actual data in our dataset. This also seems to provide a nice, general method to visualize if this assumption of our linear model is violated by the data.&lt;/p&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
       <title>What a Tangled Web We Weave...</title>
       <link>/post/2018-08-21-chords/</link>
       <pubDate>Tue, 21 Aug 2018 00:00:00 +0000</pubDate>
@@ -41472,90 +41605,6 @@ ggplot(jnj17, aes(x=idx,y=Close,col=type)) + geom_line() +
   ggtitle(&amp;quot;JNJ 100 Random Walks Prediction Ribbon&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2018-01-15-stock-rw_files/figure-html/bigrw-1.png&#34; width=&#34;672&#34; /&gt; With so many random walks, it’s no surprise the prediction line (the mean of the random walks) is nearly flat, this is the Central Limit Theorem in action.&lt;/p&gt;
 &lt;/div&gt;
-&lt;/div&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>GGPlot and Geometric Transformations II: Inversions</title>
-      <link>/post/2018-01-07-inversions/</link>
-      <pubDate>Sun, 07 Jan 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/post/2018-01-07-inversions/</guid>
-      <description>&lt;p&gt;This is the second part of two posts about using ggplot to visualize geometric transformations in the complex plane.&lt;/p&gt;
-&lt;div id=&#34;inversions&#34; class=&#34;section level1&#34;&gt;
-&lt;h1&gt;Inversions&lt;/h1&gt;
-&lt;p&gt;For this post we’ll focus on inversions, having already covered rotations, translations, and reflections. An inversion can be thought of as a reflection across a circle, the the inside of the circle gets flipped to fill the plane outside the circle and the outside is flipped into the circle. This is a more complicated transformation, both to visualize and to perform mathematically, but is essential to geometry.&lt;/p&gt;
-&lt;div id=&#34;the-math&#34; class=&#34;section level2&#34;&gt;
-&lt;h2&gt;The Math&lt;/h2&gt;
-&lt;p&gt;Since an inversion involves a circle, we’ll need a center &lt;span class=&#34;math inline&#34;&gt;\(z_0 = x_0+iy_0\)&lt;/span&gt; and a radius &lt;span class=&#34;math inline&#34;&gt;\(r\)&lt;/span&gt;. Any point &lt;span class=&#34;math inline&#34;&gt;\(z\)&lt;/span&gt; that’s within &lt;span class=&#34;math inline&#34;&gt;\(r\)&lt;/span&gt; of &lt;span class=&#34;math inline&#34;&gt;\(z_0\)&lt;/span&gt; must be moved to a point further than &lt;span class=&#34;math inline&#34;&gt;\(r\)&lt;/span&gt; from &lt;span class=&#34;math inline&#34;&gt;\(z_0\)&lt;/span&gt;, and should lie on a line connected &lt;span class=&#34;math inline&#34;&gt;\(z\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(z_0\)&lt;/span&gt;. This is accomplished via the formula: &lt;span class=&#34;math display&#34;&gt;\[
-inv(z) = \frac{r^2}{\overline{z-z_0}}+z_0
-\]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;Since dividing by a complex number is not really done, we can turn this formula into: &lt;span class=&#34;math display&#34;&gt;\[
-inv(z) = \frac{r^2(z-z_0)}{|z-z_0|^2}+z_0
-\]&lt;/span&gt; This may not look simpler, but it will be easier to write code for since it just multiples &lt;span class=&#34;math inline&#34;&gt;\(z-z_0\)&lt;/span&gt; by the square of the ratio of the radius to the distance from &lt;span class=&#34;math inline&#34;&gt;\(z\)&lt;/span&gt; to &lt;span class=&#34;math inline&#34;&gt;\(z_0\)&lt;/span&gt;, then translates by &lt;span class=&#34;math inline&#34;&gt;\(z_0\)&lt;/span&gt;. Since the ratio of distances is real, this means we’re just translating &lt;span class=&#34;math inline&#34;&gt;\(z_0\)&lt;/span&gt; to the origin, dilating by the square of distance ratio, then translating back to &lt;span class=&#34;math inline&#34;&gt;\(z_0\)&lt;/span&gt;. Do we really even need new code? Not really.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div id=&#34;the-code&#34; class=&#34;section level2&#34;&gt;
-&lt;h2&gt;The code&lt;/h2&gt;
-&lt;p&gt;We use the translation and rotation functions from the previous post:&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;translateR &amp;lt;- function(x,y,tx,ty){return (x+tx)}
-translateI &amp;lt;- function(x,y,tx,ty){return (y+ty)}
-rotateR &amp;lt;- function(x,y,rx,ry){return (x*rx-y*ry)}
-rotateI &amp;lt;- function(x,y,rx,ry){return (x*ry+y*rx)}&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Our inversion function will apply these, and work well when handed a data.frame of points.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;inversion &amp;lt;- function(x,y,x0,y0,r){
-  #set-up a data.frame to be returned
-  pt &amp;lt;- data.frame(x=x, y=y)
-  #translate z_0 to the origin
-  pt$x &amp;lt;-translateR(x,y,-x0,-y0)
-  pt$y &amp;lt;-translateI(x,y,-x0,-y0)
-  #dilate
-  distRatio &amp;lt;- r^2/((x-x0)^2+(y-y0)^2)
-  pt[,1:2] &amp;lt;- c(rotateR(pt$x,pt$y,distRatio,0),
-          rotateI(pt$x,pt$y,distRatio,0))
-  #translate back
-  pt[,1:2] &amp;lt;- c(translateR(pt$x,pt$y,x0,y0),
-          translateI(pt$x,pt$y,x0,y0))
-  return(pt)
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div id=&#34;graphs-of-inversion&#34; class=&#34;section level1&#34;&gt;
-&lt;h1&gt;Graphs of Inversion&lt;/h1&gt;
-&lt;p&gt;Let’s start by re-using our rectangle from previously and doing an inversion across the circle centered at the origin with radius 2.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;rectangle &amp;lt;- data.frame(x = c(rep(seq(from=0, to=2, by=.1),2), rep(0,11),rep(2,11)),
-                  y=c(rep(0,21),rep(1,21),rep(seq(0,1,by=.1),2)))
-rectangle$code &amp;lt;- &amp;quot;Original&amp;quot;
-
-invRect &amp;lt;- data.frame(x=rectangle$x, y=rectangle$y)
-
-invRect[,1:2]&amp;lt;- inversion(rectangle$x, rectangle$y, 0,0,2)
-invRect$code &amp;lt;- &amp;quot;Inverted&amp;quot;
-
-library(ggplot2)
-library(dplyr, quietly = TRUE)
-
-rbind.data.frame(rectangle, invRect) %&amp;gt;% 
-  ggplot(aes(x=x,y=y, col=code)) + geom_point(size=1) + xlim(c(-2,12)) + ylim(c(-2,12))&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2018-01-07-inversions_files/figure-html/makeSquare-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;p&gt;Notice how lines through the center of the circle remain lines. The lower right corner, which is on the circle, if fixed, but the center of the circle is sent to the outer reaches of the plane. The upper right corner, which was outside the circle, gets flipped inside the circle.&lt;/p&gt;
-&lt;p&gt;Let’s do another example, this time we’ll use a circle centered at &lt;span class=&#34;math inline&#34;&gt;\((-1,-1)\)&lt;/span&gt; with radius 4.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;invRect &amp;lt;- data.frame(x=rectangle$x, y=rectangle$y)
-
-invRect[,1:2]&amp;lt;- inversion(rectangle$x, rectangle$y, -1,-1,4)
-invRect$code &amp;lt;- &amp;quot;Inverted&amp;quot;
-
-rbind.data.frame(rectangle, invRect) %&amp;gt;% 
-  ggplot(aes(x=x,y=y, col=code)) + geom_point(size=1) + xlim(c(-2,12)) + ylim(c(-2,12))&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2018-01-07-inversions_files/figure-html/secInv-1.png&#34; width=&#34;672&#34; /&gt; What if we take a rectangle outside of the circle and invert?&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;invRect &amp;lt;- data.frame(x=rectangle$x, y=rectangle$y)
-
-invRect[,1:2]&amp;lt;- inversion(rectangle$x, rectangle$y, 5,0,2)
-invRect$code &amp;lt;- &amp;quot;Inverted&amp;quot;
-
-rbind.data.frame(rectangle, invRect) %&amp;gt;% 
-  ggplot(aes(x=x,y=y, col=code)) + geom_point(size=1) + xlim(c(-2,7)) + ylim(c(-2,3))&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2018-01-07-inversions_files/figure-html/thirdInv-1.png&#34; width=&#34;672&#34; /&gt; Inversions aren’t a simple to predict as rotations and translations. I encourage you to experiment a bit: try other shapes, lines, or just collections of points. Do inversions preserve anything geometrically meaningful?&lt;/p&gt;
 &lt;/div&gt;
 </description>
     </item>

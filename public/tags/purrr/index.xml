@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Purrr on Jason I. Preszler</title>
+    <link>/tags/purrr/</link>
+    <description>Recent content in Purrr on Jason I. Preszler</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; 2017 Jason Preszler</copyright>
+    <lastBuildDate>Wed, 03 Oct 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/purrr/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Ridges of Normality</title>
+      <link>/post/2018-10-01-norm-ridge/</link>
+      <pubDate>Wed, 03 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-10-01-norm-ridge/</guid>
+      <description>One of the classic assumptions of the linear regression models is that, conditioned on the explanatory variables, the response variable should be normally distributed. While teaching this the other day, I had a flash of insight into how to visualize this - ridge-line plots!
+Data I’ve been using Matloff’s Statistical Regression and Classification book, which uses the mlb dataset from his freqparcoord package. This has data on heights, weights, ages, positions, and teams of over 1000 major league baseball players.</description>
+    </item>
+    
+  </channel>
+</rss>

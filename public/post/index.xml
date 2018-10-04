@@ -13,6 +13,16 @@
     
     
     <item>
+      <title>Ridges of Normality</title>
+      <link>/post/2018-10-01-norm-ridge/</link>
+      <pubDate>Wed, 03 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-10-01-norm-ridge/</guid>
+      <description>One of the classic assumptions of the linear regression models is that, conditioned on the explanatory variables, the response variable should be normally distributed. While teaching this the other day, I had a flash of insight into how to visualize this - ridge-line plots!
+Data I’ve been using Matloff’s Statistical Regression and Classification book, which uses the mlb dataset from his freqparcoord package. This has data on heights, weights, ages, positions, and teams of over 1000 major league baseball players.</description>
+    </item>
+    
+    <item>
       <title>What a Tangled Web We Weave...</title>
       <link>/post/2018-08-21-chords/</link>
       <pubDate>Tue, 21 Aug 2018 00:00:00 +0000</pubDate>

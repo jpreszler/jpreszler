@@ -1,0 +1,134 @@
+---
+title: "Ridges of Normality"
+author: "Jason Preszler"
+date: 2018-10-03
+output: html_document
+tags: ["R", "ggplot", "purrr"]
+---
+
+
+
+<p>One of the classic assumptions of the linear regression models is that, conditioned on the explanatory variables, the response variable should be normally distributed. While teaching this the other day, I had a flash of insight into how to visualize this - ridge-line plots!</p>
+<div id="data" class="section level2">
+<h2>Data</h2>
+<p>I’ve been using Matloff’s <em>Statistical Regression and Classification</em> book, which uses the <code>mlb</code> dataset from his <code>freqparcoord</code> package. This has data on heights, weights, ages, positions, and teams of over 1000 major league baseball players. We’ll focus on just height and weight for now. Let’s load the packages we’ll need and the data and look at a simple scatter plot.</p>
+<pre class="r"><code>library(freqparcoord)
+library(dplyr)
+library(purrr)
+library(ggplot2)
+library(ggridges)
+data(mlb)
+
+ggplot(mlb, aes(x=Height, y=Weight))+
+  geom_point(alpha=.2)+
+  ggtitle(&quot;Heights and Weights of MLB Players&quot;)</code></pre>
+<p><img src="/post/2018-10-01-norm-ridge_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<p>Because height is only measured to the inch, the data is naturally “grouped” which helps see the conditioning we’ll need.</p>
+</div>
+<div id="first-try-at-normality" class="section level2">
+<h2>First Try at Normality</h2>
+<p>The first thing I tried in class was to use a side-by-side boxplot that we had constructed earlier in the semester. This uses a familiar visualization to see the distribution of weights for each height - but even symmetric boxplots don’t ensure normality. Here’s the graph:</p>
+<pre class="r"><code>ggplot(mlb, aes(x=Height, y=Weight, group=Height))+
+  geom_boxplot()+
+  ggtitle(&quot;Boxplots of Weights for each Height of MLB Player&quot;)</code></pre>
+<p><img src="/post/2018-10-01-norm-ridge_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+</div>
+<div id="second-try-at-normality" class="section level2">
+<h2>Second Try at Normality</h2>
+<p>While we were discussing the normality (or lack of it) in the boxplots, I thought about using a ridge-line plot so I brought this up in class:</p>
+<pre class="r"><code>ggplot(mlb, aes(y=Height, x=Weight, group=Height))+
+  geom_density_ridges()+
+  ggtitle(&quot;Ridgeline Plot of MLB Players Weights for each Height&quot;)</code></pre>
+<p><img src="/post/2018-10-01-norm-ridge_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>This has the advantage of showing the sample distribution. Few if any of my students had seen such a plot, but seemed to understand what it was showing. I remarked that these seemed pretty normal, for real sample data, right at the end of class and at least one student looked concerned about that.</p>
+</div>
+<div id="comparing-with-a-normal-sample" class="section level2">
+<h2>Comparing with a Normal Sample</h2>
+<p>To show how normal the data is, I decided to generate sample normal data (via <code>rnorm</code>) with the same mean and standard deviation of weights for each height. First, let’s build the dataframe of conditional means and standard deviations (homoscedasticity is another issue):</p>
+<pre class="r"><code>mlbNormP &lt;- group_by(mlb, Height) %&gt;% 
+  summarise(mean=mean(Weight), sd = sd(Weight), n=n()) %&gt;%
+  filter(n&gt;4)
+
+knitr::kable(head(mlbNormP))</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">Height</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">n</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">68</td>
+<td align="right">173.8571</td>
+<td align="right">22.08641</td>
+<td align="right">7</td>
+</tr>
+<tr class="even">
+<td align="right">69</td>
+<td align="right">179.9474</td>
+<td align="right">15.32055</td>
+<td align="right">19</td>
+</tr>
+<tr class="odd">
+<td align="right">70</td>
+<td align="right">183.0980</td>
+<td align="right">13.54143</td>
+<td align="right">51</td>
+</tr>
+<tr class="even">
+<td align="right">71</td>
+<td align="right">190.3596</td>
+<td align="right">16.43461</td>
+<td align="right">89</td>
+</tr>
+<tr class="odd">
+<td align="right">72</td>
+<td align="right">192.5600</td>
+<td align="right">17.56349</td>
+<td align="right">150</td>
+</tr>
+<tr class="even">
+<td align="right">73</td>
+<td align="right">196.7716</td>
+<td align="right">16.41249</td>
+<td align="right">162</td>
+</tr>
+</tbody>
+</table>
+<p>I’ve filtered out heights with less than 4 players, mainly for aesthetic purposes. Now for each row of this dataframe, we want to generate a random sample of normally distributed data. This is where <code>purrr::pmap_dfr</code> comes in - which will <code>map</code> (tidyverse version of <code>apply</code>) a function onto a list of input vectors in parallel and bind the results into a dataframe along rows.</p>
+<pre class="r"><code>mlbNorm&lt;-pmap_dfr(
+  list(
+    x=mlbNormP$Height, y=mlbNormP$mean, 
+    z=mlbNormP$sd, w = mlbNormP$n),
+  function(x,y,z,w){
+    data.frame(Ht=rep(x,100), WtNorm=rnorm(100, y, z))
+    }) </code></pre>
+<p>Here I’m not using the size of our sample of each height, instead using 100 for each height. Now let’s plot both ridge-lines, and color based on the observed (blue) or generated (red) data.</p>
+<pre class="r"><code>ggplot()+
+  geom_density_ridges(data=mlbNorm, 
+                      aes(y=Ht, x=WtNorm, group=Ht), fill=&quot;red&quot;, alpha=.3) + 
+  geom_density_ridges(data=mlb, 
+                      aes(x=Weight, y=Height, group=Height), 
+                      fill=&quot;blue&quot;, alpha=.3)</code></pre>
+<p><img src="/post/2018-10-01-norm-ridge_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p>Alternatively, we can take advantage of the size of each sample of observed data:</p>
+<pre class="r"><code>mlbNorm2&lt;-pmap_dfr(
+  list(
+    x=mlbNormP$Height, y=mlbNormP$mean, 
+    z=mlbNormP$sd, w = mlbNormP$n),
+  function(x,y,z,w){
+    data.frame(Ht=rep(x,w), WtNorm=rnorm(w, y, z))
+    }) 
+
+ggplot()+
+  geom_density_ridges(data=mlbNorm, 
+                      aes(y=Ht, x=WtNorm, group=Ht), fill=&quot;red&quot;, alpha=.3) + 
+  geom_density_ridges(data=mlb, 
+                      aes(x=Weight, y=Height, group=Height), 
+                      fill=&quot;blue&quot;, alpha=.3)</code></pre>
+<p><img src="/post/2018-10-01-norm-ridge_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>In either case, the generated random normal data is very similar to the actual data in our dataset. This also seems to provide a nice, general method to visualize if this assumption of our linear model is violated by the data.</p>
+</div>
