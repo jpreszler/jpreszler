@@ -1,0 +1,83 @@
+---
+title: "Reticulated Mixture Models"
+author: "Jason Preszler"
+date: 2018-11-10
+output: html_document
+tags: ["R", "Python", "Reticulate", "Mixture Model", "sklearn"]
+---
+
+
+
+<p>Clearly, there’s no such thing as a “reticulated mixture model” but if you create one I’ll gladly take credit for the name. Instead this post is a demonstration of using mixture models for clustering and the interplay of R and Python via RStudio’s <code>reticulate</code> package.</p>
+<div id="mixture-model-basics" class="section level1">
+<h1>Mixture Model Basics</h1>
+<p>The idea behind mixture models is that you have data containing information from two (or more) subgroups and you want to uncover structure of the subgroups. A classic example is you have a bunch of people’s height data and you would like to figure out which are likely to be from men and which are from women. If the data set is labeled with <code>gender</code> the problem is trivial, but if it’s not then it seems reasonable to think we’re looking at data sampled from 2 different normal distributions and we would like to use our data to get an idea what those distributions are. Of course, there’s no reason why we need to limit to only 2 groups or normal distributions, but we will here so we don’t overcomplicate the process.</p>
+</div>
+<div id="our-data" class="section level1">
+<h1>Our Data</h1>
+<p>So show the mixture model process, I’m going to manufacture some data out of two bi-variate normal distributions, and I them to have different covariance matrices.</p>
+<pre class="r"><code>library(mvtnorm) #gets rmvnorm function
+
+#function to make random covariance matrices
+randCov &lt;- function(n=2, k=1){
+  mat &lt;- matrix(runif(n^2)*k, ncol=n)
+  return(t(mat)%*%mat) #make mat symmetric and return
+}
+
+cv1 &lt;- randCov(2,2.5)
+cv2 &lt;- randCov(2,1.25)
+A &lt;- rmvnorm(100, mean=c(20,75), sigma = cv1)
+B &lt;- rmvnorm(100, mean=c(18,69), sigma = cv2)
+df &lt;- rbind.data.frame(as.data.frame(A), as.data.frame(B))
+df$V3 &lt;- c(rep(&quot;A&quot;,100),rep(&quot;B&quot;,100))</code></pre>
+<p>Here I’ve labeled the data so we can check how our mixture model performed. Let’s look at our data with and with-out using the labels:</p>
+<pre class="r"><code>library(ggplot2)
+library(patchwork)
+gNoLab &lt;- ggplot(df, aes(x=V1, y=V2))+geom_point()+ggtitle(&quot;No Labels&quot;)
+gLab &lt;- ggplot(df, aes(x=V1, y=V2, col=V3))+geom_point()+ggtitle(&quot;True Labels&quot;)
+
+gNoLab+gLab</code></pre>
+<p><img src="/post/2018-11-10-reticulate-mm_files/figure-html/dataViz-1.png" width="672" /></p>
+<p>Now our goal will be to recover the labels is we start with the data in the left graph.</p>
+</div>
+<div id="passing-data-to-python" class="section level1">
+<h1>Passing Data to Python</h1>
+<p>R has the functionality to build a gaussian mixture model, but I’ve been working with python some and want to use <code>reticulate</code>’s ability to pass data and results between R and python. First, let’s get R ready:</p>
+<pre class="r"><code>library(reticulate)
+use_python(&quot;/usr/bin/python&quot;) # I&#39;m using python 3.7.1 in Arch linux</code></pre>
+<p>Now in a python code chunk, we can access R objects.</p>
+<pre class="python"><code>import numpy as np
+import pandas as pd
+print(r.df.head())</code></pre>
+<pre><code>##           V1         V2 V3
+## 0  22.593247  75.423297  A
+## 1  20.012685  74.874178  A
+## 2  20.074491  75.357672  A
+## 3  20.541347  75.030955  A
+## 4  24.746648  76.296463  A</code></pre>
+</div>
+<div id="mixture-model-in-python" class="section level1">
+<h1>Mixture Model in Python</h1>
+<p>Now that we can get our data from R into python, we’ll use SciKit Learn to build a Gaussian Mixture model. We’ll need to give two parameters, the number of components we think the mixture has and a parameter about how the covariances may vary. We also have to copy the dataframe from R into a pandas dataframe so we can add a new column.</p>
+<pre class="python"><code>from sklearn.mixture import GaussianMixture
+gmm = GaussianMixture(n_components=2, covariance_type=&#39;full&#39;)
+pydf = r.df
+pydf[&#39;gml&#39;]=gmm.fit_predict(pydf[[&#39;V1&#39;,&#39;V2&#39;]])
+print(pydf.head())</code></pre>
+<pre><code>##           V1         V2 V3  gml
+## 0  22.593247  75.423297  A    1
+## 1  20.012685  74.874178  A    1
+## 2  20.074491  75.357672  A    1
+## 3  20.541347  75.030955  A    1
+## 4  24.746648  76.296463  A    1</code></pre>
+</div>
+<div id="check-results" class="section level1">
+<h1>Check Results</h1>
+<p>We can take advantage of <code>ggplot2</code> to visualize the mixture model labels now. I’ll reproduce the graph above, but now the left side will be colored by the labels from the mixture model while the right is still colored with the true labels.</p>
+<pre class="r"><code>py$pydf$gml &lt;- ifelse(py$pydf$gml==0, &quot;A&quot;,&quot;B&quot;)
+gMMLab &lt;- ggplot(py$pydf, aes(x=V1, y=V2, col=gml))+geom_point()+ggtitle(&quot;Labeled by GMM&quot;)
+
+gMMLab+gLab</code></pre>
+<p><img src="/post/2018-11-10-reticulate-mm_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>That looks pretty successful! Obviously, the more mixed the data is, the hard it is for the mixture model to correctly identify the boundary. Also, if we have the wrong number of mixture components, the model labels will muddle the components. Sklearn provides a <code>BayesianGaussianMixture</code> that can identify less than the provided number of components. Perhaps that can be a post in the near future.</p>
+</div>

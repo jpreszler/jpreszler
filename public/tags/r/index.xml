@@ -7,10 +7,20 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2017 Jason Preszler</copyright>
-    <lastBuildDate>Wed, 03 Oct 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 10 Nov 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/r/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Reticulated Mixture Models</title>
+      <link>/post/2018-11-10-reticulate-mm/</link>
+      <pubDate>Sat, 10 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-11-10-reticulate-mm/</guid>
+      <description>Clearly, there’s no such thing as a “reticulated mixture model” but if you create one I’ll gladly take credit for the name. Instead this post is a demonstration of using mixture models for clustering and the interplay of R and Python via RStudio’s reticulate package.
+Mixture Model Basics The idea behind mixture models is that you have data containing information from two (or more) subgroups and you want to uncover structure of the subgroups.</description>
+    </item>
     
     <item>
       <title>Ridges of Normality</title>

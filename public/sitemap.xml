@@ -5,6 +5,15 @@
     
     <url>
     
+      <loc>/post/2018-11-10-reticulate-mm/</loc>
+      <lastmod>2018-11-10T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/post/2018-10-01-norm-ridge/</loc>
       <lastmod>2018-10-03T00:00:00+00:00</lastmod>
     </url>
@@ -428,6 +437,16 @@
     
     <url>
     
+      <loc>/tags/mixture-model/</loc>
+      <lastmod>2018-11-10T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/tags/neo4j/</loc>
       <lastmod>2018-06-18T00:00:00+00:00</lastmod>
       <priority>0</priority>
@@ -478,6 +497,16 @@
     
     <url>
     
+      <loc>/tags/python/</loc>
+      <lastmod>2018-11-10T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/categories/r/</loc>
       <lastmod>2018-01-06T00:00:00+00:00</lastmod>
       <priority>0</priority>
@@ -489,7 +518,7 @@
     <url>
     
       <loc>/tags/r/</loc>
-      <lastmod>2018-10-03T00:00:00+00:00</lastmod>
+      <lastmod>2018-11-10T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -510,6 +539,16 @@
     
       <loc>/tags/reproducibility/</loc>
       <lastmod>2018-07-24T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/reticulate/</loc>
+      <lastmod>2018-11-10T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -550,6 +589,16 @@
     
       <loc>/tags/scrape/</loc>
       <lastmod>2018-07-24T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/sklearn/</loc>
+      <lastmod>2018-11-10T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     

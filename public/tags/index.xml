@@ -157,6 +157,15 @@
     </item>
     
     <item>
+      <title>Mixture Model</title>
+      <link>/tags/mixture-model/</link>
+      <pubDate>Sat, 10 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/mixture-model/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Neo4j</title>
       <link>/tags/neo4j/</link>
       <pubDate>Mon, 18 Jun 2018 00:00:00 +0000</pubDate>
@@ -184,9 +193,18 @@
     </item>
     
     <item>
+      <title>Python</title>
+      <link>/tags/python/</link>
+      <pubDate>Sat, 10 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/python/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>R</title>
       <link>/tags/r/</link>
-      <pubDate>Wed, 03 Oct 2018 00:00:00 +0000</pubDate>
+      <pubDate>Sat, 10 Nov 2018 00:00:00 +0000</pubDate>
       
       <guid>/tags/r/</guid>
       <description></description>
@@ -207,6 +225,15 @@
       <pubDate>Tue, 24 Jul 2018 00:00:00 +0000</pubDate>
       
       <guid>/tags/reproducibility/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Reticulate</title>
+      <link>/tags/reticulate/</link>
+      <pubDate>Sat, 10 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/reticulate/</guid>
       <description></description>
     </item>
     
@@ -243,6 +270,15 @@
       <pubDate>Tue, 24 Jul 2018 00:00:00 +0000</pubDate>
       
       <guid>/tags/scrape/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Sklearn</title>
+      <link>/tags/sklearn/</link>
+      <pubDate>Sat, 10 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/sklearn/</guid>
       <description></description>
     </item>
     

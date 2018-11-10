@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Reticulate on Jason I. Preszler</title>
+    <link>/tags/reticulate/</link>
+    <description>Recent content in Reticulate on Jason I. Preszler</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; 2017 Jason Preszler</copyright>
+    <lastBuildDate>Sat, 10 Nov 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/reticulate/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Reticulated Mixture Models</title>
+      <link>/post/2018-11-10-reticulate-mm/</link>
+      <pubDate>Sat, 10 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-11-10-reticulate-mm/</guid>
+      <description>Clearly, there’s no such thing as a “reticulated mixture model” but if you create one I’ll gladly take credit for the name. Instead this post is a demonstration of using mixture models for clustering and the interplay of R and Python via RStudio’s reticulate package.
+Mixture Model Basics The idea behind mixture models is that you have data containing information from two (or more) subgroups and you want to uncover structure of the subgroups.</description>
+    </item>
+    
+  </channel>
+</rss>
