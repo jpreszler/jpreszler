@@ -13,6 +13,15 @@
     
     
     <item>
+      <title>PCA Overview</title>
+      <link>/post/2018-11-24-pca/</link>
+      <pubDate>Sat, 24 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-11-24-pca/</guid>
+      <description>This post is primarily to give the basic overview of principal components analysis (PCA) for dimensionality reduction and regression. I wanted to create it as a guide for my regression students who may find it useful for their projects. First, let’s note the two main times that you may want to use PCA - dimensionality reduction (reducing variables in a dataset) and removing colinearity issues. These are not exclusive problems, often you want to do both.</description>
+    </item>
+    
+    <item>
       <title>Reticulated Mixture Models</title>
       <link>/post/2018-11-10-reticulate-mm/</link>
       <pubDate>Sat, 10 Nov 2018 00:00:00 +0000</pubDate>

@@ -1,0 +1,401 @@
+---
+title: "PCA Overview"
+author: "Jason Preszler"
+date: 2018-11-24
+output: html_document
+tags: ["R","ggplot", "PCA"]
+---
+
+
+
+<p>This post is primarily to give the basic overview of principal components analysis (PCA) for dimensionality reduction and regression. I wanted to create it as a guide for my regression students who may find it useful for their projects. First, let’s note the two main times that you may want to use PCA - dimensionality reduction (reducing variables in a dataset) and removing colinearity issues. These are not exclusive problems, often you want to do both. However, depending on the data, PCA will ensure a lack of colinearity among the principal components but may not be able to use less variables in subsequent models.</p>
+<div id="basic-idea" class="section level2">
+<h2>Basic Idea</h2>
+<p>Before getting into real examples, let’s look at what PCA does in 2 dimensions. I’ll generate some highly correlated data and compute the principal components, and we’ll make it easy to predict the components. My data will be related by <span class="math inline">\(y=3*x+1+\epsilon\)</span>, where <span class="math inline">\(\epsilon\)</span> is normally distributed random error. This means that the greatest variation in my data should be along the line <span class="math inline">\(y=3x+1\)</span>, which should give the first principal component. The second (and final in the 2-D case) will be along the perpendicular line <span class="math inline">\(y=\frac{-1}{3}x+b\)</span>.</p>
+<pre class="r"><code>library(dplyr) #pipes and df manipulation
+library(ggplot2) #graphing
+library(patchwork) #graph layout
+
+x &lt;- seq(from=1, to=10, length.out = 100)
+rn &lt;- rnorm(100, mean=0, sd=1.25) #random error
+y &lt;- 3*x+1+rn 
+df &lt;- data.frame(x, y)
+
+#compute principal components
+pcdf &lt;- prcomp(df)
+
+#graph data and pc&#39;s
+data.graph &lt;- ggplot(df, aes(x=x,y=y))+geom_point()+
+  ggtitle(&quot;Original Data&quot;)
+pc.graph &lt;- ggplot(as.data.frame(pcdf$x), aes(x=PC1, y=PC2))+
+  geom_point()+ggtitle(&quot;Data in PC-space&quot;)
+
+data.graph+pc.graph</code></pre>
+<p><img src="/post/2018-11-24-pca_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<p>Notice how the correlation between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> vanishes when looking at the data with axes aligned along the principal components - now <code>PC1</code> and <code>PC2</code> provide non-colinear data to us in regression. Furthermore, the <code>sdev</code> element of <code>pcdf</code> tells use how much of the standard deviation (and hence variance) is explained by each component:</p>
+<pre class="r"><code>pcdf$sdev^2/sum(pcdf$sdev^2)</code></pre>
+<pre><code>## [1] 0.997359167 0.002640833</code></pre>
+<p>So <code>PC1</code> accounts for almost all of the variance seen in the original data. This isn’t surprising given how the data was made, it is so highly correlated that the data is basically one-dimensional and PCA has found that. With higher dimensional data, a <span class="math inline">\(scree~plot\)</span> is useful to see how additional components explain more variance:</p>
+<pre class="r"><code>ggplot(data.frame(
+  component = 1:length(pcdf$sdev), 
+  explained.var.pct = pcdf$sdev^2/sum(pcdf$sdev^2)
+  ), 
+  aes(x=component, y=cumsum(explained.var.pct)))+
+    geom_line()+ylab(&quot;Total Percent Variance Explained&quot;)</code></pre>
+<p><img src="/post/2018-11-24-pca_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>Now, what about the relationship in our data (<span class="math inline">\(y=3x+1\)</span>) and the principal components? The <code>rotation</code> element of <code>pcdf</code> gives us a matrix of eigenvectors that tells use how to turn a point in the original <span class="math inline">\(xy\)</span>-plane into a point in the <span class="math inline">\(PC1PC2\)</span>-plane. The second row of the rotation matrix divided by the first (<span class="math inline">\(y/x\)</span>) gives use slopes of almost <span class="math inline">\(3\)</span> and <span class="math inline">\(\frac{-1}{3}\)</span> (the difference is the random error I’ve added to the data). The principal components are just a new basis (in the linear algebra sense), each column is a unit vector and the columns are orthogonal to each-other, so in two-dimensions the slope determines a unit vector. In higher dimensions this gets more complicated, but the rotation matrix columns still give us the direction vector for the principal components. If you remember multivariate calculus, you can turn a direction vector into a line in higher dimensions.</p>
+</div>
+<div id="a-real-example" class="section level2">
+<h2>A Real Example</h2>
+<p>I’ll load data from <a href="/files/sb3tnzv.csv">sb3tnzv</a>, which has data about the content of certain molecules in a certain species of sagebrush (this is related to a collaboration with a biochemist).</p>
+<pre class="r"><code>sb &lt;- read.csv(&quot;../../static/files/sb3tnzv.csv&quot;, header=TRUE)
+knitr::kable(head(sb))</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">id</th>
+<th align="left">species</th>
+<th align="left">browsed</th>
+<th align="right">CYP1A.grouse.micr</th>
+<th align="right">CYP1A.human.micr</th>
+<th align="right">SB02</th>
+<th align="right">SB03</th>
+<th align="right">SB05</th>
+<th align="right">SB07</th>
+<th align="right">SB09</th>
+<th align="right">SB10</th>
+<th align="right">SB11</th>
+<th align="right">SB12</th>
+<th align="right">SB13</th>
+<th align="right">SB14</th>
+<th align="right">SB15</th>
+<th align="right">SB16</th>
+<th align="right">SB17</th>
+<th align="right">SB18</th>
+<th align="right">SB19</th>
+<th align="right">SB20</th>
+<th align="right">SB22</th>
+<th align="right">SB23</th>
+<th align="right">SB24</th>
+<th align="right">SB26</th>
+<th align="right">SB28</th>
+<th align="right">SB29</th>
+<th align="right">SB30</th>
+<th align="right">SB31</th>
+<th align="right">SB32</th>
+<th align="right">SB34</th>
+<th align="right">SB36</th>
+<th align="right">SB37</th>
+<th align="right">SB38</th>
+<th align="right">SB39</th>
+<th align="right">SB40</th>
+<th align="right">SB41</th>
+<th align="right">SB42</th>
+<th align="right">SB43</th>
+<th align="right">SB44</th>
+<th align="right">SB45</th>
+<th align="right">SB45s</th>
+<th align="right">SB46</th>
+<th align="right">SB47</th>
+<th align="right">SB48</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">105</td>
+<td align="left">3T</td>
+<td align="left">NB</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">0.0000</td>
+<td align="right">629.0214</td>
+<td align="right">565.9454</td>
+<td align="right">0</td>
+<td align="right">0.000</td>
+<td align="right">1510.473</td>
+<td align="right">618.7710</td>
+<td align="right">1389.2164</td>
+<td align="right">719.0859</td>
+<td align="right">370.6543</td>
+<td align="right">0</td>
+<td align="right">10076.76</td>
+<td align="right">0.000</td>
+<td align="right">0</td>
+<td align="right">26818.27</td>
+<td align="right">55521.95</td>
+<td align="right">7762.168</td>
+<td align="right">7988.484</td>
+<td align="right">0</td>
+<td align="right">29838.72</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+<td align="right">0</td>
+<td align="right">0.000</td>
+<td align="right">0.00</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+<td align="right">70267.00</td>
+<td align="right">109853.00</td>
+<td align="right">0.00</td>
+<td align="right">60935.48</td>
+<td align="right">0.00</td>
+<td align="right">0.000</td>
+<td align="right">5583.644</td>
+<td align="right">4029.331</td>
+<td align="right">76519.95</td>
+</tr>
+<tr class="even">
+<td align="right">134</td>
+<td align="left">3T</td>
+<td align="left">B</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">418.1162</td>
+<td align="right">787.7897</td>
+<td align="right">649.8425</td>
+<td align="right">0</td>
+<td align="right">1825.224</td>
+<td align="right">0.000</td>
+<td align="right">749.1660</td>
+<td align="right">1629.1661</td>
+<td align="right">815.1082</td>
+<td align="right">495.5262</td>
+<td align="right">0</td>
+<td align="right">13573.21</td>
+<td align="right">1406.067</td>
+<td align="right">0</td>
+<td align="right">29028.81</td>
+<td align="right">68483.62</td>
+<td align="right">9038.913</td>
+<td align="right">9783.465</td>
+<td align="right">0</td>
+<td align="right">30501.25</td>
+<td align="right">10599.994</td>
+<td align="right">7101.127</td>
+<td align="right">8305.438</td>
+<td align="right">0.000</td>
+<td align="right">4244.354</td>
+<td align="right">0</td>
+<td align="right">2289.997</td>
+<td align="right">13235.83</td>
+<td align="right">3617.598</td>
+<td align="right">5641.736</td>
+<td align="right">5766.007</td>
+<td align="right">67198.16</td>
+<td align="right">127896.20</td>
+<td align="right">71841.00</td>
+<td align="right">66638.00</td>
+<td align="right">17905.29</td>
+<td align="right">0.000</td>
+<td align="right">4631.608</td>
+<td align="right">7263.780</td>
+<td align="right">86716.27</td>
+</tr>
+<tr class="odd">
+<td align="right">154</td>
+<td align="left">3T</td>
+<td align="left">NB</td>
+<td align="right">137.2</td>
+<td align="right">64.3</td>
+<td align="right">403.1469</td>
+<td align="right">654.3164</td>
+<td align="right">565.2982</td>
+<td align="right">0</td>
+<td align="right">0.000</td>
+<td align="right">1808.972</td>
+<td align="right">650.8421</td>
+<td align="right">1560.4817</td>
+<td align="right">1266.7593</td>
+<td align="right">0.0000</td>
+<td align="right">0</td>
+<td align="right">12916.54</td>
+<td align="right">0.000</td>
+<td align="right">0</td>
+<td align="right">37969.62</td>
+<td align="right">66222.91</td>
+<td align="right">8011.746</td>
+<td align="right">8014.458</td>
+<td align="right">0</td>
+<td align="right">25759.11</td>
+<td align="right">6783.765</td>
+<td align="right">6627.330</td>
+<td align="right">6373.151</td>
+<td align="right">0.000</td>
+<td align="right">4767.672</td>
+<td align="right">0</td>
+<td align="right">3078.736</td>
+<td align="right">15643.33</td>
+<td align="right">4111.693</td>
+<td align="right">5938.325</td>
+<td align="right">16812.998</td>
+<td align="right">59342.97</td>
+<td align="right">93693.29</td>
+<td align="right">69981.00</td>
+<td align="right">64628.00</td>
+<td align="right">18887.17</td>
+<td align="right">0.000</td>
+<td align="right">5405.461</td>
+<td align="right">4248.908</td>
+<td align="right">67234.19</td>
+</tr>
+<tr class="even">
+<td align="right">182</td>
+<td align="left">3T</td>
+<td align="left">NB</td>
+<td align="right">123.5</td>
+<td align="right">62.9</td>
+<td align="right">558.8956</td>
+<td align="right">1044.3494</td>
+<td align="right">0.0000</td>
+<td align="right">0</td>
+<td align="right">2590.590</td>
+<td align="right">0.000</td>
+<td align="right">1161.7732</td>
+<td align="right">1744.6504</td>
+<td align="right">902.3607</td>
+<td align="right">0.0000</td>
+<td align="right">0</td>
+<td align="right">10598.65</td>
+<td align="right">1635.713</td>
+<td align="right">0</td>
+<td align="right">32982.45</td>
+<td align="right">67699.61</td>
+<td align="right">8178.428</td>
+<td align="right">6533.004</td>
+<td align="right">0</td>
+<td align="right">27824.57</td>
+<td align="right">12031.102</td>
+<td align="right">6346.032</td>
+<td align="right">9447.529</td>
+<td align="right">0.000</td>
+<td align="right">5135.961</td>
+<td align="right">0</td>
+<td align="right">2169.135</td>
+<td align="right">0.00</td>
+<td align="right">6862.923</td>
+<td align="right">6174.927</td>
+<td align="right">23795.510</td>
+<td align="right">14001.83</td>
+<td align="right">20861.51</td>
+<td align="right">131440.00</td>
+<td align="right">147611.00</td>
+<td align="right">20330.75</td>
+<td align="right">0.000</td>
+<td align="right">4810.313</td>
+<td align="right">8282.686</td>
+<td align="right">80970.20</td>
+</tr>
+<tr class="odd">
+<td align="right">222</td>
+<td align="left">3T</td>
+<td align="left">NB</td>
+<td align="right">161.0</td>
+<td align="right">74.1</td>
+<td align="right">254.2615</td>
+<td align="right">431.4813</td>
+<td align="right">445.9520</td>
+<td align="right">0</td>
+<td align="right">0.000</td>
+<td align="right">1078.684</td>
+<td align="right">447.0190</td>
+<td align="right">895.7186</td>
+<td align="right">594.2125</td>
+<td align="right">0.0000</td>
+<td align="right">0</td>
+<td align="right">16864.11</td>
+<td align="right">0.000</td>
+<td align="right">0</td>
+<td align="right">23013.96</td>
+<td align="right">47683.07</td>
+<td align="right">5734.898</td>
+<td align="right">7296.023</td>
+<td align="right">0</td>
+<td align="right">12866.58</td>
+<td align="right">3783.557</td>
+<td align="right">4826.480</td>
+<td align="right">5690.679</td>
+<td align="right">0.000</td>
+<td align="right">3626.880</td>
+<td align="right">0</td>
+<td align="right">0.000</td>
+<td align="right">11667.33</td>
+<td align="right">3201.437</td>
+<td align="right">5310.534</td>
+<td align="right">8928.760</td>
+<td align="right">21563.69</td>
+<td align="right">44012.07</td>
+<td align="right">20978.52</td>
+<td align="right">34732.02</td>
+<td align="right">0.00</td>
+<td align="right">7606.205</td>
+<td align="right">0.000</td>
+<td align="right">11376.954</td>
+<td align="right">25991.20</td>
+</tr>
+<tr class="even">
+<td align="right">238</td>
+<td align="left">3T</td>
+<td align="left">B</td>
+<td align="right">132.4</td>
+<td align="right">72.9</td>
+<td align="right">0.0000</td>
+<td align="right">668.8263</td>
+<td align="right">0.0000</td>
+<td align="right">0</td>
+<td align="right">0.000</td>
+<td align="right">854.496</td>
+<td align="right">332.0903</td>
+<td align="right">652.6357</td>
+<td align="right">99.0683</td>
+<td align="right">0.0000</td>
+<td align="right">0</td>
+<td align="right">22382.95</td>
+<td align="right">0.000</td>
+<td align="right">0</td>
+<td align="right">25243.57</td>
+<td align="right">68834.52</td>
+<td align="right">9652.101</td>
+<td align="right">6982.520</td>
+<td align="right">0</td>
+<td align="right">42749.88</td>
+<td align="right">0.000</td>
+<td align="right">4809.935</td>
+<td align="right">6726.340</td>
+<td align="right">4758.589</td>
+<td align="right">0.000</td>
+<td align="right">0</td>
+<td align="right">2101.150</td>
+<td align="right">0.00</td>
+<td align="right">3842.604</td>
+<td align="right">4641.517</td>
+<td align="right">15705.387</td>
+<td align="right">51669.16</td>
+<td align="right">90192.88</td>
+<td align="right">63978.74</td>
+<td align="right">88519.23</td>
+<td align="right">24585.34</td>
+<td align="right">0.000</td>
+<td align="right">5925.326</td>
+<td align="right">3597.326</td>
+<td align="right">88216.69</td>
+</tr>
+</tbody>
+</table>
+<p>Each of the <code>SB</code> variables basically tells you how much of the molecule is in the sample and each number corresponds to a different molecule. Hopefully PCA will help reduce the number of variables. Let’s perform the PC computation and look at a scree plot.</p>
+<pre class="r"><code>sbpc &lt;- prcomp(sb[,6:45], center = TRUE, scale. = TRUE)
+
+ggplot(data.frame(
+  component = 1:length(sbpc$sdev), 
+  explained.var.pct = sbpc$sdev^2/sum(sbpc$sdev^2)
+  ), 
+  aes(x=component, y=cumsum(explained.var.pct)))+
+    geom_line()+ylab(&quot;Total Percent Variance Explained&quot;)+
+    ggtitle(&quot;Scree Plot of Sagebrush Data&quot;)</code></pre>
+<p><img src="/post/2018-11-24-pca_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>This shows that we can explain most of the variation in our data with far fewer variables than all the <code>SB</code>’s. It’s worth noting that I’ve removed all variables with zero variance already and am scaling and centering the data prior to performing the PCA computation - this is needed whenever different variables have vastly different scales.</p>
+<p>We can now go about building models using the principal components instead of the original <code>SB</code> variables and we don’t have to worry about colinearity. Furthermore, the order of our components is in order of decreasing variance explained so we would build models using the PC’s in order (i.e. a model without PC1 but with other PC’s would be strange). The <code>SB</code> variables lack this aspect, but are more interpretable.</p>
+</div>

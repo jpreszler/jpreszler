@@ -11,6 +11,406 @@
     <atom:link href="/" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>PCA Overview</title>
+      <link>/post/2018-11-24-pca/</link>
+      <pubDate>Sat, 24 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-11-24-pca/</guid>
+      <description>&lt;p&gt;This post is primarily to give the basic overview of principal components analysis (PCA) for dimensionality reduction and regression. I wanted to create it as a guide for my regression students who may find it useful for their projects. First, let’s note the two main times that you may want to use PCA - dimensionality reduction (reducing variables in a dataset) and removing colinearity issues. These are not exclusive problems, often you want to do both. However, depending on the data, PCA will ensure a lack of colinearity among the principal components but may not be able to use less variables in subsequent models.&lt;/p&gt;
+&lt;div id=&#34;basic-idea&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Basic Idea&lt;/h2&gt;
+&lt;p&gt;Before getting into real examples, let’s look at what PCA does in 2 dimensions. I’ll generate some highly correlated data and compute the principal components, and we’ll make it easy to predict the components. My data will be related by &lt;span class=&#34;math inline&#34;&gt;\(y=3*x+1+\epsilon\)&lt;/span&gt;, where &lt;span class=&#34;math inline&#34;&gt;\(\epsilon\)&lt;/span&gt; is normally distributed random error. This means that the greatest variation in my data should be along the line &lt;span class=&#34;math inline&#34;&gt;\(y=3x+1\)&lt;/span&gt;, which should give the first principal component. The second (and final in the 2-D case) will be along the perpendicular line &lt;span class=&#34;math inline&#34;&gt;\(y=\frac{-1}{3}x+b\)&lt;/span&gt;.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(dplyr) #pipes and df manipulation
+library(ggplot2) #graphing
+library(patchwork) #graph layout
+
+x &amp;lt;- seq(from=1, to=10, length.out = 100)
+rn &amp;lt;- rnorm(100, mean=0, sd=1.25) #random error
+y &amp;lt;- 3*x+1+rn 
+df &amp;lt;- data.frame(x, y)
+
+#compute principal components
+pcdf &amp;lt;- prcomp(df)
+
+#graph data and pc&amp;#39;s
+data.graph &amp;lt;- ggplot(df, aes(x=x,y=y))+geom_point()+
+  ggtitle(&amp;quot;Original Data&amp;quot;)
+pc.graph &amp;lt;- ggplot(as.data.frame(pcdf$x), aes(x=PC1, y=PC2))+
+  geom_point()+ggtitle(&amp;quot;Data in PC-space&amp;quot;)
+
+data.graph+pc.graph&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-11-24-pca_files/figure-html/unnamed-chunk-1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Notice how the correlation between &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; vanishes when looking at the data with axes aligned along the principal components - now &lt;code&gt;PC1&lt;/code&gt; and &lt;code&gt;PC2&lt;/code&gt; provide non-colinear data to us in regression. Furthermore, the &lt;code&gt;sdev&lt;/code&gt; element of &lt;code&gt;pcdf&lt;/code&gt; tells use how much of the standard deviation (and hence variance) is explained by each component:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;pcdf$sdev^2/sum(pcdf$sdev^2)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] 0.997359167 0.002640833&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;So &lt;code&gt;PC1&lt;/code&gt; accounts for almost all of the variance seen in the original data. This isn’t surprising given how the data was made, it is so highly correlated that the data is basically one-dimensional and PCA has found that. With higher dimensional data, a &lt;span class=&#34;math inline&#34;&gt;\(scree~plot\)&lt;/span&gt; is useful to see how additional components explain more variance:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot(data.frame(
+  component = 1:length(pcdf$sdev), 
+  explained.var.pct = pcdf$sdev^2/sum(pcdf$sdev^2)
+  ), 
+  aes(x=component, y=cumsum(explained.var.pct)))+
+    geom_line()+ylab(&amp;quot;Total Percent Variance Explained&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-11-24-pca_files/figure-html/unnamed-chunk-3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Now, what about the relationship in our data (&lt;span class=&#34;math inline&#34;&gt;\(y=3x+1\)&lt;/span&gt;) and the principal components? The &lt;code&gt;rotation&lt;/code&gt; element of &lt;code&gt;pcdf&lt;/code&gt; gives us a matrix of eigenvectors that tells use how to turn a point in the original &lt;span class=&#34;math inline&#34;&gt;\(xy\)&lt;/span&gt;-plane into a point in the &lt;span class=&#34;math inline&#34;&gt;\(PC1PC2\)&lt;/span&gt;-plane. The second row of the rotation matrix divided by the first (&lt;span class=&#34;math inline&#34;&gt;\(y/x\)&lt;/span&gt;) gives use slopes of almost &lt;span class=&#34;math inline&#34;&gt;\(3\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\frac{-1}{3}\)&lt;/span&gt; (the difference is the random error I’ve added to the data). The principal components are just a new basis (in the linear algebra sense), each column is a unit vector and the columns are orthogonal to each-other, so in two-dimensions the slope determines a unit vector. In higher dimensions this gets more complicated, but the rotation matrix columns still give us the direction vector for the principal components. If you remember multivariate calculus, you can turn a direction vector into a line in higher dimensions.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;a-real-example&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;A Real Example&lt;/h2&gt;
+&lt;p&gt;I’ll load data from &lt;a href=&#34;/files/sb3tnzv.csv&#34;&gt;sb3tnzv&lt;/a&gt;, which has data about the content of certain molecules in a certain species of sagebrush (this is related to a collaboration with a biochemist).&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;sb &amp;lt;- read.csv(&amp;quot;../../static/files/sb3tnzv.csv&amp;quot;, header=TRUE)
+knitr::kable(head(sb))&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;right&#34;&gt;id&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;species&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;browsed&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;CYP1A.grouse.micr&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;CYP1A.human.micr&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SB02&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SB03&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SB05&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SB07&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SB09&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SB10&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SB11&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SB12&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SB13&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SB14&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SB15&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SB16&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SB17&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SB18&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SB19&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SB20&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SB22&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SB23&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SB24&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SB26&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SB28&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SB29&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SB30&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SB31&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SB32&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SB34&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SB36&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SB37&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SB38&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SB39&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SB40&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SB41&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SB42&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SB43&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SB44&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SB45&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SB45s&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SB46&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SB47&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SB48&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;105&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;3T&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;NB&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;NA&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;NA&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;629.0214&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;565.9454&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1510.473&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;618.7710&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1389.2164&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;719.0859&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;370.6543&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;10076.76&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;26818.27&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;55521.95&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;7762.168&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;7988.484&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;29838.72&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;70267.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;109853.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;60935.48&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5583.644&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4029.331&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;76519.95&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;134&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;3T&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;B&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;NA&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;NA&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;418.1162&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;787.7897&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;649.8425&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1825.224&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;749.1660&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1629.1661&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;815.1082&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;495.5262&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;13573.21&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1406.067&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;29028.81&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;68483.62&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;9038.913&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;9783.465&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;30501.25&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;10599.994&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;7101.127&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;8305.438&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4244.354&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2289.997&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;13235.83&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3617.598&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5641.736&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5766.007&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;67198.16&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;127896.20&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;71841.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;66638.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;17905.29&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4631.608&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;7263.780&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;86716.27&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;154&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;3T&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;NB&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;137.2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;64.3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;403.1469&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;654.3164&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;565.2982&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1808.972&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;650.8421&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1560.4817&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1266.7593&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;12916.54&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;37969.62&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;66222.91&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;8011.746&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;8014.458&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;25759.11&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6783.765&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6627.330&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6373.151&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4767.672&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3078.736&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;15643.33&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4111.693&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5938.325&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;16812.998&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;59342.97&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;93693.29&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;69981.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;64628.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;18887.17&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5405.461&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4248.908&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;67234.19&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;182&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;3T&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;NB&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;123.5&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;62.9&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;558.8956&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1044.3494&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2590.590&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1161.7732&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1744.6504&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;902.3607&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;10598.65&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1635.713&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;32982.45&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;67699.61&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;8178.428&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6533.004&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;27824.57&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;12031.102&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6346.032&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;9447.529&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5135.961&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2169.135&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6862.923&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6174.927&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;23795.510&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;14001.83&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;20861.51&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;131440.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;147611.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;20330.75&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4810.313&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;8282.686&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;80970.20&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;222&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;3T&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;NB&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;161.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;74.1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;254.2615&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;431.4813&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;445.9520&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1078.684&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;447.0190&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;895.7186&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;594.2125&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;16864.11&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;23013.96&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;47683.07&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5734.898&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;7296.023&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;12866.58&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3783.557&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4826.480&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5690.679&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3626.880&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;11667.33&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3201.437&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5310.534&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;8928.760&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;21563.69&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;44012.07&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;20978.52&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;34732.02&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;7606.205&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;11376.954&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;25991.20&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;238&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;3T&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;B&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;132.4&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;72.9&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;668.8263&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;854.496&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;332.0903&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;652.6357&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;99.0683&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;22382.95&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;25243.57&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;68834.52&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;9652.101&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6982.520&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;42749.88&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4809.935&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6726.340&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4758.589&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2101.150&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3842.604&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4641.517&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;15705.387&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;51669.16&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;90192.88&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;63978.74&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;88519.23&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;24585.34&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5925.326&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3597.326&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;88216.69&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Each of the &lt;code&gt;SB&lt;/code&gt; variables basically tells you how much of the molecule is in the sample and each number corresponds to a different molecule. Hopefully PCA will help reduce the number of variables. Let’s perform the PC computation and look at a scree plot.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;sbpc &amp;lt;- prcomp(sb[,6:45], center = TRUE, scale. = TRUE)
+
+ggplot(data.frame(
+  component = 1:length(sbpc$sdev), 
+  explained.var.pct = sbpc$sdev^2/sum(sbpc$sdev^2)
+  ), 
+  aes(x=component, y=cumsum(explained.var.pct)))+
+    geom_line()+ylab(&amp;quot;Total Percent Variance Explained&amp;quot;)+
+    ggtitle(&amp;quot;Scree Plot of Sagebrush Data&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-11-24-pca_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;This shows that we can explain most of the variation in our data with far fewer variables than all the &lt;code&gt;SB&lt;/code&gt;’s. It’s worth noting that I’ve removed all variables with zero variance already and am scaling and centering the data prior to performing the PCA computation - this is needed whenever different variables have vastly different scales.&lt;/p&gt;
+&lt;p&gt;We can now go about building models using the principal components instead of the original &lt;code&gt;SB&lt;/code&gt; variables and we don’t have to worry about colinearity. Furthermore, the order of our components is in order of decreasing variance explained so we would build models using the PC’s in order (i.e. a model without PC1 but with other PC’s would be strange). The &lt;code&gt;SB&lt;/code&gt; variables lack this aspect, but are more interpretable.&lt;/p&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Reticulated Mixture Models</title>
       <link>/post/2018-11-10-reticulate-mm/</link>
       <pubDate>Sat, 10 Nov 2018 00:00:00 +0000</pubDate>
@@ -41334,104 +41734,6 @@ ggmap(map2)+geom_point(data=runs, aes(x=lon,y=lat),alpha=0.05, col=&amp;quot;red
       
       <guid>/talk/maps-312018/</guid>
       <description></description>
-    </item>
-    
-    <item>
-      <title>Idaho ACS Mapping</title>
-      <link>/post/2018-01-27-acs-map/</link>
-      <pubDate>Sat, 27 Jan 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/post/2018-01-27-acs-map/</guid>
-      <description>&lt;p&gt;Recently some diversity stats have been circulated around the College of Idaho, and as new Idahoan I wondered about the general diversity (or lack thereof) in Idaho. I remembered seeing &lt;a href=&#34;http://www.kevjohnson.org/making-maps-in-r/&#34;&gt;this post&lt;/a&gt; a while back about mapping in R, so I went to work.&lt;/p&gt;
-&lt;div id=&#34;shapefiles&#34; class=&#34;section level1&#34;&gt;
-&lt;h1&gt;Shapefiles&lt;/h1&gt;
-&lt;p&gt;First, we need shapefiles for both the Idaho country boundaries and census tracts, which will give finer detail for data. These can be downloaded from the [US Census Bureau] (&lt;a href=&#34;https://www.census.gov/geo/maps-data/data/tiger-cart-boundary.html&#34; class=&#34;uri&#34;&gt;https://www.census.gov/geo/maps-data/data/tiger-cart-boundary.html&lt;/a&gt;). Under the “State-Based” files, get census tracts and country subdivisions, these will give you zip files for the state you’re interested in: &lt;a href=&#34;/files/shape/cb_2016_16_tract_500k.zip&#34;&gt;census shape zip&lt;/a&gt; and &lt;a href=&#34;/files/shape/cb_2016_cousub_500k.zip&#34;&gt;census country&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;The zip files need to be extracted, and then we can load the data into R and prep it for ggplot. The &lt;em&gt;fortify&lt;/em&gt; commands produce a dataframe from the shapefile data the we can use with GGPlot2.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;#packages needed:
-library(ggplot2)
-library(dplyr)
-library(rgdal)
-library(ggmap)
-library(scales)
-
-#load and prep shapefiles
-tract &amp;lt;- readOGR(dsn=&amp;quot;../../static/files/shape/&amp;quot;, layer=&amp;quot;cb_2016_16_tract_500k&amp;quot;, verbose = FALSE)
-tract &amp;lt;- fortify(tract, region = &amp;quot;GEOID&amp;quot;)
-
-county &amp;lt;- readOGR(dsn=&amp;quot;../../static/files/shape/&amp;quot;, layer=&amp;quot;cb_2016_16_cousub_500k&amp;quot;, verbose = FALSE)
-county &amp;lt;- fortify(county, region = &amp;quot;COUNTYFP&amp;quot;) #using GEOID gives census tract division&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Now we’ve got our shapefile data, we need some demographic data to produce more than just empty maps.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div id=&#34;american-community-survey&#34; class=&#34;section level1&#34;&gt;
-&lt;h1&gt;American Community Survey&lt;/h1&gt;
-&lt;p&gt;A great source of demographic data is the American Community Survey from the US Census Bureau. I already had the county and &lt;a href=&#34;/files/acs2015_census_tract_data.csv&#34;&gt;census tract ACS 2015 data&lt;/a&gt; from &lt;a href=&#34;http://www.kaggle.com&#34;&gt;Kaggle&lt;/a&gt;. When loading the data, change the &lt;em&gt;CensusTract&lt;/em&gt; variable to a character because of the encoding of the Kaggle version, otherwise there will be &lt;em&gt;NA&lt;/em&gt; for all of Idaho’s census tracts!&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(readr)
-IDacs2015 &amp;lt;- read_csv(&amp;quot;../../static/files/acs2015_census_tract_data.csv&amp;quot;, 
-                      col_types = cols(CensusTract = col_character())) %&amp;gt;% 
-  filter(State == &amp;quot;Idaho&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;div id=&#34;mapping-the-data&#34; class=&#34;section level1&#34;&gt;
-&lt;h1&gt;Mapping the Data&lt;/h1&gt;
-&lt;p&gt;Now that we have geographic and demographic data loaded, we can combine it to produce some maps. There’s a fairly large amount of data in the ACS, for this post I’m going to focus on a few items: gender, racial diversity, and income.&lt;/p&gt;
-&lt;div id=&#34;idaho-gender-map&#34; class=&#34;section level2&#34;&gt;
-&lt;h2&gt;Idaho Gender Map&lt;/h2&gt;
-&lt;p&gt;Let’s build a map of Idaho with each census tract colored according to the percent of it’s population that is men (sorry LGBTQ fans, the ACS gender data is old school binary men/women).&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;#remove extra data, 
-IDacsM &amp;lt;- transmute(IDacs2015, id=CensusTract, pctMen = Men/TotalPop) 
-MplotData &amp;lt;- left_join(tract, IDacsM)
-
-ggplot() + 
-  geom_polygon(data = MplotData, aes(x = long, y = lat, group = id,
-        fill = pctMen)) +
-    geom_polygon(data = county, aes(x = long, y = lat, group = id),
-        fill = NA, color = &amp;quot;black&amp;quot;, size = 0.25) +
-    coord_map() + scale_fill_distiller(palette = &amp;quot;Blues&amp;quot;, breaks = pretty_breaks(n = 10)) +
-    guides(fill = guide_legend(reverse = TRUE)) + theme_nothing(legend = TRUE) + ggtitle(&amp;quot;Percent of Population is Male&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2018-01-27-ACS-map_files/figure-html/acsM-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;p&gt;Notice that white chuck in south Ada county (where the capitol Boise is located). Is this a data anonmaly or is something else going on? Let’s investigate a bit.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;whiteSpot &amp;lt;-MplotData[MplotData$pctMen &amp;gt; .70,]
-wsMap &amp;lt;- get_map(location = c(left = min(whiteSpot$long),bottom = min(whiteSpot$lat), right = max(whiteSpot$long), top = max(whiteSpot$lat)), maptype = &amp;quot;satellite&amp;quot;, zoom=11)
-ggmap(wsMap)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2018-01-27-ACS-map_files/figure-html/allMen-1.png&#34; width=&#34;672&#34; /&gt; The empty expense is part of the &lt;em&gt;Morley Nelson Snake River Birds of Prey National Conservation Area&lt;/em&gt; which doesn’t have any people living in it. Let’s zoom in on the top right area of the census tract, longitude -116.2 and latitude 43.5.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;wsMapZoom &amp;lt;- get_map(location = c(lon = -116.23, lat = 43.48), maptype = &amp;quot;hybrid&amp;quot;, zoom = 13)
-ggmap(wsMapZoom)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2018-01-27-ACS-map_files/figure-html/allMenZoom-1.png&#34; width=&#34;672&#34; /&gt; The buildings at &lt;span class=&#34;math inline&#34;&gt;\((-116.225, 43.48)\)&lt;/span&gt; are several correctional facilities and the smaller one on the other side of Pleasant Valley road is the state Women’s correctional facility.&lt;/p&gt;
-&lt;p&gt;The white chunck isn’t a data anomally. The includsion of a wildlife refuge and a mostly rural area make the census tract large. The presence of several men’s prisons dramatically skew the population.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div id=&#34;racial-diversity&#34; class=&#34;section level2&#34;&gt;
-&lt;h2&gt;Racial Diversity&lt;/h2&gt;
-&lt;p&gt;Let’s build a similar map of the percent of the population that is white.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;#remove extra data, 
-IDacsR &amp;lt;- transmute(IDacs2015, id=CensusTract, pctWhite = White/100) 
-RplotData &amp;lt;- left_join(tract, IDacsR)
-
-ggplot() + geom_polygon(data = RplotData, aes(x = long, y = lat, group = id,
-        fill = pctWhite)) +
-    geom_polygon(data = county, aes(x = long, y = lat, group = id),
-        fill = NA, color = &amp;quot;black&amp;quot;, size = 0.25) +
-    coord_map() + scale_fill_distiller(palette = &amp;quot;Reds&amp;quot;, breaks = pretty_breaks(n = 10)) +
-    guides(fill = guide_legend(reverse = TRUE)) + theme_nothing(legend = TRUE) + ggtitle(&amp;quot;Percent of Population is White&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2018-01-27-ACS-map_files/figure-html/acsR-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;p&gt;The bright red chuck on the border of Bingham and Bannock counties, with Pocatello on the southern edge, is the Fort Hall Indian Reservation. Not much else is surprising, Idaho is mostly white.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div id=&#34;per-capita-income&#34; class=&#34;section level2&#34;&gt;
-&lt;h2&gt;Per Capita Income&lt;/h2&gt;
-&lt;p&gt;Lastly, let’s take a look at the per capita income.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;#remove extra data, 
-IDacsI &amp;lt;- transmute(IDacs2015, id=CensusTract, IncomePerCap = IncomePerCap) 
-IplotData &amp;lt;- left_join(tract, IDacsI)
-
-ggplot() + geom_polygon(data = IplotData, aes(x = long, y = lat, group = id,
-        fill = IncomePerCap)) +
-    geom_polygon(data = county, aes(x = long, y = lat, group = id),
-        fill = NA, color = &amp;quot;black&amp;quot;, size = 0.25) +
-    coord_map() + scale_fill_distiller(palette = &amp;quot;Greens&amp;quot;, breaks = pretty_breaks(n = 10), direction = 1) +
-    guides(fill = guide_legend(reverse = TRUE)) + theme_nothing(legend = TRUE) + ggtitle(&amp;quot;Per Capita Income&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2018-01-27-ACS-map_files/figure-html/acsI-1.png&#34; width=&#34;672&#34; /&gt; Notice the large dark green in the center of the state, that’s Sun Valley. There’s also a dark area in part of Boise.&lt;/p&gt;
-&lt;p&gt;This is just a glimpse of what’s in the ACS, I encourage you to play around some.&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-</description>
     </item>
     
   </channel>

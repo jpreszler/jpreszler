@@ -5,6 +5,15 @@
     
     <url>
     
+      <loc>/post/2018-11-24-pca/</loc>
+      <lastmod>2018-11-24T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/post/2018-11-10-reticulate-mm/</loc>
       <lastmod>2018-11-10T00:00:00+00:00</lastmod>
     </url>
@@ -337,8 +346,8 @@
     
     <url>
     
-      <loc>/categories/emergent-reducibility/</loc>
-      <lastmod>2018-01-02T00:00:00+00:00</lastmod>
+      <loc>/tags/emergent-reducibility/</loc>
+      <lastmod>2018-06-01T08:24:06-07:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -347,8 +356,8 @@
     
     <url>
     
-      <loc>/tags/emergent-reducibility/</loc>
-      <lastmod>2018-06-01T08:24:06-07:00</lastmod>
+      <loc>/categories/emergent-reducibility/</loc>
+      <lastmod>2018-01-02T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -368,7 +377,7 @@
     <url>
     
       <loc>/tags/ggplot/</loc>
-      <lastmod>2018-10-03T00:00:00+00:00</lastmod>
+      <lastmod>2018-11-24T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -467,6 +476,16 @@
     
     <url>
     
+      <loc>/tags/pca/</loc>
+      <lastmod>2018-11-24T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/project/</loc>
       <lastmod>2017-12-28T00:00:00+00:00</lastmod>
       <priority>0</priority>
@@ -507,8 +526,8 @@
     
     <url>
     
-      <loc>/categories/r/</loc>
-      <lastmod>2018-01-06T00:00:00+00:00</lastmod>
+      <loc>/tags/r/</loc>
+      <lastmod>2018-11-24T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -517,8 +536,8 @@
     
     <url>
     
-      <loc>/tags/r/</loc>
-      <lastmod>2018-11-10T00:00:00+00:00</lastmod>
+      <loc>/categories/r/</loc>
+      <lastmod>2018-01-06T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -617,8 +636,8 @@
     
     <url>
     
-      <loc>/categories/teaching/</loc>
-      <lastmod>2018-01-06T00:00:00+00:00</lastmod>
+      <loc>/tags/teaching/</loc>
+      <lastmod>2018-01-07T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -627,8 +646,8 @@
     
     <url>
     
-      <loc>/tags/teaching/</loc>
-      <lastmod>2018-01-07T00:00:00+00:00</lastmod>
+      <loc>/categories/teaching/</loc>
+      <lastmod>2018-01-06T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     

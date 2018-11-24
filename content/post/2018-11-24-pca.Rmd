@@ -1,0 +1,80 @@
+---
+title: "PCA Overview"
+author: "Jason Preszler"
+date: 2018-11-24
+output: html_document
+tags: ["R","ggplot", "PCA"]
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+This post is primarily to give the basic overview of principal components analysis (PCA) for dimensionality reduction and regression. I wanted to create it as a guide for my regression students who may find it useful for their projects. First, let's note the two main times that you may want to use PCA - dimensionality reduction (reducing variables in a dataset) and removing colinearity issues. These are not exclusive problems, often you want to do both. However, depending on the data, PCA will ensure a lack of colinearity among the principal components but may not be able to use less variables in subsequent models.
+
+## Basic Idea
+Before getting into real examples, let's look at what PCA does in 2 dimensions. I'll generate some highly correlated data and compute the principal components, and we'll make it easy to predict the components. My data will be related by $y=3*x+1+\epsilon$, where $\epsilon$ is normally distributed random error. This means that the greatest variation in my data should be along the line $y=3x+1$, which should give the first principal component. The second (and final in the 2-D case) will be along the perpendicular line $y=\frac{-1}{3}x+b$.
+
+```{r}
+library(dplyr) #pipes and df manipulation
+library(ggplot2) #graphing
+library(patchwork) #graph layout
+
+x <- seq(from=1, to=10, length.out = 100)
+rn <- rnorm(100, mean=0, sd=1.25) #random error
+y <- 3*x+1+rn 
+df <- data.frame(x, y)
+
+#compute principal components
+pcdf <- prcomp(df)
+
+#graph data and pc's
+data.graph <- ggplot(df, aes(x=x,y=y))+geom_point()+
+  ggtitle("Original Data")
+pc.graph <- ggplot(as.data.frame(pcdf$x), aes(x=PC1, y=PC2))+
+  geom_point()+ggtitle("Data in PC-space")
+
+data.graph+pc.graph
+```
+
+Notice how the correlation between $x$ and $y$ vanishes when looking at the data with axes aligned along the principal components - now `PC1` and `PC2` provide non-colinear data to us in regression. Furthermore, the `sdev` element of `pcdf` tells use how much of the standard deviation (and hence variance) is explained by each component:
+```{r}
+pcdf$sdev^2/sum(pcdf$sdev^2)
+```
+So `PC1` accounts for almost all of the variance seen in the original data. This isn't surprising given how the data was made, it is so highly correlated that the data is basically one-dimensional and PCA has found that. With higher dimensional data, a $scree~plot$ is useful to see how additional components explain more variance:
+```{r}
+ggplot(data.frame(
+  component = 1:length(pcdf$sdev), 
+  explained.var.pct = pcdf$sdev^2/sum(pcdf$sdev^2)
+  ), 
+  aes(x=component, y=cumsum(explained.var.pct)))+
+    geom_line()+ylab("Total Percent Variance Explained")
+```
+
+Now, what about the relationship in our data ($y=3x+1$) and the principal components? The `rotation` element of `pcdf` gives us a matrix of eigenvectors that tells use how to turn a point in the original $xy$-plane into a point in the $PC1PC2$-plane. The second row of the rotation matrix divided by the first ($y/x$) gives use slopes of almost $3$ and $\frac{-1}{3}$ (the difference is the random error I've added to the data). The principal components are just a new basis (in the linear algebra sense), each column is a unit vector and the columns are orthogonal to each-other, so in two-dimensions the slope determines a unit vector.  In higher dimensions this gets more complicated, but the rotation matrix columns still give us the direction vector for the principal components. If you remember multivariate calculus, you can turn a direction vector into a line in higher dimensions.
+
+
+## A Real Example
+I'll load data from [sb3tnzv](/files/sb3tnzv.csv), which has data about the content of certain molecules in a certain species of sagebrush (this is related to a collaboration with a biochemist). 
+```{r}
+sb <- read.csv("../../static/files/sb3tnzv.csv", header=TRUE)
+knitr::kable(head(sb))
+```
+
+Each of the `SB` variables basically tells you how much of the molecule is in the sample and each number corresponds to a different molecule. Hopefully PCA will help reduce the number of variables. Let's perform the PC computation and look at a scree plot.
+
+```{r}
+sbpc <- prcomp(sb[,6:45], center = TRUE, scale. = TRUE)
+
+ggplot(data.frame(
+  component = 1:length(sbpc$sdev), 
+  explained.var.pct = sbpc$sdev^2/sum(sbpc$sdev^2)
+  ), 
+  aes(x=component, y=cumsum(explained.var.pct)))+
+    geom_line()+ylab("Total Percent Variance Explained")+
+    ggtitle("Scree Plot of Sagebrush Data")
+```
+
+This shows that we can explain most of the variation in our data with far fewer variables than all the `SB`'s. It's worth noting that I've removed all variables with zero variance already and am scaling and centering the data prior to performing the PCA computation - this is needed whenever different variables have vastly different scales. 
+
+We can now go about building models using the principal components instead of the original `SB` variables and we don't have to worry about colinearity. Furthermore, the order of our components is in order of decreasing variance explained so we would build models using the PC's in order (i.e. a model without PC1 but with other PC's would be strange). The `SB` variables lack this aspect, but are more interpretable.
