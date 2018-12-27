@@ -5,6 +5,15 @@
     
     <url>
     
+      <loc>/post/2018-12-27-sankey/</loc>
+      <lastmod>2018-12-27T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/post/2018-11-24-pca/</loc>
       <lastmod>2018-11-24T00:00:00+00:00</lastmod>
     </url>
@@ -307,6 +316,16 @@
     <url>
     
       <loc>/tags/curriculum/</loc>
+      <lastmod>2018-12-27T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/d3.js/</loc>
       <lastmod>2018-08-21T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
@@ -466,6 +485,16 @@
     
     <url>
     
+      <loc>/tags/networkd3/</loc>
+      <lastmod>2018-12-27T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/tags/number-theory/</loc>
       <lastmod>2017-12-28T00:00:00+00:00</lastmod>
       <priority>0</priority>
@@ -527,7 +556,7 @@
     <url>
     
       <loc>/tags/r/</loc>
-      <lastmod>2018-11-24T00:00:00+00:00</lastmod>
+      <lastmod>2018-12-27T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     

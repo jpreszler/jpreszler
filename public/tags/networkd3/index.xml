@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>NetworkD3 on Jason I. Preszler</title>
+    <link>/tags/networkd3/</link>
+    <description>Recent content in NetworkD3 on Jason I. Preszler</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; 2017 Jason Preszler</copyright>
+    <lastBuildDate>Thu, 27 Dec 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/networkd3/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Sankey Diagram</title>
+      <link>/post/2018-12-27-sankey/</link>
+      <pubDate>Thu, 27 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-12-27-sankey/</guid>
+      <description>This post is about a type of visualization the will hopefully help see how students “flow” through college. The data is an anonymized selection of Math and Math-Computer Science majors at the College of Idaho, and for simplicity we’ll only be using the math and computer science courses. Out goal is to produce the following Sankey Diagram, which is really just a graph (in the discrete math sense - nodes connected by edges) where the edges are scaled by weight, in this case the number of students taking course A then B will be reflected in the width of the link between A and B.</description>
+    </item>
+    
+  </channel>
+</rss>

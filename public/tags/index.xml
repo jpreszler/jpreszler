@@ -51,9 +51,18 @@
     <item>
       <title>Curriculum</title>
       <link>/tags/curriculum/</link>
-      <pubDate>Tue, 21 Aug 2018 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 27 Dec 2018 00:00:00 +0000</pubDate>
       
       <guid>/tags/curriculum/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>D3.js</title>
+      <link>/tags/d3.js/</link>
+      <pubDate>Tue, 21 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/d3.js/</guid>
       <description></description>
     </item>
     
@@ -175,6 +184,15 @@
     </item>
     
     <item>
+      <title>NetworkD3</title>
+      <link>/tags/networkd3/</link>
+      <pubDate>Thu, 27 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/networkd3/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Number-theory</title>
       <link>/tags/number-theory/</link>
       <pubDate>Thu, 28 Dec 2017 00:00:00 +0000</pubDate>
@@ -213,7 +231,7 @@
     <item>
       <title>R</title>
       <link>/tags/r/</link>
-      <pubDate>Sat, 24 Nov 2018 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 27 Dec 2018 00:00:00 +0000</pubDate>
       
       <guid>/tags/r/</guid>
       <description></description>
