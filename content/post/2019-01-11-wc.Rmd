@@ -94,5 +94,9 @@ The `reactiveValues` function produces of list-like structure (the documentation
 
 # Embedded [App](https://jpreszler.shinyapps.io/Gutenberg-Clouds/)
 
+*If greyed out, scroll down and reconnect to server* or the app is off because of my shinyapps.io limit.
+
 ```{r app}
-knitr::include_app("https://jpreszler.shinyapps.io/Gutenberg-Clouds/", height = "800px")
+knitr::include_app("https://jpreszler.shinyapps.io/Gutenberg-Clouds/", height = "600px")
+```
+

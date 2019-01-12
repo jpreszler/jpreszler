@@ -90,8 +90,9 @@ cloud_from_book &amp;lt;- function(gutenberg_id){
 &lt;/div&gt;
 &lt;div id=&#34;embedded-app&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;Embedded &lt;a href=&#34;https://jpreszler.shinyapps.io/Gutenberg-Clouds/&#34;&gt;App&lt;/a&gt;&lt;/h1&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;knitr::include_app(&amp;quot;https://jpreszler.shinyapps.io/Gutenberg-Clouds/&amp;quot;, height = &amp;quot;800px&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;iframe src=&#34;https://jpreszler.shinyapps.io/Gutenberg-Clouds/?showcase=0&#34; width=&#34;672&#34; height=&#34;800px&#34;&gt;
+&lt;p&gt;&lt;em&gt;If greyed out, scroll down and reconnect to server&lt;/em&gt; or the app is off because of my shinyapps.io limit.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;knitr::include_app(&amp;quot;https://jpreszler.shinyapps.io/Gutenberg-Clouds/&amp;quot;, height = &amp;quot;600px&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;iframe src=&#34;https://jpreszler.shinyapps.io/Gutenberg-Clouds/?showcase=0&#34; width=&#34;672&#34; height=&#34;600px&#34;&gt;
 &lt;/iframe&gt;
 &lt;/div&gt;
 </description>
