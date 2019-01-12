@@ -1,0 +1,98 @@
+---
+title: "Tidy Clouds"
+author: "Jason Preszler"
+date: 2019-01-11
+output: html_document
+tags: ["R","wordcloud","gutenbergr", "shiny"]
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
+```
+
+In my data visualization class I had the students get a book from [Project Gutenberg](https://www.gutenberg.org) using the `gutenbergr` package and build a word cloud using `tidytext` and `wordcloud`. It's much easier that the "old" corpus/text mapping approach, and when the students were sharing their clouds they started showing the cloud and having students try to guess the book. This made me think of using a Shiny runtime to make a little word cloud guessing game.
+
+# Building Clouds
+First, here's the code to grab a book and build a word cloud with line-by-line comments but the code is pretty straight forward (especially if you've build a word cloud before).
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+library(gutenbergr)
+library(tidytext)
+library(wordcloud)
+library(RColorBrewer)
+
+cloud_from_book <- function(gutenberg_id){
+  #download book using gutenbergr
+  book <- gutenberg_download(gutenberg_id)
+  #turn line per row into word per row
+  Words <- unnest_tokens(book, word, text)
+  #remove stop_words using the standard english stop_words
+  WordsReduced <- anti_join(Words, stop_words)
+  #turn word list into frequency table
+  WRCount <- WordsReduced %>% count(word) %>% ungroup()
+  #build wordcloud
+  wordcloud(WRCount$word, WRCount$n, random.order = FALSE, max.words = 75, colors = brewer.pal(8, "Dark2"))
+}
+```
+Let's test it out on a whale of a tale:
+```{r}
+cloud_from_book(2489)
+```
+
+# Shiny Clouds
+To make this more interesting, we'll turn this into an embedded shiny app. It will have a pretty simple design, two buttons: "New Book" and "Show Book Info". Selecting "New Book" will update the wordcloud from a random gutenberg_id, while "Show Book Info" will reveal title and other book information.
+
+Here's the `ui` function which is pretty basic:
+```{r ui, eval=FALSE}
+ui <- fluidPage(
+   titlePanel("Random Book Word Cloud"),
+   sidebarLayout(
+      sidebarPanel(
+        actionButton("new", "New Book"),
+        br(),
+        actionButton("reveal", "Show Book Info")
+      ),
+      
+      mainPanel(
+         plotOutput("distPlot"),
+         tableOutput("BookInfo"))
+   )
+)
+```
+
+And now the server function (assuming our `cloud_from_book` function is already defined). Tis is a little more complicated because of the reactive values to control the table of book info:
+```{r server, eval=FALSE}
+server <- function(input, output) {
+  
+   v<- reactiveValues(random_id=NULL, metaTab=NULL)
+   
+   observeEvent(input$new,{
+     v$random_id<-sample(gutenberg_metadata$gutenberg_id, 1)
+     v$metaTab <- NULL
+   })
+   observeEvent(input$reveal, {
+     v$metaTab<-filter(gutenberg_metadata, gutenberg_id==v$random_id)[,2:3]
+   })
+   
+   output$distPlot <- renderPlot({
+     if(!is.null(v$random_id)){
+       cloud_from_book(v$random_id)
+     }
+   })
+
+   output$BookInfo <- renderTable({
+     if(!is.null(v$metaTab)){v$metaTab}
+   })
+}
+```
+
+The `reactiveValues` function produces of list-like structure (the documentation words, not mine...) for reactive variables. Both the `random_id` and `metaTab` are `NULL`. When the `New Book` button is pressed, `random_id` is filled and `metaTab` is set to `NULL` (this resets the table of book info if it's been shown). The `Show Book Info` button (aka `input$reveal`) doesn't do anything to the `random_id` but fills the `metaTab` table. The `if` statements in the `render*` functions then control what is rendered and avoids error messages being printed.
+
+# Embedded [App](https://jpreszler.shinyapps.io/Gutenberg-Clouds/)
+
+```{r app}
+knitr::include_app("https://jpreszler.shinyapps.io/Gutenberg-Clouds/", height = "800px")

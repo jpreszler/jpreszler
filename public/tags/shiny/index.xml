@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Shiny on Jason I. Preszler</title>
+    <link>/tags/shiny/</link>
+    <description>Recent content in Shiny on Jason I. Preszler</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; 2017 Jason Preszler</copyright>
+    <lastBuildDate>Fri, 11 Jan 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/shiny/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Tidy Clouds</title>
+      <link>/post/2019-01-11-wc/</link>
+      <pubDate>Fri, 11 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2019-01-11-wc/</guid>
+      <description>In my data visualization class I had the students get a book from Project Gutenberg using the gutenbergr package and build a word cloud using tidytext and wordcloud. It’s much easier that the “old” corpus/text mapping approach, and when the students were sharing their clouds they started showing the cloud and having students try to guess the book. This made me think of using a Shiny runtime to make a little word cloud guessing game.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -13,6 +13,15 @@
     
     
     <item>
+      <title>Tidy Clouds</title>
+      <link>/post/2019-01-11-wc/</link>
+      <pubDate>Fri, 11 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2019-01-11-wc/</guid>
+      <description>In my data visualization class I had the students get a book from Project Gutenberg using the gutenbergr package and build a word cloud using tidytext and wordcloud. It’s much easier that the “old” corpus/text mapping approach, and when the students were sharing their clouds they started showing the cloud and having students try to guess the book. This made me think of using a Shiny runtime to make a little word cloud guessing game.</description>
+    </item>
+    
+    <item>
       <title>Sankey Diagram</title>
       <link>/post/2018-12-27-sankey/</link>
       <pubDate>Thu, 27 Dec 2018 00:00:00 +0000</pubDate>

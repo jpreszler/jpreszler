@@ -5,6 +5,15 @@
     
     <url>
     
+      <loc>/post/2019-01-11-wc/</loc>
+      <lastmod>2019-01-11T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/post/2018-12-27-sankey/</loc>
       <lastmod>2018-12-27T00:00:00+00:00</lastmod>
     </url>
@@ -405,6 +414,16 @@
     
     <url>
     
+      <loc>/tags/gutenbergr/</loc>
+      <lastmod>2019-01-11T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/tags/idaho/</loc>
       <lastmod>2018-01-27T00:00:00+00:00</lastmod>
       <priority>0</priority>
@@ -556,7 +575,7 @@
     <url>
     
       <loc>/tags/r/</loc>
-      <lastmod>2018-12-27T00:00:00+00:00</lastmod>
+      <lastmod>2019-01-11T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -645,6 +664,16 @@
     
     <url>
     
+      <loc>/tags/shiny/</loc>
+      <lastmod>2019-01-11T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/tags/sklearn/</loc>
       <lastmod>2018-11-10T00:00:00+00:00</lastmod>
       <priority>0</priority>
@@ -687,6 +716,16 @@
     
       <loc>/tags/visnetwork/</loc>
       <lastmod>2018-06-18T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/wordcloud/</loc>
+      <lastmod>2019-01-11T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     

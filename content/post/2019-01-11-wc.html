@@ -1,0 +1,88 @@
+---
+title: "Tidy Clouds"
+author: "Jason Preszler"
+date: 2019-01-11
+output: html_document
+tags: ["R","wordcloud","gutenbergr", "shiny"]
+---
+
+
+
+<p>In my data visualization class I had the students get a book from <a href="https://www.gutenberg.org">Project Gutenberg</a> using the <code>gutenbergr</code> package and build a word cloud using <code>tidytext</code> and <code>wordcloud</code>. It’s much easier that the “old” corpus/text mapping approach, and when the students were sharing their clouds they started showing the cloud and having students try to guess the book. This made me think of using a Shiny runtime to make a little word cloud guessing game.</p>
+<div id="building-clouds" class="section level1">
+<h1>Building Clouds</h1>
+<p>First, here’s the code to grab a book and build a word cloud with line-by-line comments but the code is pretty straight forward (especially if you’ve build a word cloud before).</p>
+<pre class="r"><code>library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+library(gutenbergr)
+library(tidytext)
+library(wordcloud)
+library(RColorBrewer)
+
+cloud_from_book &lt;- function(gutenberg_id){
+  #download book using gutenbergr
+  book &lt;- gutenberg_download(gutenberg_id)
+  #turn line per row into word per row
+  Words &lt;- unnest_tokens(book, word, text)
+  #remove stop_words using the standard english stop_words
+  WordsReduced &lt;- anti_join(Words, stop_words)
+  #turn word list into frequency table
+  WRCount &lt;- WordsReduced %&gt;% count(word) %&gt;% ungroup()
+  #build wordcloud
+  wordcloud(WRCount$word, WRCount$n, random.order = FALSE, max.words = 75, colors = brewer.pal(8, &quot;Dark2&quot;))
+}</code></pre>
+<p>Let’s test it out on a whale of a tale:</p>
+<pre class="r"><code>cloud_from_book(2489)</code></pre>
+<p><img src="/post/2019-01-11-wc_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+</div>
+<div id="shiny-clouds" class="section level1">
+<h1>Shiny Clouds</h1>
+<p>To make this more interesting, we’ll turn this into an embedded shiny app. It will have a pretty simple design, two buttons: “New Book” and “Show Book Info”. Selecting “New Book” will update the wordcloud from a random gutenberg_id, while “Show Book Info” will reveal title and other book information.</p>
+<p>Here’s the <code>ui</code> function which is pretty basic:</p>
+<pre class="r"><code>ui &lt;- fluidPage(
+   titlePanel(&quot;Random Book Word Cloud&quot;),
+   sidebarLayout(
+      sidebarPanel(
+        actionButton(&quot;new&quot;, &quot;New Book&quot;),
+        br(),
+        actionButton(&quot;reveal&quot;, &quot;Show Book Info&quot;)
+      ),
+      
+      mainPanel(
+         plotOutput(&quot;distPlot&quot;),
+         tableOutput(&quot;BookInfo&quot;))
+   )
+)</code></pre>
+<p>And now the server function (assuming our <code>cloud_from_book</code> function is already defined). Tis is a little more complicated because of the reactive values to control the table of book info:</p>
+<pre class="r"><code>server &lt;- function(input, output) {
+  
+   v&lt;- reactiveValues(random_id=NULL, metaTab=NULL)
+   
+   observeEvent(input$new,{
+     v$random_id&lt;-sample(gutenberg_metadata$gutenberg_id, 1)
+     v$metaTab &lt;- NULL
+   })
+   observeEvent(input$reveal, {
+     v$metaTab&lt;-filter(gutenberg_metadata, gutenberg_id==v$random_id)[,2:3]
+   })
+   
+   output$distPlot &lt;- renderPlot({
+     if(!is.null(v$random_id)){
+       cloud_from_book(v$random_id)
+     }
+   })
+
+   output$BookInfo &lt;- renderTable({
+     if(!is.null(v$metaTab)){v$metaTab}
+   })
+}</code></pre>
+<p>The <code>reactiveValues</code> function produces of list-like structure (the documentation words, not mine…) for reactive variables. Both the <code>random_id</code> and <code>metaTab</code> are <code>NULL</code>. When the <code>New Book</code> button is pressed, <code>random_id</code> is filled and <code>metaTab</code> is set to <code>NULL</code> (this resets the table of book info if it’s been shown). The <code>Show Book Info</code> button (aka <code>input$reveal</code>) doesn’t do anything to the <code>random_id</code> but fills the <code>metaTab</code> table. The <code>if</code> statements in the <code>render*</code> functions then control what is rendered and avoids error messages being printed.</p>
+</div>
+<div id="embedded-app" class="section level1">
+<h1>Embedded <a href="https://jpreszler.shinyapps.io/Gutenberg-Clouds/">App</a></h1>
+<pre class="r"><code>knitr::include_app(&quot;https://jpreszler.shinyapps.io/Gutenberg-Clouds/&quot;, height = &quot;800px&quot;)</code></pre>
+<iframe src="https://jpreszler.shinyapps.io/Gutenberg-Clouds/?showcase=0" width="672" height="800px">
+</iframe>
+</div>
