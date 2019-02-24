@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Python on Jason I. Preszler</title>
-    <link>/tags/python/</link>
-    <description>Recent content in Python on Jason I. Preszler</description>
+    <title>Mixture Models on Jason I. Preszler</title>
+    <link>/tags/mixture-models/</link>
+    <description>Recent content in Mixture Models on Jason I. Preszler</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2017 Jason Preszler</copyright>
     <lastBuildDate>Sat, 23 Feb 2019 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="/tags/python/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/tags/mixture-models/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -20,16 +20,6 @@
       <guid>/post/2019-02-23-em-1/</guid>
       <description>As part of some clustering work and learning about hidden Markov models, I’ve been doing some reading about the EM algorithm and it’s applications. It’s a pretty neat algorithm (I love iterative algorithms like Newton’s method and the Euclidean algorithm) so I thought I’d illustrate how it works.
 I’ve also been doing a bit more python recently, so I thought I would do all this in python rather than R. However, this post is still done in RMarkdown using python code chunks!</description>
-    </item>
-    
-    <item>
-      <title>Reticulated Mixture Models</title>
-      <link>/post/2018-11-10-reticulate-mm/</link>
-      <pubDate>Sat, 10 Nov 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/post/2018-11-10-reticulate-mm/</guid>
-      <description>Clearly, there’s no such thing as a “reticulated mixture model” but if you create one I’ll gladly take credit for the name. Instead this post is a demonstration of using mixture models for clustering and the interplay of R and Python via RStudio’s reticulate package.
-Mixture Model Basics The idea behind mixture models is that you have data containing information from two (or more) subgroups and you want to uncover structure of the subgroups.</description>
     </item>
     
   </channel>

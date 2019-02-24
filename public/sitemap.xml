@@ -5,6 +5,15 @@
     
     <url>
     
+      <loc>/post/2019-02-23-em-1/</loc>
+      <lastmod>2019-02-23T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/post/2019-01-11-wc/</loc>
       <lastmod>2019-01-11T00:00:00+00:00</lastmod>
     </url>
@@ -324,6 +333,16 @@
     
     <url>
     
+      <loc>/tags/clustering/</loc>
+      <lastmod>2019-02-23T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/tags/curriculum/</loc>
       <lastmod>2018-12-27T00:00:00+00:00</lastmod>
       <priority>0</priority>
@@ -366,6 +385,16 @@
     
       <loc>/tags/dplyr/</loc>
       <lastmod>2018-07-30T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/em/</loc>
+      <lastmod>2019-02-23T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -484,8 +513,28 @@
     
     <url>
     
+      <loc>/tags/matplotlib/</loc>
+      <lastmod>2019-02-23T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/tags/mixture-model/</loc>
       <lastmod>2018-11-10T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/mixture-models/</loc>
+      <lastmod>2019-02-23T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -534,6 +583,16 @@
     
     <url>
     
+      <loc>/tags/pandas/</loc>
+      <lastmod>2019-02-23T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/project/</loc>
       <lastmod>2017-12-28T00:00:00+00:00</lastmod>
       <priority>0</priority>
@@ -565,7 +624,7 @@
     <url>
     
       <loc>/tags/python/</loc>
-      <lastmod>2018-11-10T00:00:00+00:00</lastmod>
+      <lastmod>2019-02-23T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -656,6 +715,16 @@
     
       <loc>/tags/scrape/</loc>
       <lastmod>2018-07-24T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/seaborn/</loc>
+      <lastmod>2019-02-23T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     

@@ -11,6 +11,169 @@
     <atom:link href="/" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Expectation-Maximization</title>
+      <link>/post/2019-02-23-em-1/</link>
+      <pubDate>Sat, 23 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2019-02-23-em-1/</guid>
+      <description>&lt;p&gt;As part of some clustering work and learning about hidden Markov models, I’ve been doing some reading about the EM algorithm and it’s applications. It’s a pretty neat algorithm (I love iterative algorithms like Newton’s method and the Euclidean algorithm) so I thought I’d illustrate how it works.&lt;/p&gt;
+&lt;p&gt;I’ve also been doing a bit more python recently, so I thought I would do all this in python rather than R. However, this post is still done in RMarkdown using python code chunks! I know Jupyter notebooks have their fans, but as an authoring tool RMarkdown is plain text which makes it easier to create/edit documents and maintain them via tools like Git (unlike Jupyter notebooks).&lt;/p&gt;
+&lt;div id=&#34;the-basic-idea&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;The Basic Idea&lt;/h1&gt;
+&lt;p&gt;Like any iterative algorithm, the big picture behind the EM algorithm is to converge to values given some initial guess. For our purposes, we want to converge to the parameters of a Gaussian mixture model given observed data, a number of Gaussians being mixed, and guesses for the initial means and standard deviations of the mixture components. This is one of the major practical uses of the EM algorithm: determining unknown parameters of mixture model components.&lt;/p&gt;
+&lt;p&gt;The algorithm repeats two key steps: &lt;em&gt;E&lt;/em&gt;xpectation and &lt;em&gt;M&lt;/em&gt;aximization. The expectation step calculates probabilities of each data-point being in a mixture component. The maximization step uses these probabilities to update (a) means and standard deviations of mixture components and (b) the proportion of data-points in each component. There’s not much here that’s special to the case of Gaussian mixture models (GMM’s), except where we use normal distributions and the parameters we compute in the maximization step.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: The following functions are intended to be easy to understand as opposed to highly optimized with great error handling. If you’re estimating components of a Gaussian Mixture model in a production environment, Scikit-Learn has excellent clustering routines that will be far more robust and efficient than anything here.&lt;/p&gt;
+&lt;div id=&#34;expectation-details&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Expectation Details&lt;/h2&gt;
+&lt;p&gt;The expectation step computes the probability of a data point being in any one of the mixture components. If &lt;span class=&#34;math inline&#34;&gt;\(x_i\)&lt;/span&gt; is the data-point, &lt;span class=&#34;math inline&#34;&gt;\(\mu_c,~\sigma_c\)&lt;/span&gt; the mean and standard deviation for component &lt;span class=&#34;math inline&#34;&gt;\(c\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(f_c\)&lt;/span&gt; the fraction of data-points in component &lt;span class=&#34;math inline&#34;&gt;\(c\)&lt;/span&gt;, then these probabilities are: &lt;span class=&#34;math display&#34;&gt;\[
+p_{ic} = \frac{f_c*N(x_i | \mu_c, \sigma_c)}{\sum_k f_k*N(x_i | \mu_k, \sigma_k)}.
+\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;This can be turned in the following python code (as well as some libraries we’ll need throughout the post):&lt;/p&gt;
+&lt;pre class=&#34;python&#34;&gt;&lt;code&gt;import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import scipy
+from scipy.stats import norm
+def expectation_probabilities_gmm(data, mean_vect, sd_vect, fracPerComp):
+    ret_probs = np.zeros([len(data),len(mean_vect)])
+    for i in range(len(data)):
+        for j in range(len(mean_vect)):
+            ret_probs[i,j] = (fracPerComp[j]*norm.pdf(data[i],mean_vect[j],sd_vect[j]))
+        ret_probs[i,:] = ret_probs[i,:]/np.sum(ret_probs[i,:])
+    return(ret_probs)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This will return a &lt;code&gt;numpy&lt;/code&gt; array with one row per data-point and one column per mixture component, where values are the probabilities. Clearly, we have to supply the data, and previous values for the means, standard deviations, and fraction of points per component. Initially, these will be our guesses, but subsequent iterations will get them from the maximization step.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;maximization-details&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Maximization Details&lt;/h2&gt;
+&lt;p&gt;Once we have a new batch of probabilities, we need to update values for the mixture model parameters. First, we calculate a &lt;em&gt;component weight&lt;/em&gt; for each component which is the column sum of our probability array. We then use the component weight to compute weighted means, standard deviations, and fractions of points per component. &lt;span class=&#34;math display&#34;&gt;\[
+w_c = \sum_i p_{ic},\\
+\mu_c = \frac{\sum_i p_{ic}x_i}{w_c},\\
+\sigma_c^2 = \frac{\sum_i (p_{ic}(x_i-\mu_c)^2)}{w_c}\\
+f_c = \frac{w_c}{n}
+\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Here’s a python function that computes these and returns the &lt;span class=&#34;math inline&#34;&gt;\(\mu_c, \sigma_c, f_c\)&lt;/span&gt; tuple given the data and expectation probabilities:&lt;/p&gt;
+&lt;pre class=&#34;python&#34;&gt;&lt;code&gt;def maximization_params_gmm(expect_probs, data):
+    clust_weights = [np.sum(expect_probs[:,j]) for j in
+        range(np.shape(expect_probs)[1])]
+    new_means = np.divide([np.sum(expect_probs[:,j]*data[:]) for
+        j in range(np.shape(expect_probs)[1])],clust_weights)
+    new_sds = np.divide([np.sum(expect_probs[:,j]*(data[:]-new_means[j])*(data[:]-new_means[j])) for j in range(np.shape(expect_probs)[1]) ], clust_weights)
+    new_sds = np.sqrt(new_sds)
+    new_frac = np.divide(clust_weights,np.shape(expect_probs)[0])
+    return new_means, new_sds, new_frac;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Note that this is for a mixture of univariate Gaussian distributions, in higher dimensions you would need covariance matrices to be computed rather than just standard deviations.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;stopping-criteria&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Stopping Criteria&lt;/h2&gt;
+&lt;p&gt;A key part of an iterative algorithm is when to stop, which is achieved in the EM algorithm by looking at the convergence of the log-likelihood. Although in this post we’ll just run a fixed number of iterations.&lt;/p&gt;
+&lt;pre class=&#34;python&#34;&gt;&lt;code&gt;def log_likelihood(data, mean_vect, sd_vect, fracPerComp):
+  ret_probs = np.zeros([len(data),len(mean_vect)])
+  for i in range(len(data)):
+      for j in range(len(mean_vect)):
+          ret_probs[i,j] = (fracPerComp[j]*norm.pdf(data[i],mean_vect[j],sd_vect[j]))
+      row_sums = np.sum(ret_probs[i,:])
+  loglike = np.sum(np.log(row_sums))
+  return(loglike)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;observed-mixture-data&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Observed Mixture Data&lt;/h1&gt;
+&lt;p&gt;I don’t have a nice real-world GMM dataset, but we can easily manufacture some:&lt;/p&gt;
+&lt;pre class=&#34;python&#34;&gt;&lt;code&gt;np.random.seed(seed=123987) #reproducibility
+vals = [np.random.normal(5, .5, 100), np.random.normal(3, 1, 100), np.random.normal(6.5,1.25,100)]
+grps = [&amp;#39;A&amp;#39;,&amp;#39;B&amp;#39;,&amp;#39;C&amp;#39;]
+#build dataframe
+df = pd.concat([pd.DataFrame({&amp;quot;group&amp;quot;:grps[i], &amp;quot;value&amp;quot;:vals[i]}) for i in range(0,3)], axis=0, ignore_index=True)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Initially I had written this with 3 separate vectors of values and 3 data-frames that I then glued together. Then I remembered one of my favorite things about python: list comprehensions! Clearly I’ve made heavy use of them in the above functions as well.&lt;/p&gt;
+&lt;p&gt;With the &lt;code&gt;group&lt;/code&gt; column in our dataframe, we can easily see the three components of the mixture:&lt;/p&gt;
+&lt;pre class=&#34;python&#34;&gt;&lt;code&gt;#grouped
+plt.figure(figsize=(3,3))
+plots = sns.FacetGrid(data=df, hue=&amp;quot;group&amp;quot;, legend_out=True)
+plots.map(sns.distplot,&amp;#39;value&amp;#39;, kde_kws={&amp;quot;shade&amp;quot;:False},rug_kws={&amp;quot;alpha&amp;quot;:.3}, rug=True, kde=True, hist=False)
+plt.show()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-02-23-EM-1_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;288&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;In practice though, we would only be able to see the full distribution of our data:&lt;/p&gt;
+&lt;pre class=&#34;python&#34;&gt;&lt;code&gt;plt.close() #get a blank plot rather than overlay on our last distplots
+plt.figure(figsize=(3,3))
+sns.distplot(df[&amp;#39;value&amp;#39;], rug=True, kde=True, hist=False)
+plt.show()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-02-23-EM-1_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;288&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;The “shoulders” on the curve given a hint that we may be dealing with an underlying mixture model of 3 components. But how “non-normal” is our data? We can run a Shapiro-Wilkes test and compare with the same number of points sampled from a single normal distribution to get an idea.&lt;/p&gt;
+&lt;pre class=&#34;python&#34;&gt;&lt;code&gt;##Shapiro-Wilkes test
+print(scipy.stats.shapiro(df[&amp;#39;value&amp;#39;]))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## (0.9909396767616272, 0.0613214448094368)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The second value in this tuple is the p-value associated to a null hypothesis that our data is from a single normal distribution. In this case we would fail to reject that our observed data is different from a sample from a single normal distribution at the customary &lt;span class=&#34;math inline&#34;&gt;\(0.05\)&lt;/span&gt; significance level. More evidence that p-values and significance tests can miss important details.&lt;/p&gt;
+&lt;p&gt;We can also compare to simulated data sampled from a true normal distribution with the same mean and standard deviation as our observed data to see how close our data is to being normal.&lt;/p&gt;
+&lt;pre class=&#34;python&#34;&gt;&lt;code&gt;##compare with true normal sample
+simDF = pd.DataFrame({&amp;quot;type&amp;quot;:&amp;quot;simulated&amp;quot;, &amp;quot;value&amp;quot;:np.random.normal(df[&amp;#39;value&amp;#39;].mean(), df[&amp;#39;value&amp;#39;].std(), 300)})
+simDF = pd.concat([pd.DataFrame({&amp;quot;type&amp;quot;:&amp;quot;sample&amp;quot;, &amp;quot;value&amp;quot;:df[&amp;#39;value&amp;#39;]}), simDF], axis=0, ignore_index=True)
+plt.figure(figsize=(3,3))
+plotsim = sns.FacetGrid(data=simDF, hue=&amp;quot;type&amp;quot;)
+plotsim.map(sns.distplot,&amp;#39;value&amp;#39;, kde_kws={&amp;quot;shade&amp;quot;:False},rug_kws={&amp;quot;alpha&amp;quot;:.3}, rug=True, kde=True, hist=False)
+plt.show()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-02-23-EM-1_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;288&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;running-the-em&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Running The EM&lt;/h1&gt;
+&lt;p&gt;Here’s a function to handle calling the E and M steps and holding the results of each. This will be handle to look at how the process converges.&lt;/p&gt;
+&lt;pre class=&#34;python&#34;&gt;&lt;code&gt;def run_em(data, init_means, init_sds, init_frac, num_iterations):
+    ret_means = np.zeros((num_iterations,len(init_means)))
+    ret_sds = np.zeros((num_iterations,len(init_means)))
+    ret_fracs = np.zeros((num_iterations,len(init_means)))
+    ret_ll = np.zeros(num_iterations)
+    ret_means[0,:] = init_means
+    ret_sds[0,:] = init_sds
+    ret_fracs[0,:] = init_frac
+    for i in range(num_iterations-1):
+        ret_ll[i]=log_likelihood(data, ret_means[i,:],ret_sds[i,:], ret_fracs[i,:])
+        new_probs = expectation_probabilities_gmm(data, ret_means[i,:],ret_sds[i,:], ret_fracs[i,:])
+        ret_means[i+1,:], ret_sds[i+1,:],ret_fracs[i+1,:] = maximization_params_gmm(new_probs, data)
+    return ret_means, ret_sds, ret_fracs, ret_ll;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now we can make some guesses and run the EM algorithm. Based on the distribution of all the data, it looks like there are irregularities around 3, 5.5, and 7 - so those will be our means. We’ll assume variance of 1 and equal size for all groups.&lt;/p&gt;
+&lt;pre class=&#34;python&#34;&gt;&lt;code&gt;means = [3,5.5, 7]
+sds = [1,1,1]
+fracs = [1/3,1/3,1/3]
+mu,sigma,frac,ll = run_em(df[&amp;#39;value&amp;#39;], means, sds, fracs, 50)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We can then easily use &lt;code&gt;matplotlib&lt;/code&gt; to see how these change over the iterations:&lt;/p&gt;
+&lt;pre class=&#34;python&#34;&gt;&lt;code&gt;plt.figure(figsize=(5,5))
+plt.subplot(2,2,1)
+plt.plot(mu)
+plt.title(&amp;quot;Means&amp;quot;)
+plt.xlabel(&amp;quot;Iteration&amp;quot;)
+plt.xticks([10*(i+1) for i in range(5)])
+plt.subplot(2,2,2)
+plt.plot(sigma)
+plt.title(&amp;quot;Std. Deviations&amp;quot;)
+plt.xlabel(&amp;quot;Iteration&amp;quot;)
+plt.xticks([10*(i+1) for i in range(5)])
+plt.subplot(2,2,3)
+plt.plot(frac)
+plt.title(&amp;quot;Fraction Per Cluster&amp;quot;)
+plt.xlabel(&amp;quot;Iteration&amp;quot;)
+plt.xticks([10*(i+1) for i in range(5)])
+plt.subplot(2,2,4)
+plt.plot(ll[0:48]) #last ll value hasn&amp;#39;t been calculated
+plt.title(&amp;quot;Log-Likelihood&amp;quot;)
+plt.xlabel(&amp;quot;Iteration&amp;quot;)
+plt.xticks([10*(i+1) for i in range(5)])
+plt.tight_layout()
+plt.show()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-02-23-EM-1_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;480&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;This looks like we had convergence fairly quickly, except the fraction of points per cluster - but our y-scale is very narrow. In the end our estimates are:&lt;/p&gt;
+&lt;pre class=&#34;python&#34;&gt;&lt;code&gt;print(&amp;quot;Means:&amp;quot;, mu[49,:])&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Means: [2.9767655  4.91279169 6.30925586]&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;python&#34;&gt;&lt;code&gt;print(&amp;quot;Std. Dev.:&amp;quot;, sigma[49,:])&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Std. Dev.: [0.83852695 0.45363153 1.15733853]&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;python&#34;&gt;&lt;code&gt;print(&amp;quot;Fraction per Cluster:&amp;quot;, frac[49,:])&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Fraction per Cluster: [0.28652637 0.32794345 0.38553017]&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Since our mixture components had means &lt;span class=&#34;math inline&#34;&gt;\(3, 5, 6.5\)&lt;/span&gt; and standard deviations &lt;span class=&#34;math inline&#34;&gt;\(1, 0.5, 1.25\)&lt;/span&gt; we did pretty good. The main difference is the points where the normal distributions overlap with “high” probability. This is where any clustering algorithm will break down. Despite how close our data was to a single normal distribution, the EM algorithm was able to divide the observations into 3 groups with means and standard deviations almost equal to the actual cluster parameters.&lt;/p&gt;
+&lt;p&gt;I want to show some visuals of our mean and std. dev. estimates with the data and how the clusters evolve, but this post has gotten a little long. Look forward to part 2 soon…&lt;/p&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Tidy Clouds</title>
       <link>/post/2019-01-11-wc/</link>
       <pubDate>Fri, 11 Jan 2019 00:00:00 +0000</pubDate>
@@ -42003,82 +42166,6 @@ wordcloud(words=wordDF$word, freq=wordDF$freq,
 &lt;p&gt;&lt;img src=&#34;/post/2018-05-05-counting-class_files/figure-html/wc_init-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;The &lt;em&gt;special topics&lt;/em&gt; and &lt;em&gt;independent study&lt;/em&gt; classes that almost all subjects have along with &lt;em&gt;lab&lt;/em&gt; and &lt;em&gt;introduction&lt;/em&gt; are not too surprising. History, with it’s high course count and the fact that it appears in other subjects (&lt;em&gt;History of Math&lt;/em&gt; or &lt;em&gt;Music History&lt;/em&gt;) is also not surprising. Beyond that, the wordcloud shows a nice diversity of disciplines and unifying ideas.&lt;/p&gt;
 &lt;p&gt;Clearly this is just scratching the surface of exploring a college’s curriculum and it would be interesting to compare similar schools in addition to exploring deeper into course descriptions and the links formed by prerequisites and major/minor requirements.&lt;/p&gt;
-&lt;/div&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>SQL in RMarkdown!</title>
-      <link>/post/2018-04-01-sql-rmd/</link>
-      <pubDate>Sun, 01 Apr 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/post/2018-04-01-sql-rmd/</guid>
-      <description>&lt;p&gt;This semester I’m teaching &lt;em&gt;Applied Databases&lt;/em&gt; for the first time and have been struggling with some notes and handouts for students; as well as simple, easy to use database interfaces that work well across platforms. I love RMarkdown, and today realized that knitr has an SQL code engine!&lt;/p&gt;
-&lt;div id=&#34;basic-syntax&#34; class=&#34;section level2&#34;&gt;
-&lt;h2&gt;Basic Syntax&lt;/h2&gt;
-&lt;p&gt;I often give handouts on SQL statements as we learn about them, so I need a nice way to show commands. To do this, we’ll set up a dummy database connection.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(DBI)
-db &amp;lt;- dbConnect(RSQLite::SQLite(), dbname = &amp;quot;:memory:&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;This creates an empty, in memory, SQLite database. Clearly you need both the R packages DBI and RSQLite installed. Now we can have an SQL code chunk (must give ‘connection=db’, and ‘eval=FALSE’) to demonstrate commands like:&lt;/p&gt;
-&lt;pre class=&#34;sql&#34;&gt;&lt;code&gt;SELECT var1, COUNT(DISTINCT(var2)) FROM tab1 GROUP BY var1;&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;div id=&#34;real-example&#34; class=&#34;section level2&#34;&gt;
-&lt;h2&gt;Real Example&lt;/h2&gt;
-&lt;p&gt;Or, we can grab a real SQLite database (such as &lt;a href=&#34;/files/sf-salary.sqlite&#34;&gt;sf-salary&lt;/a&gt; from Kaggle) and do some querying.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;sf_salary &amp;lt;- dbConnect(RSQLite::SQLite(),
-                    dbname=&amp;quot;../../static/files/sf-salary.sqlite&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Obviously, within R we can use the dbGetQuery() and dbSendQuery() commands from DBI, or if you’re more comfortable with SQL, just use an SQL code chunk:&lt;/p&gt;
-&lt;pre class=&#34;sql&#34;&gt;&lt;code&gt;SELECT JobTitle, AVG(BasePay) FROM Salaries 
-  GROUP BY JobTitle ORDER BY AVG(BasePay) DESC LIMIT 8;&lt;/code&gt;&lt;/pre&gt;
-&lt;div class=&#34;knitsql-table&#34;&gt;
-&lt;table&gt;
-&lt;caption&gt;&lt;span id=&#34;tab:unnamed-chunk-2&#34;&gt;Table 1: &lt;/span&gt;8 records&lt;/caption&gt;
-&lt;thead&gt;
-&lt;tr class=&#34;header&#34;&gt;
-&lt;th align=&#34;left&#34;&gt;JobTitle&lt;/th&gt;
-&lt;th align=&#34;right&#34;&gt;AVG(BasePay)&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr class=&#34;odd&#34;&gt;
-&lt;td align=&#34;left&#34;&gt;Chief of Police&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;309767.7&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr class=&#34;even&#34;&gt;
-&lt;td align=&#34;left&#34;&gt;Chief, Fire Department&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;304232.3&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr class=&#34;odd&#34;&gt;
-&lt;td align=&#34;left&#34;&gt;Gen Mgr, Public Trnsp Dept&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;297769.4&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr class=&#34;even&#34;&gt;
-&lt;td align=&#34;left&#34;&gt;CHIEF OF DEPARTMENT, (FIRE DEPARTMENT)&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;285262.0&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr class=&#34;odd&#34;&gt;
-&lt;td align=&#34;left&#34;&gt;Dep Dir for Investments, Ret&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;276153.8&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr class=&#34;even&#34;&gt;
-&lt;td align=&#34;left&#34;&gt;Mayor&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;275852.5&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr class=&#34;odd&#34;&gt;
-&lt;td align=&#34;left&#34;&gt;Adm, SFGH Medical Center&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;265218.8&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr class=&#34;even&#34;&gt;
-&lt;td align=&#34;left&#34;&gt;EXECUTIVE CONTRACT EMPLOYEE&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;264452.5&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div id=&#34;the-real-reason-for-excitement&#34; class=&#34;section level2&#34;&gt;
-&lt;h2&gt;The Real Reason For Excitement&lt;/h2&gt;
-&lt;p&gt;Beyond a love of doing everything in R, I’m really excited because we’ve been using SQLiteStudio as a nice GUI for SQLite databases. However, my students with Macs have to use an old version due to an installation bug. This old version makes it impossible for them to use some SQL such as the DISTINCT command. Obviously this is a problem, but perhaps RMarkdown is the answer!&lt;/p&gt;
 &lt;/div&gt;
 </description>
     </item>

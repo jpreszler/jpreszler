@@ -49,6 +49,15 @@
     </item>
     
     <item>
+      <title>Clustering</title>
+      <link>/tags/clustering/</link>
+      <pubDate>Sat, 23 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/clustering/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Curriculum</title>
       <link>/tags/curriculum/</link>
       <pubDate>Thu, 27 Dec 2018 00:00:00 +0000</pubDate>
@@ -90,6 +99,15 @@
       <pubDate>Mon, 30 Jul 2018 00:00:00 +0000</pubDate>
       
       <guid>/tags/dplyr/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>EM</title>
+      <link>/tags/em/</link>
+      <pubDate>Sat, 23 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/em/</guid>
       <description></description>
     </item>
     
@@ -175,11 +193,29 @@
     </item>
     
     <item>
+      <title>Matplotlib</title>
+      <link>/tags/matplotlib/</link>
+      <pubDate>Sat, 23 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/matplotlib/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Mixture Model</title>
       <link>/tags/mixture-model/</link>
       <pubDate>Sat, 10 Nov 2018 00:00:00 +0000</pubDate>
       
       <guid>/tags/mixture-model/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Mixture Models</title>
+      <link>/tags/mixture-models/</link>
+      <pubDate>Sat, 23 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/mixture-models/</guid>
       <description></description>
     </item>
     
@@ -220,6 +256,15 @@
     </item>
     
     <item>
+      <title>Pandas</title>
+      <link>/tags/pandas/</link>
+      <pubDate>Sat, 23 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/pandas/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Purrr</title>
       <link>/tags/purrr/</link>
       <pubDate>Wed, 03 Oct 2018 00:00:00 +0000</pubDate>
@@ -231,7 +276,7 @@
     <item>
       <title>Python</title>
       <link>/tags/python/</link>
-      <pubDate>Sat, 10 Nov 2018 00:00:00 +0000</pubDate>
+      <pubDate>Sat, 23 Feb 2019 00:00:00 +0000</pubDate>
       
       <guid>/tags/python/</guid>
       <description></description>
@@ -306,6 +351,15 @@
       <pubDate>Tue, 24 Jul 2018 00:00:00 +0000</pubDate>
       
       <guid>/tags/scrape/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Seaborn</title>
+      <link>/tags/seaborn/</link>
+      <pubDate>Sat, 23 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/seaborn/</guid>
       <description></description>
     </item>
     

@@ -13,6 +13,16 @@
     
     
     <item>
+      <title>Expectation-Maximization</title>
+      <link>/post/2019-02-23-em-1/</link>
+      <pubDate>Sat, 23 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2019-02-23-em-1/</guid>
+      <description>As part of some clustering work and learning about hidden Markov models, I’ve been doing some reading about the EM algorithm and it’s applications. It’s a pretty neat algorithm (I love iterative algorithms like Newton’s method and the Euclidean algorithm) so I thought I’d illustrate how it works.
+I’ve also been doing a bit more python recently, so I thought I would do all this in python rather than R. However, this post is still done in RMarkdown using python code chunks!</description>
+    </item>
+    
+    <item>
       <title>Tidy Clouds</title>
       <link>/post/2019-01-11-wc/</link>
       <pubDate>Fri, 11 Jan 2019 00:00:00 +0000</pubDate>
