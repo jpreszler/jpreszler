@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Pandas on Jason I. Preszler</title>
+    <title>pandas on Jason I. Preszler</title>
     <link>/tags/pandas/</link>
-    <description>Recent content in Pandas on Jason I. Preszler</description>
+    <description>Recent content in pandas on Jason I. Preszler</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2017 Jason Preszler</copyright>
@@ -19,7 +19,7 @@
       
       <guid>/post/2019-02-23-em-1/</guid>
       <description>As part of some clustering work and learning about hidden Markov models, I’ve been doing some reading about the EM algorithm and it’s applications. It’s a pretty neat algorithm (I love iterative algorithms like Newton’s method and the Euclidean algorithm) so I thought I’d illustrate how it works.
-I’ve also been doing a bit more python recently, so I thought I would do all this in python rather than R. However, this post is still done in RMarkdown using python code chunks!</description>
+I’ve also been doing a bit more python recently, so I thought I would do all this in python rather than R.</description>
     </item>
     
   </channel>

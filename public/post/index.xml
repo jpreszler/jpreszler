@@ -19,7 +19,7 @@
       
       <guid>/post/2019-02-23-em-1/</guid>
       <description>As part of some clustering work and learning about hidden Markov models, I’ve been doing some reading about the EM algorithm and it’s applications. It’s a pretty neat algorithm (I love iterative algorithms like Newton’s method and the Euclidean algorithm) so I thought I’d illustrate how it works.
-I’ve also been doing a bit more python recently, so I thought I would do all this in python rather than R. However, this post is still done in RMarkdown using python code chunks!</description>
+I’ve also been doing a bit more python recently, so I thought I would do all this in python rather than R.</description>
     </item>
     
     <item>
@@ -163,7 +163,7 @@ Basic Syntax I often give handouts on SQL statements as we learn about them, so 
       
       <guid>/post/2018-3-11-run-tacoma1/</guid>
       <description>When I lived in Tacoma, I was running quite a bit. Since I moved away my training has become much more irregular, but I thought it would be interesting to take the Tacoma data from my current Garmin Forerunner 220 a take a look.
-Data Prep The Garmin stores data in .fit format, but gpsbabel can translate to a nicely structured GPX file, which is what I’ll start with here. The XML package in R has some nice features to easily parse xml files (GPX is GPS data in a special XML schema).</description>
+Data Prep The Garmin stores data in .fit format, but gpsbabel can translate to a nicely structured GPX file, which is what I’ll start with here.</description>
     </item>
     
     <item>

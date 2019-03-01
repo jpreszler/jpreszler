@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Run on Jason I. Preszler</title>
+    <title>run on Jason I. Preszler</title>
     <link>/tags/run/</link>
-    <description>Recent content in Run on Jason I. Preszler</description>
+    <description>Recent content in run on Jason I. Preszler</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2017 Jason Preszler</copyright>
@@ -19,7 +19,7 @@
       
       <guid>/post/2018-3-11-run-tacoma1/</guid>
       <description>When I lived in Tacoma, I was running quite a bit. Since I moved away my training has become much more irregular, but I thought it would be interesting to take the Tacoma data from my current Garmin Forerunner 220 a take a look.
-Data Prep The Garmin stores data in .fit format, but gpsbabel can translate to a nicely structured GPX file, which is what I’ll start with here. The XML package in R has some nice features to easily parse xml files (GPX is GPS data in a special XML schema).</description>
+Data Prep The Garmin stores data in .fit format, but gpsbabel can translate to a nicely structured GPX file, which is what I’ll start with here.</description>
     </item>
     
   </channel>
