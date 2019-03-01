@@ -16,7 +16,10 @@
       <pubDate>Sat, 23 Feb 2019 00:00:00 +0000</pubDate>
       
       <guid>/post/2019-02-23-em-1/</guid>
-      <description>&lt;p&gt;As part of some clustering work and learning about hidden Markov models, I’ve been doing some reading about the EM algorithm and it’s applications. It’s a pretty neat algorithm (I love iterative algorithms like Newton’s method and the Euclidean algorithm) so I thought I’d illustrate how it works.&lt;/p&gt;
+      <description>
+
+
+&lt;p&gt;As part of some clustering work and learning about hidden Markov models, I’ve been doing some reading about the EM algorithm and it’s applications. It’s a pretty neat algorithm (I love iterative algorithms like Newton’s method and the Euclidean algorithm) so I thought I’d illustrate how it works.&lt;/p&gt;
 &lt;p&gt;I’ve also been doing a bit more python recently, so I thought I would do all this in python rather than R. However, this post is still done in RMarkdown using python code chunks! I know Jupyter notebooks have their fans, but as an authoring tool RMarkdown is plain text which makes it easier to create/edit documents and maintain them via tools like Git (unlike Jupyter notebooks).&lt;/p&gt;
 &lt;div id=&#34;the-basic-idea&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;The Basic Idea&lt;/h1&gt;
@@ -179,7 +182,10 @@ plt.show()&lt;/code&gt;&lt;/pre&gt;
       <pubDate>Fri, 11 Jan 2019 00:00:00 +0000</pubDate>
       
       <guid>/post/2019-01-11-wc/</guid>
-      <description>&lt;p&gt;In my data visualization class I had the students get a book from &lt;a href=&#34;https://www.gutenberg.org&#34;&gt;Project Gutenberg&lt;/a&gt; using the &lt;code&gt;gutenbergr&lt;/code&gt; package and build a word cloud using &lt;code&gt;tidytext&lt;/code&gt; and &lt;code&gt;wordcloud&lt;/code&gt;. It’s much easier that the “old” corpus/text mapping approach, and when the students were sharing their clouds they started showing the cloud and having students try to guess the book. This made me think of using a Shiny runtime to make a little word cloud guessing game.&lt;/p&gt;
+      <description>
+
+
+&lt;p&gt;In my data visualization class I had the students get a book from &lt;a href=&#34;https://www.gutenberg.org&#34;&gt;Project Gutenberg&lt;/a&gt; using the &lt;code&gt;gutenbergr&lt;/code&gt; package and build a word cloud using &lt;code&gt;tidytext&lt;/code&gt; and &lt;code&gt;wordcloud&lt;/code&gt;. It’s much easier that the “old” corpus/text mapping approach, and when the students were sharing their clouds they started showing the cloud and having students try to guess the book. This made me think of using a Shiny runtime to make a little word cloud guessing game.&lt;/p&gt;
 &lt;div id=&#34;building-clouds&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;Building Clouds&lt;/h1&gt;
 &lt;p&gt;First, here’s the code to grab a book and build a word cloud with line-by-line comments but the code is pretty straight forward (especially if you’ve build a word cloud before).&lt;/p&gt;
@@ -267,7 +273,8 @@ cloud_from_book &amp;lt;- function(gutenberg_id){
       <pubDate>Thu, 27 Dec 2018 00:00:00 +0000</pubDate>
       
       <guid>/post/2018-12-27-sankey/</guid>
-      <description>&lt;script src=&#34;/rmarkdown-libs/htmlwidgets/htmlwidgets.js&#34;&gt;&lt;/script&gt;
+      <description>
+&lt;script src=&#34;/rmarkdown-libs/htmlwidgets/htmlwidgets.js&#34;&gt;&lt;/script&gt;
 &lt;script src=&#34;/rmarkdown-libs/d3/d3.min.js&#34;&gt;&lt;/script&gt;
 &lt;script src=&#34;/rmarkdown-libs/sankey/sankey.js&#34;&gt;&lt;/script&gt;
 &lt;script src=&#34;/rmarkdown-libs/sankeyNetwork-binding/sankeyNetwork.js&#34;&gt;&lt;/script&gt;
@@ -617,7 +624,10 @@ sankeyNetwork(Links = edgeDFTemp, Nodes = nodeDFTemp, Source = &amp;quot;source&
       <pubDate>Sat, 24 Nov 2018 00:00:00 +0000</pubDate>
       
       <guid>/post/2018-11-24-pca/</guid>
-      <description>&lt;p&gt;This post is primarily to give the basic overview of principal components analysis (PCA) for dimensionality reduction and regression. I wanted to create it as a guide for my regression students who may find it useful for their projects. First, let’s note the two main times that you may want to use PCA - dimensionality reduction (reducing variables in a dataset) and removing colinearity issues. These are not exclusive problems, often you want to do both. However, depending on the data, PCA will ensure a lack of colinearity among the principal components but may not be able to use less variables in subsequent models.&lt;/p&gt;
+      <description>
+
+
+&lt;p&gt;This post is primarily to give the basic overview of principal components analysis (PCA) for dimensionality reduction and regression. I wanted to create it as a guide for my regression students who may find it useful for their projects. First, let’s note the two main times that you may want to use PCA - dimensionality reduction (reducing variables in a dataset) and removing colinearity issues. These are not exclusive problems, often you want to do both. However, depending on the data, PCA will ensure a lack of colinearity among the principal components but may not be able to use less variables in subsequent models.&lt;/p&gt;
 &lt;div id=&#34;basic-idea&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Basic Idea&lt;/h2&gt;
 &lt;p&gt;Before getting into real examples, let’s look at what PCA does in 2 dimensions. I’ll generate some highly correlated data and compute the principal components, and we’ll make it easy to predict the components. My data will be related by &lt;span class=&#34;math inline&#34;&gt;\(y=3*x+1+\epsilon\)&lt;/span&gt;, where &lt;span class=&#34;math inline&#34;&gt;\(\epsilon\)&lt;/span&gt; is normally distributed random error. This means that the greatest variation in my data should be along the line &lt;span class=&#34;math inline&#34;&gt;\(y=3x+1\)&lt;/span&gt;, which should give the first principal component. The second (and final in the 2-D case) will be along the perpendicular line &lt;span class=&#34;math inline&#34;&gt;\(y=\frac{-1}{3}x+b\)&lt;/span&gt;.&lt;/p&gt;
@@ -1017,7 +1027,10 @@ ggplot(data.frame(
       <pubDate>Sat, 10 Nov 2018 00:00:00 +0000</pubDate>
       
       <guid>/post/2018-11-10-reticulate-mm/</guid>
-      <description>&lt;p&gt;Clearly, there’s no such thing as a “reticulated mixture model” but if you create one I’ll gladly take credit for the name. Instead this post is a demonstration of using mixture models for clustering and the interplay of R and Python via RStudio’s &lt;code&gt;reticulate&lt;/code&gt; package.&lt;/p&gt;
+      <description>
+
+
+&lt;p&gt;Clearly, there’s no such thing as a “reticulated mixture model” but if you create one I’ll gladly take credit for the name. Instead this post is a demonstration of using mixture models for clustering and the interplay of R and Python via RStudio’s &lt;code&gt;reticulate&lt;/code&gt; package.&lt;/p&gt;
 &lt;div id=&#34;mixture-model-basics&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;Mixture Model Basics&lt;/h1&gt;
 &lt;p&gt;The idea behind mixture models is that you have data containing information from two (or more) subgroups and you want to uncover structure of the subgroups. A classic example is you have a bunch of people’s height data and you would like to figure out which are likely to be from men and which are from women. If the data set is labeled with &lt;code&gt;gender&lt;/code&gt; the problem is trivial, but if it’s not then it seems reasonable to think we’re looking at data sampled from 2 different normal distributions and we would like to use our data to get an idea what those distributions are. Of course, there’s no reason why we need to limit to only 2 groups or normal distributions, but we will here so we don’t overcomplicate the process.&lt;/p&gt;
@@ -1099,7 +1112,10 @@ gMMLab+gLab&lt;/code&gt;&lt;/pre&gt;
       <pubDate>Wed, 03 Oct 2018 00:00:00 +0000</pubDate>
       
       <guid>/post/2018-10-01-norm-ridge/</guid>
-      <description>&lt;p&gt;One of the classic assumptions of the linear regression models is that, conditioned on the explanatory variables, the response variable should be normally distributed. While teaching this the other day, I had a flash of insight into how to visualize this - ridge-line plots!&lt;/p&gt;
+      <description>
+
+
+&lt;p&gt;One of the classic assumptions of the linear regression models is that, conditioned on the explanatory variables, the response variable should be normally distributed. While teaching this the other day, I had a flash of insight into how to visualize this - ridge-line plots!&lt;/p&gt;
 &lt;div id=&#34;data&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Data&lt;/h2&gt;
 &lt;p&gt;I’ve been using Matloff’s &lt;em&gt;Statistical Regression and Classification&lt;/em&gt; book, which uses the &lt;code&gt;mlb&lt;/code&gt; dataset from his &lt;code&gt;freqparcoord&lt;/code&gt; package. This has data on heights, weights, ages, positions, and teams of over 1000 major league baseball players. We’ll focus on just height and weight for now. Let’s load the packages we’ll need and the data and look at a simple scatter plot.&lt;/p&gt;
@@ -1232,7 +1248,8 @@ ggplot()+
       <pubDate>Tue, 21 Aug 2018 00:00:00 +0000</pubDate>
       
       <guid>/post/2018-08-21-chords/</guid>
-      <description>&lt;script src=&#34;/rmarkdown-libs/htmlwidgets/htmlwidgets.js&#34;&gt;&lt;/script&gt;
+      <description>
+&lt;script src=&#34;/rmarkdown-libs/htmlwidgets/htmlwidgets.js&#34;&gt;&lt;/script&gt;
 &lt;script src=&#34;/rmarkdown-libs/d3/d3.min.js&#34;&gt;&lt;/script&gt;
 &lt;script src=&#34;/rmarkdown-libs/d3-tip/index.js&#34;&gt;&lt;/script&gt;
 &lt;link href=&#34;/rmarkdown-libs/chorddiag/chorddiag.css&#34; rel=&#34;stylesheet&#34; /&gt;
@@ -1390,7 +1407,7 @@ head(mmhl) %&amp;gt;% knitr::kable()&lt;/code&gt;&lt;/pre&gt;
 chorddiag(majMinTab, type=&amp;quot;bipartite&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
 &lt;div id=&#34;htmlwidget-2&#34; style=&#34;width:672px;height:480px;&#34; class=&#34;chorddiag html-widget&#34;&gt;&lt;/div&gt;
 &lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-2&#34;&gt;{&#34;x&#34;:{&#34;matrix&#34;:[[0,0,0,0,0,0,0,0,2,2,0,1,0,0,2,0,0,0,0,0,5,0,1,1,4,1,3,1],[0,0,0,0,0,0,0,0,1,0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,1,0,1,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,1,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,1],[0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,1,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,1,0],[0,0,0,0,0,0,0,0,1,2,0,0,1,2,0,4,0,0,1,0,0,1,0,1,3,0,1,0],[0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0],[2,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[2,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,1,0,0,1,1,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[2,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,1,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[5,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[4,1,1,0,1,1,3,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[3,1,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],&#34;options&#34;:{&#34;type&#34;:&#34;bipartite&#34;,&#34;width&#34;:null,&#34;height&#34;:null,&#34;margin&#34;:100,&#34;showGroupnames&#34;:true,&#34;groupNames&#34;:[&#34;BUS&#34;,&#34;CHE&#34;,&#34;HEA&#34;,&#34;HIS&#34;,&#34;MAT&#34;,&#34;MATCS&#34;,&#34;MATPH&#34;,&#34;THE&#34;,&#34;ais&#34;,&#34;artde&#34;,&#34;bus&#34;,&#34;criju&#34;,&#34;crw&#34;,&#34;csc&#34;,&#34;csd&#34;,&#34;dueng&#34;,&#34;ed10&#34;,&#34;fre&#34;,&#34;his&#34;,&#34;hpmed&#34;,&#34;matap&#34;,&#34;phi&#34;,&#34;phsci&#34;,&#34;poec&#34;,&#34;psy&#34;,&#34;relst&#34;,&#34;spa&#34;,&#34;vstdy&#34;],&#34;groupColors&#34;:[&#34;#FFFFFF&#34;,&#34;#F0F0F0&#34;,&#34;#D9D9D9&#34;,&#34;#BDBDBD&#34;,&#34;#969696&#34;,&#34;#737373&#34;,&#34;#525252&#34;,&#34;#252525&#34;,&#34;#1B9E77&#34;,&#34;#D95F02&#34;,&#34;#7570B3&#34;,&#34;#E7298A&#34;,&#34;#66A61E&#34;,&#34;#E6AB02&#34;,&#34;#A6761D&#34;,&#34;#666666&#34;],&#34;groupThickness&#34;:0.1,&#34;groupPadding&#34;:0.0349065850398866,&#34;groupnamePadding&#34;:[30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30],&#34;groupnameFontsize&#34;:18,&#34;groupedgeColor&#34;:null,&#34;chordedgeColor&#34;:&#34;#808080&#34;,&#34;categoryNames&#34;:[&#34;MAJOR&#34;,&#34;minor&#34;],&#34;categorynamePadding&#34;:100,&#34;categorynameFontsize&#34;:28,&#34;showTicks&#34;:true,&#34;tickInterval&#34;:0.1,&#34;ticklabelFontsize&#34;:10,&#34;fadeLevel&#34;:0.1,&#34;showTooltips&#34;:true,&#34;showZeroTooltips&#34;:true,&#34;tooltipNames&#34;:[&#34;BUS&#34;,&#34;CHE&#34;,&#34;HEA&#34;,&#34;HIS&#34;,&#34;MAT&#34;,&#34;MATCS&#34;,&#34;MATPH&#34;,&#34;THE&#34;,&#34;ais&#34;,&#34;artde&#34;,&#34;bus&#34;,&#34;criju&#34;,&#34;crw&#34;,&#34;csc&#34;,&#34;csd&#34;,&#34;dueng&#34;,&#34;ed10&#34;,&#34;fre&#34;,&#34;his&#34;,&#34;hpmed&#34;,&#34;matap&#34;,&#34;phi&#34;,&#34;phsci&#34;,&#34;poec&#34;,&#34;psy&#34;,&#34;relst&#34;,&#34;spa&#34;,&#34;vstdy&#34;],&#34;tooltipFontsize&#34;:12,&#34;tooltipUnit&#34;:&#34;&#34;,&#34;tooltipGroupConnector&#34;:&#34; &amp;#x25B6; &#34;,&#34;precision&#34;:&#34;null&#34;,&#34;clickAction&#34;:null,&#34;clickGroupAction&#34;:null}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
-&lt;p&gt;The &lt;code&gt;type=&amp;quot;bipartite&amp;quot;&lt;/code&gt; allows us to pass a non-square matrix to &lt;code&gt;chorddiag&lt;/code&gt; since we only need links between two sets of groups (majors and minors). This isn’t bad, but the default color options only allow about 16 groups (8 from the &lt;code&gt;dark2&lt;/code&gt; palette and 8 form the &lt;code&gt;grey2&lt;/code&gt; palette). Also the tick marks seem unnecessary.&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;type=&#34;bipartite&#34;&lt;/code&gt; allows us to pass a non-square matrix to &lt;code&gt;chorddiag&lt;/code&gt; since we only need links between two sets of groups (majors and minors). This isn’t bad, but the default color options only allow about 16 groups (8 from the &lt;code&gt;dark2&lt;/code&gt; palette and 8 form the &lt;code&gt;grey2&lt;/code&gt; palette). Also the tick marks seem unnecessary.&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;improving-colors&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Improving Colors&lt;/h2&gt;
@@ -1425,7 +1442,10 @@ many_colors = unlist(mapply(brewer.pal, qual_cols$maxcolors, rownames(qual_cols)
       <pubDate>Mon, 30 Jul 2018 00:00:00 +0000</pubDate>
       
       <guid>/post/2018-07-30-top_n/</guid>
-      <description>&lt;p&gt;I’ve been using R since 2006. That predates RStudio and the &lt;code&gt;tidyverse&lt;/code&gt;. I remember the struggle of keeping track of the variants of &lt;code&gt;apply&lt;/code&gt; and often fiddling with them to get code to work.&lt;/p&gt;
+      <description>
+
+
+&lt;p&gt;I’ve been using R since 2006. That predates RStudio and the &lt;code&gt;tidyverse&lt;/code&gt;. I remember the struggle of keeping track of the variants of &lt;code&gt;apply&lt;/code&gt; and often fiddling with them to get code to work.&lt;/p&gt;
 &lt;p&gt;Then came &lt;code&gt;plyr&lt;/code&gt; and the &lt;code&gt;dplyr&lt;/code&gt; and my life has never been the same. The major verbs of &lt;code&gt;dplyr&lt;/code&gt; include &lt;code&gt;select&lt;/code&gt;, &lt;code&gt;filter&lt;/code&gt;, &lt;code&gt;mutate&lt;/code&gt;, &lt;code&gt;group_by&lt;/code&gt;, &lt;code&gt;summarise&lt;/code&gt;, and &lt;code&gt;arrange&lt;/code&gt;; and if you are doing data analysis in R then you should be fluent in them. These are far from an exhaustive list of &lt;code&gt;dplyr&lt;/code&gt;’s verbs though, and I recently discovered one that solves a problem I’ve encountered a few times: &lt;code&gt;top_n&lt;/code&gt;.&lt;/p&gt;
 &lt;div id=&#34;the-problem&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;The Problem&lt;/h2&gt;
@@ -1686,7 +1706,8 @@ kable(dat)&lt;/code&gt;&lt;/pre&gt;
       <pubDate>Sat, 28 Jul 2018 00:00:00 +0000</pubDate>
       
       <guid>/post/2018-07-28-cat-evolve/</guid>
-      <description>&lt;script src=&#34;/rmarkdown-libs/htmlwidgets/htmlwidgets.js&#34;&gt;&lt;/script&gt;
+      <description>
+&lt;script src=&#34;/rmarkdown-libs/htmlwidgets/htmlwidgets.js&#34;&gt;&lt;/script&gt;
 &lt;script src=&#34;/rmarkdown-libs/pymjs/pym.v1.js&#34;&gt;&lt;/script&gt;
 &lt;script src=&#34;/rmarkdown-libs/widgetframe-binding/widgetframe.js&#34;&gt;&lt;/script&gt;
 
@@ -2231,7 +2252,8 @@ added18 %&amp;gt;% datatable(rownames = FALSE, filter = &amp;quot;top&amp;quot;,
       <pubDate>Tue, 24 Jul 2018 00:00:00 +0000</pubDate>
       
       <guid>/post/2018-07-24-recount-class/</guid>
-      <description>&lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
+      <description>
+&lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
 
 
 &lt;p&gt;&lt;strong&gt;Edit 7/27/2018&lt;/strong&gt; I realized that MFL’s name change to WLC didn’t change the prefix of their courses, this broke my scrapper. Below is an updated post that deals with this.&lt;/p&gt;
@@ -4408,7 +4430,8 @@ wordcloud(words=wordDF$word, freq=wordDF$freq,
       <pubDate>Thu, 28 Jun 2018 00:00:00 +0000</pubDate>
       
       <guid>/post/2018-06-28-dt/</guid>
-      <description>&lt;script src=&#34;/rmarkdown-libs/htmlwidgets/htmlwidgets.js&#34;&gt;&lt;/script&gt;
+      <description>
+&lt;script src=&#34;/rmarkdown-libs/htmlwidgets/htmlwidgets.js&#34;&gt;&lt;/script&gt;
 &lt;script src=&#34;/rmarkdown-libs/pymjs/pym.v1.js&#34;&gt;&lt;/script&gt;
 &lt;script src=&#34;/rmarkdown-libs/widgetframe-binding/widgetframe.js&#34;&gt;&lt;/script&gt;
 
@@ -39462,7 +39485,8 @@ enrollSummary %&amp;gt;% datatable(rownames = FALSE, filter = &amp;quot;top&amp;
       <pubDate>Mon, 18 Jun 2018 00:00:00 +0000</pubDate>
       
       <guid>/post/2018-06-18-neo4j-majors/</guid>
-      <description>&lt;script src=&#34;/rmarkdown-libs/htmlwidgets/htmlwidgets.js&#34;&gt;&lt;/script&gt;
+      <description>
+&lt;script src=&#34;/rmarkdown-libs/htmlwidgets/htmlwidgets.js&#34;&gt;&lt;/script&gt;
 &lt;link href=&#34;/rmarkdown-libs/vis/vis.css&#34; rel=&#34;stylesheet&#34; /&gt;
 &lt;script src=&#34;/rmarkdown-libs/vis/vis.min.js&#34;&gt;&lt;/script&gt;
 &lt;script src=&#34;/rmarkdown-libs/visNetwork-binding/visNetwork.js&#34;&gt;&lt;/script&gt;
@@ -39693,7 +39717,8 @@ majorVis &amp;lt;- function(majorName){
       <pubDate>Fri, 15 Jun 2018 00:00:00 +0000</pubDate>
       
       <guid>/post/2018-06-16-neo4j-demo/</guid>
-      <description>&lt;script src=&#34;/rmarkdown-libs/htmlwidgets/htmlwidgets.js&#34;&gt;&lt;/script&gt;
+      <description>
+&lt;script src=&#34;/rmarkdown-libs/htmlwidgets/htmlwidgets.js&#34;&gt;&lt;/script&gt;
 &lt;link href=&#34;/rmarkdown-libs/vis/vis.css&#34; rel=&#34;stylesheet&#34; /&gt;
 &lt;script src=&#34;/rmarkdown-libs/vis/vis.min.js&#34;&gt;&lt;/script&gt;
 &lt;script src=&#34;/rmarkdown-libs/visNetwork-binding/visNetwork.js&#34;&gt;&lt;/script&gt;
@@ -40031,7 +40056,8 @@ minorVis &amp;lt;- function(minorName){
       <pubDate>Sat, 05 May 2018 00:00:00 +0000</pubDate>
       
       <guid>/post/2018-05-05-counting-class/</guid>
-      <description>&lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
+      <description>
+&lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
 
 
 &lt;p&gt;At the College of Idaho, there’s been discussion about visualizing the curriculum as well as understanding the curriculum. Naturally this interests me as a chance to wallow in some complicated data (students are required to complete a major and 3 minors across 4 “peaks” rather than complete courses from a traditional “core”). I thought using R and a Neo4j graph database would be useful (something to look forward to) - but first I needed to get data from the catalogue!&lt;/p&gt;

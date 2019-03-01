@@ -15,7 +15,7 @@ library(stringr)
 library(RColorBrewer)
 library(chorddiag)
 
-mmh <- read.csv("~/github-web/peak-neo4j/misc/maps-minor-historical-cleaned.csv", header = TRUE) %>% select(-c(Major2, Concentration))
+mmh <- read.csv("../../static/files/maps-minor-historical-cleaned.csv", header = TRUE) %>% select(-c(Major2, Concentration))
 
 mmhl <- gather(mmh, key=mNum, value = minor, -c(Grad.Year, Major1, Degree)) %>% mutate(minor = str_to_lower(str_trim(minor, side = "both"))) %>% rename(MAJOR = Major1)
 

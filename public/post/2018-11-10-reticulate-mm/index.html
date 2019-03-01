@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="theme" content="hugo-academic">
-  <meta name="generator" content="Hugo 0.46" />
+  <meta name="generator" content="Hugo 0.54.0" />
   <meta name="author" content="Jason Preszler">
   <meta name="description" content="Assistant Professor - Math, Statistics, and Computer Science">
 
@@ -320,7 +320,10 @@
 
 
       <div class="article-style" itemprop="articleBody">
-        <p>Clearly, there’s no such thing as a “reticulated mixture model” but if you create one I’ll gladly take credit for the name. Instead this post is a demonstration of using mixture models for clustering and the interplay of R and Python via RStudio’s <code>reticulate</code> package.</p>
+        
+
+
+<p>Clearly, there’s no such thing as a “reticulated mixture model” but if you create one I’ll gladly take credit for the name. Instead this post is a demonstration of using mixture models for clustering and the interplay of R and Python via RStudio’s <code>reticulate</code> package.</p>
 <div id="mixture-model-basics" class="section level1">
 <h1>Mixture Model Basics</h1>
 <p>The idea behind mixture models is that you have data containing information from two (or more) subgroups and you want to uncover structure of the subgroups. A classic example is you have a bunch of people’s height data and you would like to figure out which are likely to be from men and which are from women. If the data set is labeled with <code>gender</code> the problem is trivial, but if it’s not then it seems reasonable to think we’re looking at data sampled from 2 different normal distributions and we would like to use our data to get an idea what those distributions are. Of course, there’s no reason why we need to limit to only 2 groups or normal distributions, but we will here so we don’t overcomplicate the process.</p>
