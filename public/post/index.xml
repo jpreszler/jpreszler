@@ -13,6 +13,15 @@
     
     
     <item>
+      <title>Mapping with an 800 Pound Gorilla</title>
+      <link>/post/2019-03-18-matplotlib-map/</link>
+      <pubDate>Mon, 18 Mar 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2019-03-18-matplotlib-map/</guid>
+      <description>I’ve been focusing on python recently to become a bi-lingual data scientist. Probably my least favorite thing about python is its plotting libraries - there are too many options built on top of matplotlib which pre-dates pandas dataframes. This makes for some clunky code and blurry boundaries (both “is that a seaborn, pandas, or matplotlib function?” and situations with 3 equally messy solutions but in very different ways). In my opinion, ggplot2’s deep interplay with dataframes makes a lot more sense and ggplot’s layers make it easy to change plot type (just switch the geom_), add facets, and tweak aesthetics.</description>
+    </item>
+    
+    <item>
       <title>Expectation-Maximization</title>
       <link>/post/2019-02-23-em-1/</link>
       <pubDate>Sat, 23 Feb 2019 00:00:00 +0000</pubDate>
