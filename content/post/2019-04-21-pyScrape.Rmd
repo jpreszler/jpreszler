@@ -1,0 +1,105 @@
+---
+title: "Python Web Scraping"
+author: "Jason Preszler"
+date: 2019-04-21
+output: html_document
+tags: ["Python", "beautifulsoup", "curriculum"]
+---
+
+I was putting some data together about previous catalogs for students for projects in my Applied Databases course and realized that I was missing something. I had course info (subject, number, title and url) for the last 4 catalog years at the College of Idaho, but I didn't have course descriptions! What a great chance to do some simple web scraping in python.
+
+# Data Import and Cleaning
+Since I have a `csv` file for each catalog year with a link to each course, I just needed to read the urls, extract the description from the page, and save the results. So let's start by loading the data I had:
+
+```{python load, echo=TRUE}
+import pandas as pd
+
+path = '../../static/files/'
+files = ['class-list-2015-2016.csv',
+          'class-list-2016-2017.csv',
+          'class-list-2017-2018.csv',
+          'class-list-2018-2019.csv']
+
+dfs = []
+for file in files:
+    df = pd.read_csv(path+file)
+    df['catalog'] = file.split('-')[2]
+    dfs.append(df)
+
+```
+
+This gives me a list of data frames with the course info for each catalog. Before combining them, there's a problem to deal with. The 2017-2018 catalog was scraped when it was "current", but now the 2018-2019 is current.
+```{python current, echo=TRUE}
+print(dfs[2].url[0:4])
+print(dfs[3].url[0:4])
+```
+
+This means we have to change to the urls in the 2017-2018 catalog or we'll just find a lot of broken links.
+```{python fix, echo=TRUE}
+dfs[2]['url'] = dfs[2].url.apply(lambda x: x.replace('current', '2017-2018'))
+
+catalogs = pd.concat(dfs, axis=0, ignore_index=True)
+```
+
+Now we're ready to go get the descriptions.
+
+# Scraping Descriptions
+This is a pretty simple scraping problem: each `url` in `catalogs` leads to a page with 2 `<p>` tags, the second is the course description. I've been learning a bit about `scrapy` which is overkill for this job so I'll stick with `beautifulsoup4`.
+
+Here's the code to get one description before we try to grab 4 catalog years at once.
+```{python oneDesc, echo=TRUE}
+import urllib.request, urllib.error
+from bs4 import BeautifulSoup
+
+html = urllib.request.urlopen(catalogs.url[1])
+soup = BeautifulSoup(html, 'html')
+ps = soup.find_all('p')
+print(ps[0].text)
+print(ps[1].text)
+```
+
+Looks like we're good to go - but looks can be deceiving. In the last two years, there have been a handful of courses removed after I scraped my original lists. For example MAT-150 (Applied Calculus) used to have a lab component. Due to switching to new catalog software this course re-appeared in the 2017-2018 catalog (when it was "current") but this was identified and removed after I scraped. There were several other courses like this which means I have them in my list with a url, but the link won't work. Fortunately, python has some pretty good error handling capabilities.
+
+## Getting Descriptions and Handling Errors
+Below is the function that I'll hand each `url` to and expect a description returned. If the `url` is bad, the function should:
+* print the bad url (so we know which course is involved) and
+* return 'NA'
+
+We'll accomplish this be "try"ing to open the url and handling "except"ions that are thrown.
+
+```{python func, echo=TRUE}
+def get_desc(url):
+    try:
+        html = urllib.request.urlopen(url)
+    except urllib.error.HTTPError as e:
+        print('HTTP Error: {}'.format(e.code))
+        print(url)
+        return('NA')
+    except urllib.error.URLError as e:
+        print('URLError: {}'.format(e.code))
+        print(url)
+        return('NA')
+    else:
+        desc = BeautifulSoup(html, 'html').find_all('p')
+        if(len(desc)>1):
+            return(desc[1].text)
+        else:
+            return(desc[0].text)
+
+```
+
+Next, we simply apply our function over the `url` column of `catalogs` (this is also when I wish python had easier parallelization). I'm also going to get rid of the courses "without" descriptions, remove hard-coded `\n`s,  and save the results.
+
+```{python app, echo=TRUE, eval=FALSE}
+catalogs['description'] = catalogs.url.apply(get_desc)
+
+catalogs = catalogs[catalogs['description']!='NA']
+
+#remove newlines in description
+catalogs['description'] = catalogs.description.astype(str)
+catalogs['description'] = catalogs.description.apply(lambda x: x.replace('\n', ' '))
+
+catalogs.to_csv("class-desc-2015-2019.csv", header=True, index=False)
+```
+
+I didn't have the above code chunk execute when rendering the page due to the time it takes, but you can download [class-desc-2015-2019.csv](/files/class-desc-2015-2019.csv) to verify (or run the code yourself).

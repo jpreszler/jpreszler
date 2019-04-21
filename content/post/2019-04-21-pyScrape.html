@@ -1,0 +1,103 @@
+---
+title: "Python Web Scraping"
+author: "Jason Preszler"
+date: 2019-04-21
+output: html_document
+tags: ["Python", "beautifulsoup", "curriculum"]
+---
+
+
+
+<p>I was putting some data together about previous catalogs for students for projects in my Applied Databases course and realized that I was missing something. I had course info (subject, number, title and url) for the last 4 catalog years at the College of Idaho, but I didn’t have course descriptions! What a great chance to do some simple web scraping in python.</p>
+<div id="data-import-and-cleaning" class="section level1">
+<h1>Data Import and Cleaning</h1>
+<p>Since I have a <code>csv</code> file for each catalog year with a link to each course, I just needed to read the urls, extract the description from the page, and save the results. So let’s start by loading the data I had:</p>
+<pre class="python"><code>import pandas as pd
+
+path = &#39;../../static/files/&#39;
+files = [&#39;class-list-2015-2016.csv&#39;,
+          &#39;class-list-2016-2017.csv&#39;,
+          &#39;class-list-2017-2018.csv&#39;,
+          &#39;class-list-2018-2019.csv&#39;]
+
+dfs = []
+for file in files:
+    df = pd.read_csv(path+file)
+    df[&#39;catalog&#39;] = file.split(&#39;-&#39;)[2]
+    dfs.append(df)</code></pre>
+<p>This gives me a list of data frames with the course info for each catalog. Before combining them, there’s a problem to deal with. The 2017-2018 catalog was scraped when it was “current”, but now the 2018-2019 is current.</p>
+<pre class="python"><code>print(dfs[2].url[0:4])</code></pre>
+<pre><code>## 0    http://collegeofidaho.smartcatalogiq.com/en/cu...
+## 1    http://collegeofidaho.smartcatalogiq.com/en/cu...
+## 2    http://collegeofidaho.smartcatalogiq.com/en/cu...
+## 3    http://collegeofidaho.smartcatalogiq.com/en/cu...
+## Name: url, dtype: object</code></pre>
+<pre class="python"><code>print(dfs[3].url[0:4])</code></pre>
+<pre><code>## 0    http://collegeofidaho.smartcatalogiq.com/en/cu...
+## 1    http://collegeofidaho.smartcatalogiq.com/en/cu...
+## 2    http://collegeofidaho.smartcatalogiq.com/en/cu...
+## 3    http://collegeofidaho.smartcatalogiq.com/en/cu...
+## Name: url, dtype: object</code></pre>
+<p>This means we have to change to the urls in the 2017-2018 catalog or we’ll just find a lot of broken links.</p>
+<pre class="python"><code>dfs[2][&#39;url&#39;] = dfs[2].url.apply(lambda x: x.replace(&#39;current&#39;, &#39;2017-2018&#39;))
+
+catalogs = pd.concat(dfs, axis=0, ignore_index=True)</code></pre>
+<p>Now we’re ready to go get the descriptions.</p>
+</div>
+<div id="scraping-descriptions" class="section level1">
+<h1>Scraping Descriptions</h1>
+<p>This is a pretty simple scraping problem: each <code>url</code> in <code>catalogs</code> leads to a page with 2 <code>&lt;p&gt;</code> tags, the second is the course description. I’ve been learning a bit about <code>scrapy</code> which is overkill for this job so I’ll stick with <code>beautifulsoup4</code>.</p>
+<p>Here’s the code to get one description before we try to grab 4 catalog years at once.</p>
+<pre class="python"><code>import urllib.request, urllib.error
+from bs4 import BeautifulSoup
+
+html = urllib.request.urlopen(catalogs.url[1])
+soup = BeautifulSoup(html, &#39;html&#39;)
+ps = soup.find_all(&#39;p&#39;)
+print(ps[0].text)</code></pre>
+<pre><code>## 2015-2016 Undergraduate Catalog &gt; Courses &gt; ACC - Accounting &gt; 200 &gt; ACC-222</code></pre>
+<pre class="python"><code>print(ps[1].text)</code></pre>
+<pre><code>## A study of the role of accounting information in
+## decision-making emphasizing the use of accounting
+## data for internal management decisions.  The
+## course includes an introduction to cash flows,
+## cost accounting, cost-volume-profit relationships
+## and budgeting in business decisions.
+## Prerequisite: ACC-221</code></pre>
+<p>Looks like we’re good to go - but looks can be deceiving. In the last two years, there have been a handful of courses removed after I scraped my original lists. For example MAT-150 (Applied Calculus) used to have a lab component. Due to switching to new catalog software this course re-appeared in the 2017-2018 catalog (when it was “current”) but this was identified and removed after I scraped. There were several other courses like this which means I have them in my list with a url, but the link won’t work. Fortunately, python has some pretty good error handling capabilities.</p>
+<div id="getting-descriptions-and-handling-errors" class="section level2">
+<h2>Getting Descriptions and Handling Errors</h2>
+<p>Below is the function that I’ll hand each <code>url</code> to and expect a description returned. If the <code>url</code> is bad, the function should:
+* print the bad url (so we know which course is involved) and
+* return ‘NA’</p>
+<p>We’ll accomplish this be “try”ing to open the url and handling “except”ions that are thrown.</p>
+<pre class="python"><code>def get_desc(url):
+    try:
+        html = urllib.request.urlopen(url)
+    except urllib.error.HTTPError as e:
+        print(&#39;HTTP Error: {}&#39;.format(e.code))
+        print(url)
+        return(&#39;NA&#39;)
+    except urllib.error.URLError as e:
+        print(&#39;URLError: {}&#39;.format(e.code))
+        print(url)
+        return(&#39;NA&#39;)
+    else:
+        desc = BeautifulSoup(html, &#39;html&#39;).find_all(&#39;p&#39;)
+        if(len(desc)&gt;1):
+            return(desc[1].text)
+        else:
+            return(desc[0].text)</code></pre>
+<p>Next, we simply apply our function over the <code>url</code> column of <code>catalogs</code> (this is also when I wish python had easier parallelization). I’m also going to get rid of the courses “without” descriptions, remove hard-coded <code>\n</code>s, and save the results.</p>
+<pre class="python"><code>catalogs[&#39;description&#39;] = catalogs.url.apply(get_desc)
+
+catalogs = catalogs[catalogs[&#39;description&#39;]!=&#39;NA&#39;]
+
+#remove newlines in description
+catalogs[&#39;description&#39;] = catalogs.description.astype(str)
+catalogs[&#39;description&#39;] = catalogs.description.apply(lambda x: x.replace(&#39;\n&#39;, &#39; &#39;))
+
+catalogs.to_csv(&quot;class-desc-2015-2019.csv&quot;, header=True, index=False)</code></pre>
+<p>I didn’t have the above code chunk execute when rendering the page due to the time it takes, but you can download <a href="/files/class-desc-2015-2019.csv">class-desc-2015-2019.csv</a> to verify (or run the code yourself).</p>
+</div>
+</div>

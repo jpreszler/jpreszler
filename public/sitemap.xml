@@ -1,5 +1,63 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+    
+    
+    <url>
+    
+      <loc>/</loc>
+      <lastmod>2019-04-21T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/python/</loc>
+      <lastmod>2019-04-21T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/post/2019-04-21-pyscrape/</loc>
+      <lastmod>2019-04-21T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/</loc>
+      <lastmod>2019-04-21T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/beautifulsoup/</loc>
+      <lastmod>2019-04-21T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/curriculum/</loc>
+      <lastmod>2019-04-21T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
   
     
     
@@ -7,6 +65,36 @@
     
       <loc>/post/2019-03-18-matplotlib-map/</loc>
       <lastmod>2019-03-18T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/map/</loc>
+      <lastmod>2019-03-18T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/matplotlib/</loc>
+      <lastmod>2019-03-18T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/em/</loc>
+      <lastmod>2019-02-23T00:00:00+00:00</lastmod>
+      <priority>0</priority>
     </url>
     
   
@@ -23,8 +111,88 @@
     
     <url>
     
+      <loc>/tags/mixture-models/</loc>
+      <lastmod>2019-02-23T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/clustering/</loc>
+      <lastmod>2019-02-23T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/pandas/</loc>
+      <lastmod>2019-02-23T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/seaborn/</loc>
+      <lastmod>2019-02-23T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/r/</loc>
+      <lastmod>2019-01-11T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/post/2019-01-11-wc/</loc>
       <lastmod>2019-01-11T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/gutenbergr/</loc>
+      <lastmod>2019-01-11T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/shiny/</loc>
+      <lastmod>2019-01-11T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/wordcloud/</loc>
+      <lastmod>2019-01-11T00:00:00+00:00</lastmod>
+      <priority>0</priority>
     </url>
     
   
@@ -41,8 +209,68 @@
     
     <url>
     
+      <loc>/tags/d3.js/</loc>
+      <lastmod>2018-12-27T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/networkd3/</loc>
+      <lastmod>2018-12-27T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/pca/</loc>
+      <lastmod>2018-11-24T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/post/2018-11-24-pca/</loc>
       <lastmod>2018-11-24T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/ggplot/</loc>
+      <lastmod>2018-11-24T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/mixture-model/</loc>
+      <lastmod>2018-11-10T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/reticulate/</loc>
+      <lastmod>2018-11-10T00:00:00+00:00</lastmod>
+      <priority>0</priority>
     </url>
     
   
@@ -59,8 +287,28 @@
     
     <url>
     
+      <loc>/tags/sklearn/</loc>
+      <lastmod>2018-11-10T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/post/2018-10-01-norm-ridge/</loc>
       <lastmod>2018-10-03T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/purrr/</loc>
+      <lastmod>2018-10-03T00:00:00+00:00</lastmod>
+      <priority>0</priority>
     </url>
     
   
@@ -77,8 +325,28 @@
     
     <url>
     
+      <loc>/tags/chorddiag/</loc>
+      <lastmod>2018-08-21T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/post/2018-07-30-top_n/</loc>
       <lastmod>2018-07-30T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/dplyr/</loc>
+      <lastmod>2018-07-30T00:00:00+00:00</lastmod>
+      <priority>0</priority>
     </url>
     
   
@@ -104,6 +372,46 @@
     
     <url>
     
+      <loc>/tags/reproducibility/</loc>
+      <lastmod>2018-07-24T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/rvest/</loc>
+      <lastmod>2018-07-24T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/scrape/</loc>
+      <lastmod>2018-07-24T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/dt/</loc>
+      <lastmod>2018-06-28T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/post/2018-06-28-dt/</loc>
       <lastmod>2018-06-28T00:00:00+00:00</lastmod>
     </url>
@@ -113,8 +421,38 @@
     
     <url>
     
+      <loc>/tags/rmarkdown/</loc>
+      <lastmod>2018-06-28T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/post/2018-06-18-neo4j-majors/</loc>
       <lastmod>2018-06-18T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/neo4j/</loc>
+      <lastmod>2018-06-18T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/visnetwork/</loc>
+      <lastmod>2018-06-18T00:00:00+00:00</lastmod>
+      <priority>0</priority>
     </url>
     
   
@@ -140,8 +478,38 @@
     
     <url>
     
+      <loc>/tags/emergent-reducibility/</loc>
+      <lastmod>2018-06-01T08:24:06-07:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/machine-learning/</loc>
+      <lastmod>2018-06-01T08:24:06-07:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/post/2018-05-05-counting-class/</loc>
       <lastmod>2018-05-05T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/sql/</loc>
+      <lastmod>2018-04-01T00:00:00+00:00</lastmod>
+      <priority>0</priority>
     </url>
     
   
@@ -167,6 +535,16 @@
     
     <url>
     
+      <loc>/tags/run/</loc>
+      <lastmod>2018-03-11T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/talk/maps-312018/</loc>
       <lastmod>2018-03-01T08:24:06-07:00</lastmod>
     </url>
@@ -178,6 +556,16 @@
     
       <loc>/talk/</loc>
       <lastmod>2018-03-01T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/idaho/</loc>
+      <lastmod>2018-01-27T00:00:00+00:00</lastmod>
+      <priority>0</priority>
     </url>
     
   
@@ -203,8 +591,38 @@
     
     <url>
     
+      <loc>/tags/forecast/</loc>
+      <lastmod>2018-01-15T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/post/2018-01-07-inversions/</loc>
       <lastmod>2018-01-07T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/teaching/</loc>
+      <lastmod>2018-01-07T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/categories/</loc>
+      <lastmod>2018-01-06T00:00:00+00:00</lastmod>
+      <priority>0</priority>
     </url>
     
   
@@ -221,8 +639,38 @@
     
     <url>
     
+      <loc>/categories/r/</loc>
+      <lastmod>2018-01-06T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/categories/teaching/</loc>
+      <lastmod>2018-01-06T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/post/2018-01-01/</loc>
       <lastmod>2018-01-02T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/categories/emergent-reducibility/</loc>
+      <lastmod>2018-01-02T00:00:00+00:00</lastmod>
+      <priority>0</priority>
     </url>
     
   
@@ -239,6 +687,36 @@
     
     <url>
     
+      <loc>/project/</loc>
+      <lastmod>2017-12-28T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/arithmetic-statistics/</loc>
+      <lastmod>2017-12-28T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/number-theory/</loc>
+      <lastmod>2017-12-28T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/talk/stat-b/</loc>
       <lastmod>2017-10-22T00:00:00-06:00</lastmod>
     </url>
@@ -248,8 +726,48 @@
     
     <url>
     
+      <loc>/tags/bayesian/</loc>
+      <lastmod>2017-10-22T00:00:00-06:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/maps/</loc>
+      <lastmod>2017-10-22T00:00:00-06:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/publication_types/2/</loc>
+      <lastmod>2017-03-01T00:00:00-07:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/publication/infinite-cubics/</loc>
       <lastmod>2017-03-01T00:00:00-07:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/publication_types/</loc>
+      <lastmod>2017-03-01T00:00:00-07:00</lastmod>
+      <priority>0</priority>
     </url>
     
   
@@ -293,517 +811,8 @@
     
     <url>
     
-      <loc>/publication_types/2/</loc>
-      <lastmod>2017-03-01T00:00:00-07:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/categories/</loc>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/d3.js/</loc>
-      <lastmod>2018-08-21T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/dt/</loc>
-      <lastmod>2018-06-28T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/em/</loc>
-      <lastmod>2019-02-23T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/idaho/</loc>
-      <lastmod>2018-01-27T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/</loc>
-      <lastmod>2017-12-28T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/mixture-model/</loc>
-      <lastmod>2018-11-10T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/mixture-models/</loc>
-      <lastmod>2019-02-23T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/neo4j/</loc>
-      <lastmod>2018-06-18T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/pca/</loc>
-      <lastmod>2018-11-24T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/project/</loc>
-      <lastmod>2017-12-28T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/publication_types/</loc>
-      <lastmod>2017-03-01T00:00:00-07:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/python/</loc>
-      <lastmod>2019-03-18T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/r/</loc>
-      <lastmod>2019-01-11T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/categories/r/</loc>
-      <lastmod>2018-01-06T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/rmarkdown/</loc>
-      <lastmod>2018-06-28T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/reticulate/</loc>
-      <lastmod>2018-11-10T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/sql/</loc>
-      <lastmod>2018-04-01T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/</loc>
-      <lastmod>2017-01-01T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/arithmetic-statistics/</loc>
-      <lastmod>2017-12-28T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/bayesian/</loc>
-      <lastmod>2017-10-22T00:00:00-06:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/chorddiag/</loc>
-      <lastmod>2018-08-21T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/clustering/</loc>
-      <lastmod>2019-02-23T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/curriculum/</loc>
-      <lastmod>2018-12-27T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/d3.js/</loc>
-      <lastmod>2018-08-21T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/dplyr/</loc>
-      <lastmod>2018-07-30T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/emergent-reducibility/</loc>
-      <lastmod>2018-06-01T08:24:06-07:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/categories/emergent-reducibility/</loc>
-      <lastmod>2018-01-02T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/forecast/</loc>
-      <lastmod>2018-01-15T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/ggplot/</loc>
-      <lastmod>2018-11-24T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/gutenbergr/</loc>
-      <lastmod>2019-01-11T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
       <loc>/tags/jmm/</loc>
       <lastmod>2015-01-11T00:00:00-07:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/machine-learning/</loc>
-      <lastmod>2018-06-01T08:24:06-07:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/map/</loc>
-      <lastmod>2019-03-18T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/maps/</loc>
-      <lastmod>2017-10-22T00:00:00-06:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/matplotlib/</loc>
-      <lastmod>2019-03-18T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/networkd3/</loc>
-      <lastmod>2018-12-27T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/number-theory/</loc>
-      <lastmod>2017-12-28T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/pandas/</loc>
-      <lastmod>2019-02-23T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/purrr/</loc>
-      <lastmod>2018-10-03T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/reproducibility/</loc>
-      <lastmod>2018-07-24T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/run/</loc>
-      <lastmod>2018-03-11T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/rvest/</loc>
-      <lastmod>2018-07-24T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/scrape/</loc>
-      <lastmod>2018-07-24T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/seaborn/</loc>
-      <lastmod>2019-02-23T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/shiny/</loc>
-      <lastmod>2019-01-11T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/sklearn/</loc>
-      <lastmod>2018-11-10T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/teaching/</loc>
-      <lastmod>2018-01-07T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/categories/teaching/</loc>
-      <lastmod>2018-01-06T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/visnetwork/</loc>
-      <lastmod>2018-06-18T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/wordcloud/</loc>
-      <lastmod>2019-01-11T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     

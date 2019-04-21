@@ -7,251 +7,35 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2017 Jason Preszler</copyright>
-    <lastBuildDate>Sun, 01 Jan 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 21 Apr 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>Content tagged as &#39;Academic&#39;</title>
-      <link>/tags/academic/</link>
-      <pubDate>Sun, 01 Jan 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/academic/</guid>
-      <description>Here is a list of all the content that has been tagged as academic.</description>
-    </item>
-    
-    <item>
-      <title>D3.js</title>
-      <link>/tags/d3.js/</link>
-      <pubDate>Tue, 21 Aug 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/d3.js/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>DT</title>
-      <link>/tags/dt/</link>
-      <pubDate>Thu, 28 Jun 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/dt/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>EM</title>
-      <link>/tags/em/</link>
-      <pubDate>Sat, 23 Feb 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/em/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Idaho</title>
-      <link>/tags/idaho/</link>
-      <pubDate>Sat, 27 Jan 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/idaho/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Mixture Model</title>
-      <link>/tags/mixture-model/</link>
-      <pubDate>Sat, 10 Nov 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/mixture-model/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Mixture Models</title>
-      <link>/tags/mixture-models/</link>
-      <pubDate>Sat, 23 Feb 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/mixture-models/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Neo4j</title>
-      <link>/tags/neo4j/</link>
-      <pubDate>Mon, 18 Jun 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/neo4j/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>PCA</title>
-      <link>/tags/pca/</link>
-      <pubDate>Sat, 24 Nov 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/pca/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>Python</title>
       <link>/tags/python/</link>
-      <pubDate>Mon, 18 Mar 2019 00:00:00 +0000</pubDate>
+      <pubDate>Sun, 21 Apr 2019 00:00:00 +0000</pubDate>
       
       <guid>/tags/python/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>R</title>
-      <link>/tags/r/</link>
-      <pubDate>Fri, 11 Jan 2019 00:00:00 +0000</pubDate>
+      <title>beautifulsoup</title>
+      <link>/tags/beautifulsoup/</link>
+      <pubDate>Sun, 21 Apr 2019 00:00:00 +0000</pubDate>
       
-      <guid>/tags/r/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>RMarkdown</title>
-      <link>/tags/rmarkdown/</link>
-      <pubDate>Thu, 28 Jun 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/rmarkdown/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Reticulate</title>
-      <link>/tags/reticulate/</link>
-      <pubDate>Sat, 10 Nov 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/reticulate/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>SQL</title>
-      <link>/tags/sql/</link>
-      <pubDate>Sun, 01 Apr 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/sql/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>arithmetic-statistics</title>
-      <link>/tags/arithmetic-statistics/</link>
-      <pubDate>Thu, 28 Dec 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/arithmetic-statistics/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>bayesian</title>
-      <link>/tags/bayesian/</link>
-      <pubDate>Sun, 22 Oct 2017 00:00:00 -0600</pubDate>
-      
-      <guid>/tags/bayesian/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>chorddiag</title>
-      <link>/tags/chorddiag/</link>
-      <pubDate>Tue, 21 Aug 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/chorddiag/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>clustering</title>
-      <link>/tags/clustering/</link>
-      <pubDate>Sat, 23 Feb 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/clustering/</guid>
+      <guid>/tags/beautifulsoup/</guid>
       <description></description>
     </item>
     
     <item>
       <title>curriculum</title>
       <link>/tags/curriculum/</link>
-      <pubDate>Thu, 27 Dec 2018 00:00:00 +0000</pubDate>
+      <pubDate>Sun, 21 Apr 2019 00:00:00 +0000</pubDate>
       
       <guid>/tags/curriculum/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>d3.js</title>
-      <link>/tags/d3.js/</link>
-      <pubDate>Tue, 21 Aug 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/d3.js/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>dplyr</title>
-      <link>/tags/dplyr/</link>
-      <pubDate>Mon, 30 Jul 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/dplyr/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>emergent-reducibility</title>
-      <link>/tags/emergent-reducibility/</link>
-      <pubDate>Fri, 01 Jun 2018 08:24:06 -0700</pubDate>
-      
-      <guid>/tags/emergent-reducibility/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>forecast</title>
-      <link>/tags/forecast/</link>
-      <pubDate>Mon, 15 Jan 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/forecast/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>ggplot</title>
-      <link>/tags/ggplot/</link>
-      <pubDate>Sat, 24 Nov 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/ggplot/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>gutenbergr</title>
-      <link>/tags/gutenbergr/</link>
-      <pubDate>Fri, 11 Jan 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/gutenbergr/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>jmm</title>
-      <link>/tags/jmm/</link>
-      <pubDate>Sun, 11 Jan 2015 00:00:00 -0700</pubDate>
-      
-      <guid>/tags/jmm/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>machine-learning</title>
-      <link>/tags/machine-learning/</link>
-      <pubDate>Fri, 01 Jun 2018 08:24:06 -0700</pubDate>
-      
-      <guid>/tags/machine-learning/</guid>
       <description></description>
     </item>
     
@@ -265,15 +49,6 @@
     </item>
     
     <item>
-      <title>maps</title>
-      <link>/tags/maps/</link>
-      <pubDate>Sun, 22 Oct 2017 00:00:00 -0600</pubDate>
-      
-      <guid>/tags/maps/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>matplotlib</title>
       <link>/tags/matplotlib/</link>
       <pubDate>Mon, 18 Mar 2019 00:00:00 +0000</pubDate>
@@ -283,20 +58,29 @@
     </item>
     
     <item>
-      <title>networkD3</title>
-      <link>/tags/networkd3/</link>
-      <pubDate>Thu, 27 Dec 2018 00:00:00 +0000</pubDate>
+      <title>EM</title>
+      <link>/tags/em/</link>
+      <pubDate>Sat, 23 Feb 2019 00:00:00 +0000</pubDate>
       
-      <guid>/tags/networkd3/</guid>
+      <guid>/tags/em/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>number-theory</title>
-      <link>/tags/number-theory/</link>
-      <pubDate>Thu, 28 Dec 2017 00:00:00 +0000</pubDate>
+      <title>Mixture Models</title>
+      <link>/tags/mixture-models/</link>
+      <pubDate>Sat, 23 Feb 2019 00:00:00 +0000</pubDate>
       
-      <guid>/tags/number-theory/</guid>
+      <guid>/tags/mixture-models/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>clustering</title>
+      <link>/tags/clustering/</link>
+      <pubDate>Sat, 23 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/clustering/</guid>
       <description></description>
     </item>
     
@@ -310,6 +94,114 @@
     </item>
     
     <item>
+      <title>seaborn</title>
+      <link>/tags/seaborn/</link>
+      <pubDate>Sat, 23 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/seaborn/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>R</title>
+      <link>/tags/r/</link>
+      <pubDate>Fri, 11 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/r/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>gutenbergr</title>
+      <link>/tags/gutenbergr/</link>
+      <pubDate>Fri, 11 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/gutenbergr/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>shiny</title>
+      <link>/tags/shiny/</link>
+      <pubDate>Fri, 11 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/shiny/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>wordcloud</title>
+      <link>/tags/wordcloud/</link>
+      <pubDate>Fri, 11 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/wordcloud/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>d3.js</title>
+      <link>/tags/d3.js/</link>
+      <pubDate>Thu, 27 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/d3.js/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>networkD3</title>
+      <link>/tags/networkd3/</link>
+      <pubDate>Thu, 27 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/networkd3/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>PCA</title>
+      <link>/tags/pca/</link>
+      <pubDate>Sat, 24 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/pca/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ggplot</title>
+      <link>/tags/ggplot/</link>
+      <pubDate>Sat, 24 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/ggplot/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Mixture Model</title>
+      <link>/tags/mixture-model/</link>
+      <pubDate>Sat, 10 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/mixture-model/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Reticulate</title>
+      <link>/tags/reticulate/</link>
+      <pubDate>Sat, 10 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/reticulate/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>sklearn</title>
+      <link>/tags/sklearn/</link>
+      <pubDate>Sat, 10 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/sklearn/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>purrr</title>
       <link>/tags/purrr/</link>
       <pubDate>Wed, 03 Oct 2018 00:00:00 +0000</pubDate>
@@ -319,20 +211,29 @@
     </item>
     
     <item>
+      <title>chorddiag</title>
+      <link>/tags/chorddiag/</link>
+      <pubDate>Tue, 21 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/chorddiag/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>dplyr</title>
+      <link>/tags/dplyr/</link>
+      <pubDate>Mon, 30 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/dplyr/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>reproducibility</title>
       <link>/tags/reproducibility/</link>
       <pubDate>Tue, 24 Jul 2018 00:00:00 +0000</pubDate>
       
       <guid>/tags/reproducibility/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>run</title>
-      <link>/tags/run/</link>
-      <pubDate>Sun, 11 Mar 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/run/</guid>
       <description></description>
     </item>
     
@@ -355,38 +256,29 @@
     </item>
     
     <item>
-      <title>seaborn</title>
-      <link>/tags/seaborn/</link>
-      <pubDate>Sat, 23 Feb 2019 00:00:00 +0000</pubDate>
+      <title>DT</title>
+      <link>/tags/dt/</link>
+      <pubDate>Thu, 28 Jun 2018 00:00:00 +0000</pubDate>
       
-      <guid>/tags/seaborn/</guid>
+      <guid>/tags/dt/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>shiny</title>
-      <link>/tags/shiny/</link>
-      <pubDate>Fri, 11 Jan 2019 00:00:00 +0000</pubDate>
+      <title>RMarkdown</title>
+      <link>/tags/rmarkdown/</link>
+      <pubDate>Thu, 28 Jun 2018 00:00:00 +0000</pubDate>
       
-      <guid>/tags/shiny/</guid>
+      <guid>/tags/rmarkdown/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>sklearn</title>
-      <link>/tags/sklearn/</link>
-      <pubDate>Sat, 10 Nov 2018 00:00:00 +0000</pubDate>
+      <title>Neo4j</title>
+      <link>/tags/neo4j/</link>
+      <pubDate>Mon, 18 Jun 2018 00:00:00 +0000</pubDate>
       
-      <guid>/tags/sklearn/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>teaching</title>
-      <link>/tags/teaching/</link>
-      <pubDate>Sun, 07 Jan 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/teaching/</guid>
+      <guid>/tags/neo4j/</guid>
       <description></description>
     </item>
     
@@ -400,11 +292,119 @@
     </item>
     
     <item>
-      <title>wordcloud</title>
-      <link>/tags/wordcloud/</link>
-      <pubDate>Fri, 11 Jan 2019 00:00:00 +0000</pubDate>
+      <title>emergent-reducibility</title>
+      <link>/tags/emergent-reducibility/</link>
+      <pubDate>Fri, 01 Jun 2018 08:24:06 -0700</pubDate>
       
-      <guid>/tags/wordcloud/</guid>
+      <guid>/tags/emergent-reducibility/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>machine-learning</title>
+      <link>/tags/machine-learning/</link>
+      <pubDate>Fri, 01 Jun 2018 08:24:06 -0700</pubDate>
+      
+      <guid>/tags/machine-learning/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>SQL</title>
+      <link>/tags/sql/</link>
+      <pubDate>Sun, 01 Apr 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/sql/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>run</title>
+      <link>/tags/run/</link>
+      <pubDate>Sun, 11 Mar 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/run/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Idaho</title>
+      <link>/tags/idaho/</link>
+      <pubDate>Sat, 27 Jan 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/idaho/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>forecast</title>
+      <link>/tags/forecast/</link>
+      <pubDate>Mon, 15 Jan 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/forecast/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>teaching</title>
+      <link>/tags/teaching/</link>
+      <pubDate>Sun, 07 Jan 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/teaching/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>arithmetic-statistics</title>
+      <link>/tags/arithmetic-statistics/</link>
+      <pubDate>Thu, 28 Dec 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/arithmetic-statistics/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>number-theory</title>
+      <link>/tags/number-theory/</link>
+      <pubDate>Thu, 28 Dec 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/number-theory/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>bayesian</title>
+      <link>/tags/bayesian/</link>
+      <pubDate>Sun, 22 Oct 2017 00:00:00 -0600</pubDate>
+      
+      <guid>/tags/bayesian/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>maps</title>
+      <link>/tags/maps/</link>
+      <pubDate>Sun, 22 Oct 2017 00:00:00 -0600</pubDate>
+      
+      <guid>/tags/maps/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Content tagged as &#39;Academic&#39;</title>
+      <link>/tags/academic/</link>
+      <pubDate>Sun, 01 Jan 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/academic/</guid>
+      <description>Here is a list of all the content that has been tagged as academic.</description>
+    </item>
+    
+    <item>
+      <title>jmm</title>
+      <link>/tags/jmm/</link>
+      <pubDate>Sun, 11 Jan 2015 00:00:00 -0700</pubDate>
+      
+      <guid>/tags/jmm/</guid>
       <description></description>
     </item>
     
