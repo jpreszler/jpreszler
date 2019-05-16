@@ -1,141 +1,284 @@
-baseURL = "https://jpreszler.rbind.io"
-title = "Jason I. Preszler, Ph. D."
-# for smart copyright line, leave this blank and check [params.copyright]
-copyright = "&copy; 2019 Jason Preszler"
-
-theme = "minimo"
-
-disqusShortname = ""
-googleAnalytics = "UA-111748163-1"
-
+baseurl = "/"  # End your URL with a `/` trailing slash, e.g. `https://example.com/`.
+title = "Jason I. Preszler"
+copyright = "&copy; 2017 Jason Preszler"
+theme = "hugo-academic"
+enableEmoji = true
+footnotereturnlinkcontents = "<sup>^</sup>"
 ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 preserveTaxonomyNames = true
-Paginate = 10
+paginate = 10
 
-enableRobotsTXT = true # generate robots.txt
+# Enable comments by entering your Disqus shortname
+disqusShortname = ""
 
-# Syntax Highlighting ( https://gohugo.io/content-management/syntax-highlighting/ )
-pygmentsCodefences = true
+# Enable analytics by entering your Google Analytics tracking ID
+googleAnalytics = "UA-111748163-1"
 
-enableEmoji = true
-
-# Missing translations will default to this content language
+# Default language to use (if you setup multilingual support)
 defaultContentLanguage = "en"
+defaultContentLanguageInSubdir = false
 
-[params.info]
-description = "Website and Blog for Jason Preszler, Ph.D."
-title404 = "Nothing's here!"
+[outputs]
+  home = [ "HTML", "CSS", "RSS" ]
+  section = [ "HTML", "RSS" ]
 
-[params.assets]
-favicon = "favicon.ico"
-customCSS = ["css/custom.css"]
-customJS = ["js/custom.js"]
-gopher = "" # used in 404 template ( Generator: https://gopherize.me )
+# Configure BlackFriday Markdown rendering.
+#   See: https://gohugo.io/readfiles/bfconfig/
+[blackfriday]
+  hrefTargetBlank = true  # `true` opens external links in a new tab.
+  fractions = true  # `false` disables smart fractions (e.g. 5/12 formatted as a fraction).
+  smartypants = true  # `false` disables all smart punctuation substitutions (e.g. smart quotes, dashes, fractions).
 
-[params.copyright]
-prefix = ""
-holder = "Jason Preszler"
-startYear = "2017"
-suffix = ""
+[params]
+  # Color theme.
+  #   Choose from `default`, `ocean`, `forest`, `coffee`, `dark`, or `1950s`.
+  color_theme = "coffee"
 
-[params.settings]
-# date & time format: https://golang.org/pkg/time/
-dateFormat = "Jan 02, 2006"
-listDateFormat = "Jan 02, 2006"
-archiveDateFormat = "Jan 02"
-hideEntryNavigation = ["page"] # boolean / array of sections
-hideEntryMeta = ["page"] # boolean / array of sections
-showReadingTime = false
-showLastmod = true
-taxonomyCloudShuffle = true
-accentColor = "#ffcd00"
-hideMainMenu = false
-rtl = false
+  # Font style.
+  #   Choose from `default`, `classic`, or `playfair`.
+  font = "default"
 
-[params.sidebar]
-enable = true
+  # Your details.
+  name = "Jason Preszler"
+  role = "Data Science Fellow"
 
-[params.widgets]
-header = ["breadcrumbs"]
-homepage = ["recent_posts"]
-sidebar = ["about","search","sidebar_menu","taxonomy_cloud"]
-footer = ["social_menu"]
+  # Organizations/Affiliations.
+  #   Separate multiple entries with a comma, using the form: `[ {name="Org1", url=""}, {name="Org2", url=""} ]`.
+  organizations = [{name = "Insight Data Science - Seattle", url="https://www.insightdatascience.com"}]# { name = "The College of Idaho", url = "http://www.collegeofidaho.edu" } ]
 
-[params.opengraph.facebook]
-admins = [] # array of Facebook IDs
-appID = ""
-pageID = ""
+  gravatar = false  # Get your avatar from Gravatar.com? (true/false)
+  avatar = "jp-coi.jpg"  # Specify an avatar image (in `static/img/` folder) or delete value to disable avatar.
+  email = "jpreszler@gmail.com"
+#  address = "Boone 102E, The College of Idaho, Caldwell, ID. USA"
+#  office_hours = ""
+#  phone = "208 459 5147"
+  skype = ""
+  telegram = ""
 
-[params.opengraph.twitter]
-page = "" # Twitter page username
+  # Enable Keybase in Contact widget by entering your keybase.io username.
+  keybase = ""
 
-[params.seo]
-# Title Separator: - – — · • * ⋆ | ~ « » < >
-titleSeparator = "•"
+  # Discussion link (e.g. link to a forum, mailing list, or chat).
+  #   Uncomment line below to use.
+  #   discussion = { name = "Discuss", url = "https://discourse.gohugo.io" }
 
-[params.social]
-email = "jpreszler@gmail.com"
-github = "jpreszler"
-gitlab = "jpreszler"
-linkedin = "jpreszler"
+  # Diplay a logo in navigation bar rather than title (optional).
+  #   To enable, place an image in `static/img/` and reference its filename below. To disable, set the value to "".
+  logo = ""
 
-[params.comments]
-enable = false
+  # Enable/disable map in Contact widget.
+  # To show your address on a map in the contact widget, you need to enter your latitude, longitude and choose
+  # a map provider below.
+  # To use Google Maps, set `map = 1` and enter your API key that can be obtained here:
+  #   https://developers.google.com/maps/documentation/javascript/get-api-key
+  # To use OpenStreetMap tiles, set `map = 2`.
+  # To use OpenStreetMap on a high traffic site, set `map = 3` and enter your API key that can be obtained here:
+  #   https://www.mapbox.com/studio/account/tokens
+  # To get your coordinates, right-click on Google Maps and choose "What's here?". The coords will show up at the bottom.
+  #
+  # Map provider:
+  #   0: No map
+  #   1: Google Maps
+  #   2: OpenStreetMap (Mapnik)
+  #   3: OpenStreetMap (Mapbox)
+  map = 0
+  map_api_key = ""
+  latitude = "37.4275"
+  longitude = "-122.1697"
+  zoom = 15
 
-# Isso: https://posativ.org/isso/
-[params.comments.isso]
-enable = false
-scriptSrc = "" # "https://isso.example.com/js/embed.min.js"
-dataAttrs = "" # "data-isso='https://isso.example.com' data-isso-require-author='true'"
+  # Date and time format (refer to Go's date format: http://fuckinggodateformat.com )
+  #   Examples: "Mon, Jan 2, 2006" or "2006-01-02"
+  date_format = "Jan 2, 2006"
+  #   Examples: "3:04 pm" or "15:04"
+  time_format = "3:04 PM"
 
-[params.comments.staticman]
-enable = true
-apiEndpoint = "https://api.staticman.net/v2/entry"
-maxDepth = 2
-username = "MunifTanjim"
-repository = "minimo"
-branch = "master"
+  # Show estimated reading time for posts?
+  reading_time = false
 
-# Utterances: https://utteranc.es
-[params.comments.utterances]
-enable = false
-issueTerm = "pathname" # pathname / url / title
+  # Display comment count? Requires commenting to be enabled.
+  comment_count = true
 
-[params.comments.utterances.github]
-username = "jpreszler"
-repository = "jpreszler"
+  # Display section pager for posts?
+  section_pager = false
 
-[params.search]
-client = "fuse" # algolia / fuse / lunr
+  # Enable global LaTeX math rendering?
+  #   If false, you can enable it locally on a per page basis.
+  math = true
 
-[params.search.algolia]
-appId = ""
-indexName = ""
-searchApiKey = ""
+  # Highlight.js options
+  #   highlight
+  #     Enable global source code highlighting?  If false, you can
+  #     override it for a particular page in that page's preamble.
+  #
+  #     Example: highlight = true
+  #
+  #   highlight_languages
+  #     Add support for highlighting additional languages. Support for
+  #     languages mentioned here will be included in all pages. You
+  #     can also set this variable for a particular page in that
+  #     page's preamble.
+  #
+  #     Example: highlight_languages = ["go", "lisp", "ocaml"]
+  #
+  #   highlight_style
+  #     Choose a different CSS style for highlighting source
+  #     code. Setting this option in a page's preamble has no
+  #     effect.
+  #
+  #     Example: highlight_style = "github-gist"
+  #
+  #   For the list of supported languages and styles, see:
+  #   https://cdnjs.com/libraries/highlight.js/
+  #
+  #   For more info on the highlighting options, see:
+  #   https://sourcethemes.com/academic/post/writing-markdown-latex/#highlighting-options
+  highlight = true
+  highlight_languages = ["r", "python", "c", "sql"]
+  # highlight_style = "github"
 
-[taxonomies]
-author = "authors"
-category = "categories"
-series = "series"
-tag = "tags"
+  # Enable native social sharing buttons?
+  sharing = true
 
-[permalinks]
-page = "/:slug/"
+  # Link custom CSS and JS assets
+  #   (relative to /static/css and /static/js respectively)
+  custom_css = []
+  custom_js  = []
+
+  # Publication types.
+  #   Used to categorize publications.
+  #   The index of the publication type in the list is used as its unique numerical identifier.
+  #   The numeric ID is used in a publication's frontmatter to categorize it.
+  #   The language can be edited below.
+  #   For multi-lingual sites, copy this block to each language section at the end of this file.
+  publication_types = [
+    'Uncategorized',  # 0
+    'Conference proceedings',  # 1
+    'Journal',  # 2
+    'Work in progress',  # 3
+    'Technical report',  # 4
+    'Book',  # 5
+    'Book chapter'  # 6
+  ]
+
+  # Configuration of talk pages.
+  [params.talks]
+    # Show talk time?
+    time = false
+
+  # Configuration of publication pages.
+  [params.publications]
+    # Date format (refer to Go's date format: http://fuckinggodateformat.com )
+    #   Examples: "Mon, Jan 2, 2006" or "2006-01-02"
+    date_format = "January, 2006"
+
+  # Configuration of project pages.
+  [params.projects]
+    # List publications and talks related to the project?
+    list_children = true
+
+    # Publication list format.
+    #   0 = Simple
+    #   1 = Detailed
+    #   2 = APA
+    #   3 = MLA
+    publication_format = 0
+
+  # Social/Academic Networking
+  #
+  # Icon pack "fa" includes the following social network icons:
+  #
+  #   twitter, weibo, linkedin, github, facebook, pinterest, google-plus,
+  #   youtube, instagram, soundcloud
+  #
+  #   For email icon, use "fa" icon pack, "envelope" icon, and
+  #   "mailto:your@email.com" as the link.
+  #
+  #   Full list: https://fortawesome.github.io/Font-Awesome/icons/
+  #
+  # Icon pack "ai" includes the following academic network icons:
+  #
+  #   google-scholar, arxiv, orcid, researchgate, mendeley
+  #
+  #   Full list: https://jpswalsh.github.io/academicons/
+
+  [[params.social]]
+    icon = "envelope"
+    icon_pack = "fa"
+    link = "mailto:jpreszler@collegeofidaho.edu"
+
+  [[params.social]]
+    icon = "arxiv"
+    icon_pack = "ai"
+    link = "https://arxiv.org/find/math/1/au:+Preszler_J/0/1/0/all/0/1"
+
+  [[params.social]]
+    icon = "github"
+    icon_pack = "fa"
+    link = "//github.com/jpreszler"
+    
+  [[params.social]]
+    icon = "gitlab"
+    icon_pack = "fa"
+    link = "//gitlab.com/jpreszler"
+
+  [[params.social]]
+    icon = "linkedin"
+    icon_pack = "fa"
+    link = "//linkedin.com/in/jpreszler"
+
+# Navigation Links
+#   To link a homepage widget, specify the URL as a hash `#` followed by the filename of the
+#     desired widget in your `content/home/` folder.
+#   The weight parameter defines the order that the links will appear in.
+[params.menus]
+  # Align the main menu to the right of the page? (true/false)
+  align_right = true
 
 [[menu.main]]
-name = "Repo"
-weight = -10
-identifier = "repository"
-url = "https://github.com/jpreszler/jpreszler"
+  name = "Home"
+  url = "#about"
+  weight = 1
 
-[blackfriday]
-hrefTargetBlank = true
-fractions = true  # `false` disables smart fractions (e.g. 5/12 formatted as a fraction).
-smartypants = true  # `false` disables all smart punctuation substitutions (e.g. smart quotes, dashes, fractions).
+[[menu.main]]
+  name = "Publications"
+  url = "#publications"
+  weight = 3
 
-[languages]
-# edit this block for your own language
-[languages.en]
-lang = "en"
-languageName = "English"
-weight = 1
+[[menu.main]]
+  name = "Posts"
+  url = "#posts"
+  weight = 2
+
+[[menu.main]]
+  name = "Projects"
+  url = "#projects"
+  weight = 5
+
+#[[menu.main]]
+#  name = "Teaching"
+#  url = "#teaching"
+#  weight = 5
+
+[[menu.main]]
+  name = "Talks"
+  url = "#talks"
+  weight = 4
+  
+[[menu.main]]
+  name = "Contact"
+  url = "#contact"
+  weight = 7
+
+# Taxonomies.
+[taxonomies]
+  tag = "tags"
+  category = "categories"
+  publication_type = "publication_types"
+
+# Languages
+#   Create a [languages.X] block for each language you want, where X is the language ID.
+
+# Configure the English version of the website.
+[Languages.en]
+  languageCode = "en-us"
