@@ -2,17 +2,14 @@
 author: "Jason Preszler"
 title: "Pythonic SQL with SQLAlchemy"
 date: 2019-05-18
-tags: ['python', 'sql', 'sqlalchemy']
+output: html_document
+tags: ['Python', 'SQL', 'sqlalchemy']
 ---
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
-library(reticulate)
-knitr::chunk_opts(echo=TRUE)
-
-```
 During my *Applied Databases* course in Spring 2019, I gave my students a choice of which language to use to interact with SQL and relational databases. They had already learned core SQL and I only gave them 3 options: C++, R, and Python. The choices of R and python are natural given my data science interests and experience. Last year I just showed them R and got some complaints on evaluations (some people don't think R is a "real language"). The option of C++ had 2 motivations: every student had 1 semester (many had 2) of the intro programming sequence in C++, and we were using SQLite which is written in C++. Fortunately, the majority picked Python and these are some examples we went through to start learning SQLAlchemy.
 
 Here's the basic process of working with a database via `sqlalchemy`:
+
  * Create an engine via: `eng = create_engine('dialect+driver://db-location')`
  * Create a connection via: `conn = eng.connection()`
  * Create an object to hold metadata: `md = MetaData()`
@@ -28,10 +25,10 @@ Here's the basic process of working with a database via `sqlalchemy`:
 First we need an engine to handle communication with the database. This requires passing the SQL driver and dialect information as well as the location of the database. For SQLite, this is very simple but large RDBMS connections will require additional connection information.
 
 Once we create the engine, we'll ask for the table names to see which tables are in the database (it should be empty in this case).
-```{python}
+```{python create, echo=TRUE}
 import sqlalchemy as sa
 
-eng = sa.create_engine('sqlite:///../databases/countries.sqlite')
+eng = sa.create_engine('sqlite:///../../static/files/countries.sqlite')
 eng.table_names()
 ```
 
@@ -41,7 +38,7 @@ We could run SQL `INSERT` commands, but `pandas` can read common data files and 
 
 ```{python}
 import pandas as pd
-cityDF = pd.read_csv('../databases/cities.csv')
+cityDF = pd.read_csv('../../static/files/cities.csv')
 print(cityDF.head())
 
 cityDF.to_sql('cities', eng)
@@ -93,25 +90,25 @@ Here's the initial set-up for the new database.
 
 ```{python}
 #engine
-JACSeng = sa.create_engine('sqlite:///../databases/jacs.sqlite')
+JACSeng = sa.create_engine('sqlite:///../../static/files/jacs.sqlite')
 # connection
 conn = JACSeng.connect()
 #metadata and tables
 md = sa.MetaData()
-authors = sa.Table('Authors', md, autoload=True, autoload_with=eng)
-papers = sa.Table('Papers', md, autoload=True, autoload_with=eng)
-pa = sa.Table('Paper_Authors', md, autoload=True, autoload_with=eng)
+authors = sa.Table('Authors', md, autoload=True, autoload_with=JACSeng)
+papers = sa.Table('Papers', md, autoload=True, autoload_with=JACSeng)
+pa = sa.Table('Paper_Authors', md, autoload=True, autoload_with=JACSeng)
 ```
 
 Now we'll write a query to get the titles and authors names of all papers in volume 2 of issue 118 (pretty arbitrary, but a realistic problem). First we `select` then add a `select_from` that contains the `join`(s). Finally, we use our function to print the results.
 
 ```{python}
-query118v2 = sa.select([papers.columns.title, auth.columns.surname, auth.columns.forename])
+query118v2 = sa.select([papers.columns.title, authors.columns.surname, authors.columns.forename])
 query118v2 = query118v2.select_from(
   papers.join(
     pa, pa.columns.paperID==papers.columns.paperID
     ).join(
-      auth, pa.columns.authorID==auth.columns.authorID
+      authors, pa.columns.authorID==authors.columns.authorID
       )
     )
 query118v2 = query118v2.where(sa.and_(papers.columns.issue==118, papers.columns.volume==2))

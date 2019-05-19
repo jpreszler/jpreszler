@@ -14,6 +14,7 @@ weight = 5
   "Supervised Machine Learning",
   "Data Visualization",
   "Natural Language Processing",
+  "Time Series Forecasting",
   "Bayesian Data Analysis"
   ]
 
@@ -39,7 +40,8 @@ weight = 5
 
 I am a Data Science Fellow at [Insight Data Science](https://www.insightdatascience.com) in Seattle. 
 
-For ten years prior to joining Insight, I was teaching math, statistics, and computer science full-time at various colleges and universities including:
+For ten years prior to joining Insight, I was in academia teaching math, statistics, and computer science at various colleges and universities including:
+
  * The College of Idaho
  * James Madison University
  * University of Puget Sound

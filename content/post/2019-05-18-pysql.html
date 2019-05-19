@@ -1,0 +1,117 @@
+---
+author: "Jason Preszler"
+title: "Pythonic SQL with SQLAlchemy"
+date: 2019-05-18
+output: html_document
+tags: ['Python', 'SQL', 'sqlalchemy']
+---
+
+
+
+<p>During my <em>Applied Databases</em> course in Spring 2019, I gave my students a choice of which language to use to interact with SQL and relational databases. They had already learned core SQL and I only gave them 3 options: C++, R, and Python. The choices of R and python are natural given my data science interests and experience. Last year I just showed them R and got some complaints on evaluations (some people don’t think R is a “real language”). The option of C++ had 2 motivations: every student had 1 semester (many had 2) of the intro programming sequence in C++, and we were using SQLite which is written in C++. Fortunately, the majority picked Python and these are some examples we went through to start learning SQLAlchemy.</p>
+<p>Here’s the basic process of working with a database via <code>sqlalchemy</code>:</p>
+<ul>
+<li>Create an engine via: <code>eng = create_engine('dialect+driver://db-location')</code></li>
+<li>Create a connection via: <code>conn = eng.connection()</code></li>
+<li>Create an object to hold metadata: <code>md = MetaData()</code></li>
+<li>Create python objects for tables you’ll work with: <code>pyTable = Table('name',md, autoload=True, autoload_with=eng)</code><br />
+</li>
+<li>Build queries - anything SQL can do, SQLAlchemy supports.</li>
+<li>execute queries: <code>proxy = conn.execute(query)</code></li>
+<li>fetch results: <code>results = proxy.fetchall()</code></li>
+<li>work with results (any python code you need)</li>
+<li>When finished, close the connection</li>
+</ul>
+<div id="creating-an-engine" class="section level2">
+<h2>Creating an Engine</h2>
+<p>First we need an engine to handle communication with the database. This requires passing the SQL driver and dialect information as well as the location of the database. For SQLite, this is very simple but large RDBMS connections will require additional connection information.</p>
+<p>Once we create the engine, we’ll ask for the table names to see which tables are in the database (it should be empty in this case).</p>
+<pre class="python"><code>import sqlalchemy as sa
+
+eng = sa.create_engine(&#39;sqlite:///../../static/files/countries.sqlite&#39;)
+eng.table_names()</code></pre>
+<pre><code>## []</code></pre>
+</div>
+<div id="pandas-to-bulk-load-data" class="section level2">
+<h2>Pandas to Bulk Load Data</h2>
+<p>We could run SQL <code>INSERT</code> commands, but <code>pandas</code> can read common data files and export to SQL. Here we’ll put some city data into our database:</p>
+<pre class="python"><code>import pandas as pd
+cityDF = pd.read_csv(&#39;../../static/files/cities.csv&#39;)
+print(cityDF.head())</code></pre>
+<pre><code>##           name country_code  city_proper_pop  metroarea_pop  urbanarea_pop
+## 0      Abidjan          CIV          4765000            NaN        4765000
+## 1    Abu Dhabi          ARE          1145000            NaN        1145000
+## 2        Abuja          NGA          1235880      6000000.0        1235880
+## 3        Accra          GHA          2070463      4010054.0        2070463
+## 4  Addis Ababa          ETH          3103673      4567857.0        3103673</code></pre>
+<pre class="python"><code>cityDF.to_sql(&#39;cities&#39;, eng)
+
+eng.table_names()</code></pre>
+<pre><code>## [&#39;cities&#39;]</code></pre>
+<p><code>pandas</code> also provides ways to query a database as though it was a typical dataframe. If you already know <code>pandas</code> and only need some basic queries then this is a natural path. Instead, we’re going to start using SQLAlchemy to write queries in a nice <em>pythonic</em> way, but I’m not going to get into the full object-relational mapper that SQLAlchemy provides (but this is what to do if you want to store complex objects into a relational database).</p>
+</div>
+<div id="sqlalchemy-queries" class="section level2">
+<h2>SQLAlchemy Queries</h2>
+<p><em>Warning about SQL injection</em></p>
+<p>SQLAlchemy allows you to send raw query strings, <strong>but don’t do this</strong>. If you’re doing interactive data analysis, raw query strings are quick and easy. If you’re building the query from user input, raw query strings are the easiest way to expose your database to SQL injection attacks.</p>
+<p>Now to the queries. We need a metadata object to hold table metadata. Then we have to have a table object to select from. Other SQL clauses are then methods on the select function:</p>
+<pre class="python"><code>md = sa.MetaData()
+cities = sa.Table(&#39;cities&#39;, md, autoload=True, autoload_with=eng)
+
+stmt =  sa.sql.select([cities]).where(
+  cities.columns.country_code==&#39;USA&#39;
+  ).order_by(
+    cities.columns.city_proper_pop.desc()
+    )
+
+results = eng.execute(stmt).fetchall()
+print(results[0:10])</code></pre>
+<pre><code>## [(153, &#39;New York City&#39;, &#39;USA&#39;, 8550405, 20182305.0, 8550405), (124, &#39;Los Angeles&#39;, &#39;USA&#39;, 3884307, 15058000.0, 3884307), (45, &#39;Chicago&#39;, &#39;USA&#39;, 2695598, 9156000.0, 2695598), (87, &#39;Houston&#39;, &#39;USA&#39;, 2489558, 6490180.0, 2489558), (165, &#39;Philadelphia&#39;, &#39;USA&#39;, 1567872, 6069875.0, 1567872), (167, &#39;Phoenix&#39;, &#39;USA&#39;, 1563025, 4574531.0, 1563025), (186, &#39;San Antonio&#39;, &#39;USA&#39;, 1469845, 2454061.0, 1469845), (187, &#39;San Diego&#39;, &#39;USA&#39;, 1394928, 3095313.0, 1394928), (55, &#39;Dallas&#39;, &#39;USA&#39;, 1317929, 7233323.0, 1317929)]</code></pre>
+<p>After building the query <code>stmt</code> we obtain results by (1) executing the query on the engine and (2) fetching all the results. As you can see from the printed results, what’s returned is a list of database tuples.</p>
+<div id="pretty-print-results" class="section level3">
+<h3>Pretty Print Results</h3>
+<p>Since a list of tuples is a mess to read (but fairly easy to work with), here’s a function to display results in a more human-readable format.</p>
+<pre class="python"><code># requires import pandas as pd
+def query_results(query, engine, number):
+    results = engine.execute(query).fetchmany(number)
+    resDF = pd.DataFrame(results)
+    resDF.columns = results[0].keys()
+    print(resDF)</code></pre>
+</div>
+</div>
+<div id="joins" class="section level2">
+<h2>Joins</h2>
+<p>You can’t do much in a real database without joins, so let’s do an example. We’ll load the JACS database - containing data on papers published in the Journal of the American Chemical Society. This database has 3 tables: <code>Papers</code>, <code>Authors</code> and <code>Paper_Authors</code>. The last one is a join table since we can’t have a list of authors for each paper in a relational database.</p>
+<p>Here’s the initial set-up for the new database.</p>
+<pre class="python"><code>#engine
+JACSeng = sa.create_engine(&#39;sqlite:///../../static/files/jacs.sqlite&#39;)
+# connection
+conn = JACSeng.connect()
+#metadata and tables
+md = sa.MetaData()
+authors = sa.Table(&#39;Authors&#39;, md, autoload=True, autoload_with=JACSeng)
+papers = sa.Table(&#39;Papers&#39;, md, autoload=True, autoload_with=JACSeng)
+pa = sa.Table(&#39;Paper_Authors&#39;, md, autoload=True, autoload_with=JACSeng)</code></pre>
+<p>Now we’ll write a query to get the titles and authors names of all papers in volume 2 of issue 118 (pretty arbitrary, but a realistic problem). First we <code>select</code> then add a <code>select_from</code> that contains the <code>join</code>(s). Finally, we use our function to print the results.</p>
+<pre class="python"><code>query118v2 = sa.select([papers.columns.title, authors.columns.surname, authors.columns.forename])
+query118v2 = query118v2.select_from(
+  papers.join(
+    pa, pa.columns.paperID==papers.columns.paperID
+    ).join(
+      authors, pa.columns.authorID==authors.columns.authorID
+      )
+    )
+query118v2 = query118v2.where(sa.and_(papers.columns.issue==118, papers.columns.volume==2))
+
+query_results(query118v2, conn, 5)</code></pre>
+<pre><code>##                                                title   surname  forename
+## 0  Evidence for Concert in the Thermal Unimolecul...  Gajewski    Joseph
+## 1  Evidence for Concert in the Thermal Unimolecul...     Olson      Leif
+## 2  Evidence for Concert in the Thermal Unimolecul...  Willcott        M.
+## 3  Orthogonal Ligation of Unprotected Peptide Seg...       Liu  Chuan-Fa
+## 4  Orthogonal Ligation of Unprotected Peptide Seg...       Rao     Chang</code></pre>
+</div>
+<div id="end" class="section level2">
+<h2>End</h2>
+<p>We can use similar commands to run any SQL query we want, including DDL commands to create tables.</p>
+</div>
