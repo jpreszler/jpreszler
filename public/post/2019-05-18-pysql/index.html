@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="theme" content="hugo-academic">
+  <meta name="generator" content="Hugo 0.55.3" />
+  <meta name="author" content="Jason Preszler">
+  <meta name="description" content="Data Science Fellow">
+
+  
+  <link rel="alternate" hreflang="en-us" href="/post/2019-05-18-pysql/">
+
+  
+  
+
+
+  
+
+  
+  
+  
+  
+    
+  
+  
+    
+    
+      
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+      
+    
+  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha512-6MXa8B6uaO18Hid6blRMetEIoPqHf7Ux1tnyIQdpt9qI5OACx7C+O3IVTr98vwGnlcg0LOLa02i9Y1HpVhlfiw==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.1/css/academicons.min.css" integrity="sha512-NThgw3XKQ1absAahW6to7Ey42uycrVvfNfyjqcFNgCmOCQ5AR4AO0SiXrN+8ZtYeappp56lk1WtvjVmEa+VR6A==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha512-SfTiTlX6kk+qitfevl/7LibUOeJWlt9rbyDn92a1DqWOw9vWG2MFoays0sgObmWazO5BQPiFucnnEAjpAB+/Sw==" crossorigin="anonymous">
+  
+  
+  
+  
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Montserrat:400,700%7cRoboto:400,400italic,700%7cRoboto&#43;Mono">
+  
+  <link rel="stylesheet" href="/styles.css">
+  
+
+  
+    <script>
+      window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+      ga('create', 'UA-111748163-1', 'auto');
+      ga('require', 'eventTracker');
+      ga('require', 'outboundLinkTracker');
+      ga('require', 'urlChangeTracker');
+      ga('send', 'pageview');
+    </script>
+    <script async src="//www.google-analytics.com/analytics.js"></script>
+    
+    <script async src="https://cdnjs.cloudflare.com/ajax/libs/autotrack/2.4.1/autotrack.js" integrity="sha512-HUmooslVKj4m6OBu0OgzjXXr+QuFYy/k7eLI5jdeEy/F4RSgMn6XRWRGkFi5IFaFgy7uFTkegp3Z0XnJf3Jq+g==" crossorigin="anonymous"></script>
+    
+  
+
+  
+  <link rel="alternate" href="/index.xml" type="application/rss+xml" title="Jason I. Preszler">
+  <link rel="feed" href="/index.xml" type="application/rss+xml" title="Jason I. Preszler">
+  
+
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="/post/2019-05-18-pysql/">
+
+  <meta property="twitter:card" content="summary_large_image">
+  
+  <meta property="og:site_name" content="Jason I. Preszler">
+  <meta property="og:url" content="/post/2019-05-18-pysql/">
+  <meta property="og:title" content="Pythonic SQL with SQLAlchemy | Jason I. Preszler">
+  <meta property="og:description" content="">
+  <meta property="og:locale" content="en-us">
+  
+  <meta property="article:published_time" content="2019-05-18T00:00:00&#43;00:00">
+  
+  <meta property="article:modified_time" content="2019-05-18T00:00:00&#43;00:00">
+  
+
+  
+
+  <title>Pythonic SQL with SQLAlchemy | Jason I. Preszler</title>
+
+</head>
+<body id="top" data-spy="scroll" data-target="#toc" data-offset="71" >
+
+<nav class="navbar navbar-default navbar-fixed-top" id="navbar-main">
+  <div class="container">
+
+    
+    <div class="navbar-header">
+      
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+              data-target=".navbar-collapse" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      
+      <a class="navbar-brand" href="/">Jason I. Preszler</a>
+    </div>
+
+    
+    <div class="collapse navbar-collapse">
+
+      
+      
+      <ul class="nav navbar-nav navbar-right">
+        
+
+        
+
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#about">
+            
+            <span>Home</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#posts">
+            
+            <span>Posts</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#publications">
+            
+            <span>Publications</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#talks">
+            
+            <span>Talks</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#projects">
+            
+            <span>Projects</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#contact">
+            
+            <span>Contact</span>
+            
+          </a>
+        </li>
+
+        
+        
+      
+
+      
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+<article class="article" itemscope itemtype="http://schema.org/Article">
+
+  
+
+
+  <div class="article-container">
+    <div class="article-inner">
+      <h1 itemprop="name">Pythonic SQL with SQLAlchemy</h1>
+
+      
+
+<div class="article-metadata">
+
+  <span class="article-date">
+    
+    <time datetime="2019-05-18 00:00:00 &#43;0000 UTC" itemprop="datePublished">
+      May 18, 2019
+    </time>
+  </span>
+
+  
+
+  
+  
+
+  
+
+  
+  
+<div class="share-box" aria-hidden="true">
+  <ul class="share">
+    <li>
+      <a class="twitter"
+         href="https://twitter.com/intent/tweet?text=Pythonic%20SQL%20with%20SQLAlchemy&amp;url=%2fpost%2f2019-05-18-pysql%2f"
+         target="_blank" rel="noopener">
+        <i class="fa fa-twitter"></i>
+      </a>
+    </li>
+    <li>
+      <a class="facebook"
+         href="https://www.facebook.com/sharer.php?u=%2fpost%2f2019-05-18-pysql%2f"
+         target="_blank" rel="noopener">
+        <i class="fa fa-facebook"></i>
+      </a>
+    </li>
+    <li>
+      <a class="linkedin"
+         href="https://www.linkedin.com/shareArticle?mini=true&amp;url=%2fpost%2f2019-05-18-pysql%2f&amp;title=Pythonic%20SQL%20with%20SQLAlchemy"
+         target="_blank" rel="noopener">
+        <i class="fa fa-linkedin"></i>
+      </a>
+    </li>
+    <li>
+      <a class="weibo"
+         href="http://service.weibo.com/share/share.php?url=%2fpost%2f2019-05-18-pysql%2f&amp;title=Pythonic%20SQL%20with%20SQLAlchemy"
+         target="_blank" rel="noopener">
+        <i class="fa fa-weibo"></i>
+      </a>
+    </li>
+    <li>
+      <a class="email"
+         href="mailto:?subject=Pythonic%20SQL%20with%20SQLAlchemy&amp;body=%2fpost%2f2019-05-18-pysql%2f">
+        <i class="fa fa-envelope"></i>
+      </a>
+    </li>
+  </ul>
+</div>
+
+
+  
+
+</div>
+
+
+      <div class="article-style" itemprop="articleBody">
+        
+
+
+<p>During my <em>Applied Databases</em> course in Spring 2019, I gave my students a choice of which language to use to interact with SQL and relational databases. They had already learned core SQL and I only gave them 3 options: C++, R, and Python. The choices of R and python are natural given my data science interests and experience. Last year I just showed them R and got some complaints on evaluations (some people don’t think R is a “real language”). The option of C++ had 2 motivations: every student had 1 semester (many had 2) of the intro programming sequence in C++, and we were using SQLite which is written in C++. Fortunately, the majority picked Python and these are some examples we went through to start learning SQLAlchemy.</p>
+<p>Here’s the basic process of working with a database via <code>sqlalchemy</code>:</p>
+<ul>
+<li>Create an engine via: <code>eng = create_engine('dialect+driver://db-location')</code></li>
+<li>Create a connection via: <code>conn = eng.connection()</code></li>
+<li>Create an object to hold metadata: <code>md = MetaData()</code></li>
+<li>Create python objects for tables you’ll work with: <code>pyTable = Table('name',md, autoload=True, autoload_with=eng)</code><br />
+</li>
+<li>Build queries - anything SQL can do, SQLAlchemy supports.</li>
+<li>execute queries: <code>proxy = conn.execute(query)</code></li>
+<li>fetch results: <code>results = proxy.fetchall()</code></li>
+<li>work with results (any python code you need)</li>
+<li>When finished, close the connection</li>
+</ul>
+<div id="creating-an-engine" class="section level2">
+<h2>Creating an Engine</h2>
+<p>First we need an engine to handle communication with the database. This requires passing the SQL driver and dialect information as well as the location of the database. For SQLite, this is very simple but large RDBMS connections will require additional connection information.</p>
+<p>Once we create the engine, we’ll ask for the table names to see which tables are in the database (it should be empty in this case).</p>
+<pre class="python"><code>import sqlalchemy as sa
+
+eng = sa.create_engine(&#39;sqlite:///../../static/files/countries.sqlite&#39;)
+eng.table_names()</code></pre>
+<pre><code>## []</code></pre>
+</div>
+<div id="pandas-to-bulk-load-data" class="section level2">
+<h2>Pandas to Bulk Load Data</h2>
+<p>We could run SQL <code>INSERT</code> commands, but <code>pandas</code> can read common data files and export to SQL. Here we’ll put some city data into our database:</p>
+<pre class="python"><code>import pandas as pd
+cityDF = pd.read_csv(&#39;../../static/files/cities.csv&#39;)
+print(cityDF.head())</code></pre>
+<pre><code>##           name country_code  city_proper_pop  metroarea_pop  urbanarea_pop
+## 0      Abidjan          CIV          4765000            NaN        4765000
+## 1    Abu Dhabi          ARE          1145000            NaN        1145000
+## 2        Abuja          NGA          1235880      6000000.0        1235880
+## 3        Accra          GHA          2070463      4010054.0        2070463
+## 4  Addis Ababa          ETH          3103673      4567857.0        3103673</code></pre>
+<pre class="python"><code>cityDF.to_sql(&#39;cities&#39;, eng)
+
+eng.table_names()</code></pre>
+<pre><code>## [&#39;cities&#39;]</code></pre>
+<p><code>pandas</code> also provides ways to query a database as though it was a typical dataframe. If you already know <code>pandas</code> and only need some basic queries then this is a natural path. Instead, we’re going to start using SQLAlchemy to write queries in a nice <em>pythonic</em> way, but I’m not going to get into the full object-relational mapper that SQLAlchemy provides (but this is what to do if you want to store complex objects into a relational database).</p>
+</div>
+<div id="sqlalchemy-queries" class="section level2">
+<h2>SQLAlchemy Queries</h2>
+<p><em>Warning about SQL injection</em></p>
+<p>SQLAlchemy allows you to send raw query strings, <strong>but don’t do this</strong>. If you’re doing interactive data analysis, raw query strings are quick and easy. If you’re building the query from user input, raw query strings are the easiest way to expose your database to SQL injection attacks.</p>
+<p>Now to the queries. We need a metadata object to hold table metadata. Then we have to have a table object to select from. Other SQL clauses are then methods on the select function:</p>
+<pre class="python"><code>md = sa.MetaData()
+cities = sa.Table(&#39;cities&#39;, md, autoload=True, autoload_with=eng)
+
+stmt =  sa.sql.select([cities]).where(
+  cities.columns.country_code==&#39;USA&#39;
+  ).order_by(
+    cities.columns.city_proper_pop.desc()
+    )
+
+results = eng.execute(stmt).fetchall()
+print(results[0:10])</code></pre>
+<pre><code>## [(153, &#39;New York City&#39;, &#39;USA&#39;, 8550405, 20182305.0, 8550405), (124, &#39;Los Angeles&#39;, &#39;USA&#39;, 3884307, 15058000.0, 3884307), (45, &#39;Chicago&#39;, &#39;USA&#39;, 2695598, 9156000.0, 2695598), (87, &#39;Houston&#39;, &#39;USA&#39;, 2489558, 6490180.0, 2489558), (165, &#39;Philadelphia&#39;, &#39;USA&#39;, 1567872, 6069875.0, 1567872), (167, &#39;Phoenix&#39;, &#39;USA&#39;, 1563025, 4574531.0, 1563025), (186, &#39;San Antonio&#39;, &#39;USA&#39;, 1469845, 2454061.0, 1469845), (187, &#39;San Diego&#39;, &#39;USA&#39;, 1394928, 3095313.0, 1394928), (55, &#39;Dallas&#39;, &#39;USA&#39;, 1317929, 7233323.0, 1317929)]</code></pre>
+<p>After building the query <code>stmt</code> we obtain results by (1) executing the query on the engine and (2) fetching all the results. As you can see from the printed results, what’s returned is a list of database tuples.</p>
+<div id="pretty-print-results" class="section level3">
+<h3>Pretty Print Results</h3>
+<p>Since a list of tuples is a mess to read (but fairly easy to work with), here’s a function to display results in a more human-readable format.</p>
+<pre class="python"><code># requires import pandas as pd
+def query_results(query, engine, number):
+    results = engine.execute(query).fetchmany(number)
+    resDF = pd.DataFrame(results)
+    resDF.columns = results[0].keys()
+    print(resDF)</code></pre>
+</div>
+</div>
+<div id="joins" class="section level2">
+<h2>Joins</h2>
+<p>You can’t do much in a real database without joins, so let’s do an example. We’ll load the JACS database - containing data on papers published in the Journal of the American Chemical Society. This database has 3 tables: <code>Papers</code>, <code>Authors</code> and <code>Paper_Authors</code>. The last one is a join table since we can’t have a list of authors for each paper in a relational database.</p>
+<p>Here’s the initial set-up for the new database.</p>
+<pre class="python"><code>#engine
+JACSeng = sa.create_engine(&#39;sqlite:///../../static/files/jacs.sqlite&#39;)
+# connection
+conn = JACSeng.connect()
+#metadata and tables
+md = sa.MetaData()
+authors = sa.Table(&#39;Authors&#39;, md, autoload=True, autoload_with=JACSeng)
+papers = sa.Table(&#39;Papers&#39;, md, autoload=True, autoload_with=JACSeng)
+pa = sa.Table(&#39;Paper_Authors&#39;, md, autoload=True, autoload_with=JACSeng)</code></pre>
+<p>Now we’ll write a query to get the titles and authors names of all papers in volume 2 of issue 118 (pretty arbitrary, but a realistic problem). First we <code>select</code> then add a <code>select_from</code> that contains the <code>join</code>(s). Finally, we use our function to print the results.</p>
+<pre class="python"><code>query118v2 = sa.select([papers.columns.title, authors.columns.surname, authors.columns.forename])
+query118v2 = query118v2.select_from(
+  papers.join(
+    pa, pa.columns.paperID==papers.columns.paperID
+    ).join(
+      authors, pa.columns.authorID==authors.columns.authorID
+      )
+    )
+query118v2 = query118v2.where(sa.and_(papers.columns.issue==118, papers.columns.volume==2))
+
+query_results(query118v2, conn, 5)</code></pre>
+<pre><code>##                                                title   surname  forename
+## 0  Evidence for Concert in the Thermal Unimolecul...  Gajewski    Joseph
+## 1  Evidence for Concert in the Thermal Unimolecul...     Olson      Leif
+## 2  Evidence for Concert in the Thermal Unimolecul...  Willcott        M.
+## 3  Orthogonal Ligation of Unprotected Peptide Seg...       Liu  Chuan-Fa
+## 4  Orthogonal Ligation of Unprotected Peptide Seg...       Rao     Chang</code></pre>
+</div>
+<div id="end" class="section level2">
+<h2>End</h2>
+<p>We can use similar commands to run any SQL query we want, including DDL commands to create tables.</p>
+</div>
+
+      </div>
+
+      
+
+
+<div class="article-tags">
+  
+  <a class="btn btn-primary btn-outline" href="/tags/python">Python</a>
+  
+  <a class="btn btn-primary btn-outline" href="/tags/sql">SQL</a>
+  
+  <a class="btn btn-primary btn-outline" href="/tags/sqlalchemy">sqlalchemy</a>
+  
+</div>
+
+
+
+    </div>
+  </div>
+
+</article>
+
+
+
+<div class="article-container article-widget">
+  <div class="hr-light"></div>
+  <h3>Related</h3>
+  <ul>
+    
+    <li><a href="/post/2019-04-21-pyscrape/">Python Web Scraping</a></li>
+    
+    <li><a href="/post/2019-03-18-matplotlib-map/">Mapping with an 800 Pound Gorilla</a></li>
+    
+    <li><a href="/post/2019-02-23-em-1/">Expectation-Maximization</a></li>
+    
+    <li><a href="/post/2018-11-10-reticulate-mm/">Reticulated Mixture Models</a></li>
+    
+    <li><a href="/post/2018-04-01-sql-rmd/">SQL in RMarkdown!</a></li>
+    
+  </ul>
+</div>
+
+
+
+
+<div class="article-container">
+  
+
+</div>
+
+<footer class="site-footer">
+  <div class="container">
+    <p class="powered-by">
+
+      &copy; 2017 Jason Preszler &middot; 
+
+      Powered by the
+      <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+      <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+      <span class="pull-right" aria-hidden="true">
+        <a href="#" id="back_to_top">
+          <span class="button_icon">
+            <i class="fa fa-chevron-up fa-2x"></i>
+          </span>
+        </a>
+      </span>
+
+    </p>
+  </div>
+</footer>
+
+
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close btn-large" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Cite</h4>
+      </div>
+      <div>
+        <pre><code class="modal-body tex"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-primary btn-outline js-copy-cite" href="#" target="_blank">
+          <i class="fa fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-primary btn-outline js-download-cite" href="#" target="_blank">
+          <i class="fa fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+    
+
+    
+
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" integrity="sha512-3P8rXCuGJdNZOnUx/03c1jOTnMn3rP63nBip5gOP2qmUh5YAdVAvFZ1E+QLZZbC1rtMrQb+mah3AfYW11RUrWA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.3/imagesloaded.pkgd.min.js" integrity="sha512-umsR78NN0D23AzgoZ11K7raBD+R6hqKojyBZs1w8WvYlsI+QuKRGBx3LFCwhatzBunCjDuJpDHwxD13sLMbpRA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha512-iztkobsvnjKfAtTNdHkGVjAYTrrtlC7mGp/54c40wowO7LhURYl3gVzzcEqGl/qKXQltJ2HwMrdLcNUdo+N/RQ==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.4/isotope.pkgd.min.js" integrity="sha512-VDBOIlDbuC4VWxGJNmuFRQ0Li0SKkDpmGyuhAG5LTDLd/dJ/S0WMVxriR2Y+CyPL5gzjpN4f/6iqWVBJlht0tQ==" crossorigin="anonymous"></script>
+    
+    
+    <script src="/js/hugo-academic.js"></script>
+    
+
+    
+    
+      
+      
+      <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+      
+
+      
+      <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+      
+      <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/python.min.js"></script>
+      
+      <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/c.min.js"></script>
+      
+      <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/sql.min.js"></script>
+      
+
+      
+
+      <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({ tex2jax: { inlineMath: [['$','$'], ['\\(','\\)']] } });
+    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_CHTML" integrity="sha512-tOav5w1OjvsSJzePRtt2uQPFwBoHt1VZcUq8l8nm5284LEKE9FSJBQryzMBzHxY5P0zRdNqEcpLIRVYFNgu1jw==" crossorigin="anonymous"></script>
+    
+    
+
+  </body>
+</html>
+

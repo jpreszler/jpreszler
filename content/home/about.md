@@ -2,7 +2,7 @@
 # About/Biography widget.
 widget = "about"
 active = true
-date = "2017-12-28T00:00:00"
+date = "2019-05-16T00:00:00"
 
 # Order that this section will appear in.
 weight = 5
@@ -10,10 +10,12 @@ weight = 5
 # List your academic interests.
 [interests]
   interests = [
-  "Arithmetic Statistics",
-  "Arboreal Galois Representations",
-  "Bayesian Data Analysis",
-  "Machine Learning"
+  "Clustering",
+  "Supervised Machine Learning",
+  "Data Visualization",
+  "Natural Language Processing",
+  "Time Series Forecasting",
+  "Bayesian Data Analysis"
   ]
 
 # List your qualifications (such as academic degrees).
@@ -36,11 +38,14 @@ weight = 5
 
 # Biography
 
-I am an Assistant Professor of Mathematics, Statistics and Computer Science at The College of Idaho. My research interests are in the application of statistics and machine learning to problems in algebraic number theory as well as other applications of machine learning and statistical modeling, depending on collaborators and other interesting things that pass my way.
+I am a Data Science Fellow at [Insight Data Science](https://www.insightdatascience.com) in Seattle. 
 
-Currently, my main focus is on using machine learning to better understand why some irreducible polynomials factor after being composed with themselves. There are infinitely many polynomials with this property, but only about 1 in a million randomly selected polynomials will do this. 
+For ten years prior to joining Insight, I was in academia teaching math, statistics, and computer science at various colleges and universities including:
 
-I regularly teach a wide variety of courses including Introductory Statistics, Introductory Computer Science, Data Visualization, Machine Learning, Applied Databases, Geometry and Number Theory and have taught almost every undergraduate math course. I also enjoy working with students on independent study and research projects, so if you're interested in what I do or have a project that involves analyzing data please come see me.
-
-## CV
-{{% staticref "files/cv.pdf" %}}Download my CV{{% /staticref %}}
+ * The College of Idaho
+ * James Madison University
+ * University of Puget Sound
+ * University of Washington (Tacoma and Bothell).
+ 
+## Resume
+{{% staticref "files/resume.pdf" %}}Download my Resume{{% /staticref %}}

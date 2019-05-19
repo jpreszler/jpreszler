@@ -1,0 +1,121 @@
+---
+author: "Jason Preszler"
+title: "Pythonic SQL with SQLAlchemy"
+date: 2019-05-18
+output: html_document
+tags: ['Python', 'SQL', 'sqlalchemy']
+---
+
+During my *Applied Databases* course in Spring 2019, I gave my students a choice of which language to use to interact with SQL and relational databases. They had already learned core SQL and I only gave them 3 options: C++, R, and Python. The choices of R and python are natural given my data science interests and experience. Last year I just showed them R and got some complaints on evaluations (some people don't think R is a "real language"). The option of C++ had 2 motivations: every student had 1 semester (many had 2) of the intro programming sequence in C++, and we were using SQLite which is written in C++. Fortunately, the majority picked Python and these are some examples we went through to start learning SQLAlchemy.
+
+Here's the basic process of working with a database via `sqlalchemy`:
+
+ * Create an engine via: `eng = create_engine('dialect+driver://db-location')`
+ * Create a connection via: `conn = eng.connection()`
+ * Create an object to hold metadata: `md = MetaData()`
+ * Create python objects for tables you'll work with: `pyTable = Table('name',md, autoload=True, autoload_with=eng)`  
+ * Build queries - anything SQL can do, SQLAlchemy supports.
+ * execute queries: `proxy = conn.execute(query)`
+ * fetch results: `results = proxy.fetchall()`
+ * work with results (any python code you need)
+ * When finished, close the connection
+
+## Creating an Engine
+
+First we need an engine to handle communication with the database. This requires passing the SQL driver and dialect information as well as the location of the database. For SQLite, this is very simple but large RDBMS connections will require additional connection information.
+
+Once we create the engine, we'll ask for the table names to see which tables are in the database (it should be empty in this case).
+```{python create, echo=TRUE}
+import sqlalchemy as sa
+
+eng = sa.create_engine('sqlite:///../../static/files/countries.sqlite')
+eng.table_names()
+```
+
+## Pandas to Bulk Load Data
+
+We could run SQL `INSERT` commands, but `pandas` can read common data files and export to SQL. Here we'll put some city data into our database:
+
+```{python}
+import pandas as pd
+cityDF = pd.read_csv('../../static/files/cities.csv')
+print(cityDF.head())
+
+cityDF.to_sql('cities', eng)
+
+eng.table_names()
+```
+
+`pandas` also provides ways to query a database as though it was a typical dataframe. If you already know `pandas` and only need some basic queries then this is a natural path. Instead, we're going to start using SQLAlchemy to write queries in a nice *pythonic* way, but I'm not going to get into the full object-relational mapper that SQLAlchemy provides (but this is what to do if you want to store complex objects into a relational database).
+
+## SQLAlchemy Queries
+
+*Warning about SQL injection*
+
+SQLAlchemy allows you to send raw query strings, **but don't do this**. If you're doing interactive data analysis, raw query strings are quick and easy. If you're building the query from user input, raw query strings are the easiest way to expose your database to SQL injection attacks.
+
+Now to the queries. We need a metadata object to hold table metadata. Then we have to have a table object to select from. Other SQL clauses are then methods on the select function:
+```{python}
+md = sa.MetaData()
+cities = sa.Table('cities', md, autoload=True, autoload_with=eng)
+
+stmt =  sa.sql.select([cities]).where(
+  cities.columns.country_code=='USA'
+  ).order_by(
+    cities.columns.city_proper_pop.desc()
+    )
+
+results = eng.execute(stmt).fetchall()
+print(results[0:10])
+```
+After building the query `stmt` we obtain results by (1) executing the query on the engine and (2) fetching all the results. As you can see from the printed results, what's returned is a list of database tuples.
+
+### Pretty Print Results
+Since a list of tuples is a mess to read (but fairly easy to work with), here's a function to display results in a more human-readable format.
+
+```{python}
+# requires import pandas as pd
+def query_results(query, engine, number):
+    results = engine.execute(query).fetchmany(number)
+    resDF = pd.DataFrame(results)
+    resDF.columns = results[0].keys()
+    print(resDF)
+```
+
+## Joins
+
+You can't do much in a real database without joins, so let's do an example. We'll load the JACS database - containing data on papers published in the Journal of the American Chemical Society. This database has 3 tables: `Papers`, `Authors` and `Paper_Authors`. The last one is a join table since we can't have a list of authors for each paper in a relational database.
+
+Here's the initial set-up for the new database.
+
+```{python}
+#engine
+JACSeng = sa.create_engine('sqlite:///../../static/files/jacs.sqlite')
+# connection
+conn = JACSeng.connect()
+#metadata and tables
+md = sa.MetaData()
+authors = sa.Table('Authors', md, autoload=True, autoload_with=JACSeng)
+papers = sa.Table('Papers', md, autoload=True, autoload_with=JACSeng)
+pa = sa.Table('Paper_Authors', md, autoload=True, autoload_with=JACSeng)
+```
+
+Now we'll write a query to get the titles and authors names of all papers in volume 2 of issue 118 (pretty arbitrary, but a realistic problem). First we `select` then add a `select_from` that contains the `join`(s). Finally, we use our function to print the results.
+
+```{python}
+query118v2 = sa.select([papers.columns.title, authors.columns.surname, authors.columns.forename])
+query118v2 = query118v2.select_from(
+  papers.join(
+    pa, pa.columns.paperID==papers.columns.paperID
+    ).join(
+      authors, pa.columns.authorID==authors.columns.authorID
+      )
+    )
+query118v2 = query118v2.where(sa.and_(papers.columns.issue==118, papers.columns.volume==2))
+
+query_results(query118v2, conn, 5)
+```
+
+## End
+
+We can use similar commands to run any SQL query we want, including DDL commands to create tables.

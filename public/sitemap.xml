@@ -5,7 +5,7 @@
     <url>
     
       <loc>/</loc>
-      <lastmod>2019-04-21T00:00:00+00:00</lastmod>
+      <lastmod>2019-05-18T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -15,7 +15,46 @@
     <url>
     
       <loc>/tags/python/</loc>
-      <lastmod>2019-04-21T00:00:00+00:00</lastmod>
+      <lastmod>2019-05-18T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/post/2019-05-18-pysql/</loc>
+      <lastmod>2019-05-18T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/sql/</loc>
+      <lastmod>2019-05-18T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/</loc>
+      <lastmod>2019-05-18T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/sqlalchemy/</loc>
+      <lastmod>2019-05-18T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -26,16 +65,6 @@
     
       <loc>/post/2019-04-21-pyscrape/</loc>
       <lastmod>2019-04-21T00:00:00+00:00</lastmod>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/</loc>
-      <lastmod>2019-04-21T00:00:00+00:00</lastmod>
-      <priority>0</priority>
     </url>
     
   
@@ -200,8 +229,9 @@
     
     <url>
     
-      <loc>/post/2018-12-27-sankey/</loc>
+      <loc>/tags/d3.js/</loc>
       <lastmod>2018-12-27T00:00:00+00:00</lastmod>
+      <priority>0</priority>
     </url>
     
   
@@ -209,9 +239,8 @@
     
     <url>
     
-      <loc>/tags/d3.js/</loc>
+      <loc>/post/2018-12-27-sankey/</loc>
       <lastmod>2018-12-27T00:00:00+00:00</lastmod>
-      <priority>0</priority>
     </url>
     
   
@@ -500,16 +529,6 @@
     
       <loc>/post/2018-05-05-counting-class/</loc>
       <lastmod>2018-05-05T00:00:00+00:00</lastmod>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/sql/</loc>
-      <lastmod>2018-04-01T00:00:00+00:00</lastmod>
-      <priority>0</priority>
     </url>
     
   

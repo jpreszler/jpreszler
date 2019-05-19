@@ -40,18 +40,18 @@ defaultContentLanguageInSubdir = false
 
   # Your details.
   name = "Jason Preszler"
-  role = "Assistant Professor - Math, Statistics, and Computer Science"
+  role = "Data Science Fellow"
 
   # Organizations/Affiliations.
   #   Separate multiple entries with a comma, using the form: `[ {name="Org1", url=""}, {name="Org2", url=""} ]`.
-  organizations = [ { name = "The College of Idaho", url = "http://www.collegeofidaho.edu" } ]
+  organizations = [{name = "Insight Data Science - Seattle", url="https://www.insightdatascience.com"}]# { name = "The College of Idaho", url = "http://www.collegeofidaho.edu" } ]
 
   gravatar = false  # Get your avatar from Gravatar.com? (true/false)
   avatar = "jp-coi.jpg"  # Specify an avatar image (in `static/img/` folder) or delete value to disable avatar.
-  email = "jpreszler@collegeofidaho.edu"
-  address = "Boone 102E, The College of Idaho, Caldwell, ID. USA"
-  office_hours = ""
-  phone = "208 459 5147"
+  email = "jpreszler@gmail.com"
+#  address = "Boone 102E, The College of Idaho, Caldwell, ID. USA"
+#  office_hours = ""
+#  phone = "208 459 5147"
   skype = ""
   telegram = ""
 
@@ -134,7 +134,7 @@ defaultContentLanguageInSubdir = false
   #   For more info on the highlighting options, see:
   #   https://sourcethemes.com/academic/post/writing-markdown-latex/#highlighting-options
   highlight = true
-  highlight_languages = ["r", "python", "c"]
+  highlight_languages = ["r", "python", "c", "sql"]
   # highlight_style = "github"
 
   # Enable native social sharing buttons?
@@ -243,27 +243,27 @@ defaultContentLanguageInSubdir = false
 [[menu.main]]
   name = "Publications"
   url = "#publications"
-  weight = 2
+  weight = 3
 
 [[menu.main]]
   name = "Posts"
   url = "#posts"
-  weight = 3
+  weight = 2
 
 [[menu.main]]
   name = "Projects"
   url = "#projects"
-  weight = 4
-
-[[menu.main]]
-  name = "Teaching"
-  url = "#teaching"
   weight = 5
+
+#[[menu.main]]
+#  name = "Teaching"
+#  url = "#teaching"
+#  weight = 5
 
 [[menu.main]]
   name = "Talks"
   url = "#talks"
-  weight = 6
+  weight = 4
   
 [[menu.main]]
   name = "Contact"
