@@ -157,7 +157,7 @@
     </item>
     
     <item>
-      <title>D3.js</title>
+      <title>d3.js</title>
       <link>/tags/d3.js/</link>
       <pubDate>Thu, 27 Dec 2018 00:00:00 +0000</pubDate>
       
@@ -384,7 +384,7 @@
     <item>
       <title>bayesian</title>
       <link>/tags/bayesian/</link>
-      <pubDate>Sun, 22 Oct 2017 00:00:00 -0600</pubDate>
+      <pubDate>Sun, 22 Oct 2017 00:00:00 -0700</pubDate>
       
       <guid>/tags/bayesian/</guid>
       <description></description>
@@ -393,7 +393,7 @@
     <item>
       <title>maps</title>
       <link>/tags/maps/</link>
-      <pubDate>Sun, 22 Oct 2017 00:00:00 -0600</pubDate>
+      <pubDate>Sun, 22 Oct 2017 00:00:00 -0700</pubDate>
       
       <guid>/tags/maps/</guid>
       <description></description>
@@ -411,7 +411,7 @@
     <item>
       <title>jmm</title>
       <link>/tags/jmm/</link>
-      <pubDate>Sun, 11 Jan 2015 00:00:00 -0700</pubDate>
+      <pubDate>Sun, 11 Jan 2015 00:00:00 -0800</pubDate>
       
       <guid>/tags/jmm/</guid>
       <description></description>

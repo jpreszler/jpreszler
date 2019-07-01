@@ -33,12 +33,17 @@ weight = 5
   course = "BS Mathematics, Minor in Computer Science"
   institution = "University of Puget Sound"
   year = 2002
- 
+
 +++
 
 # Biography
 
-I am a Data Science Fellow at [Insight Data Science](https://www.insightdatascience.com) in Seattle. 
+I am a Data Science Fellow at [Insight Data Science](https://www.insightdatascience.com) in Seattle. My project has been to develop [RealAllocator](https://realallocator.herokuapp.com), a web app for portfolio optimization and backtesting of an investment portfolio moving from only stocks and bonds to stocks, bonds, and direct real estate investment. This was done in consultation with [RealCrowd](https://www.realcrowd.com)
+
+Other recent data science projects have been:
+ * An investigation into using various (interpretable) binary classifiers to better understand an imbalanced classification problem in my number theory research (emergent reducibility).
+ * Working to identify and reduce curriculum inefficiencies at the College of Idaho.
+ * Developing usage and staffing models for a large drop-in tutoring center at James Madison University.
 
 For ten years prior to joining Insight, I was in academia teaching math, statistics, and computer science at various colleges and universities including:
 
@@ -46,6 +51,6 @@ For ten years prior to joining Insight, I was in academia teaching math, statist
  * James Madison University
  * University of Puget Sound
  * University of Washington (Tacoma and Bothell).
- 
+
 ## Resume
 {{% staticref "files/resume.pdf" %}}Download my Resume{{% /staticref %}}

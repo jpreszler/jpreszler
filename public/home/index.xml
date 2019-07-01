@@ -18,9 +18,8 @@
       <pubDate>Thu, 16 May 2019 00:00:00 +0000</pubDate>
       
       <guid>/home/about/</guid>
-      <description>Biography I am a Data Science Fellow at Insight Data Science in Seattle.
-For ten years prior to joining Insight, I was in academia teaching math, statistics, and computer science at various colleges and universities including:
- The College of Idaho James Madison University University of Puget Sound University of Washington (Tacoma and Bothell).  Resume Download my Resume</description>
+      <description>Biography I am a Data Science Fellow at Insight Data Science in Seattle. My project has been to develop RealAllocator, a web app for portfolio optimization and backtesting of an investment portfolio moving from only stocks and bonds to stocks, bonds, and direct real estate investment. This was done in consultation with RealCrowd
+Other recent data science projects have been: * An investigation into using various (interpretable) binary classifiers to better understand an imbalanced classification problem in my number theory research (emergent reducibility).</description>
     </item>
     
     <item>
@@ -35,7 +34,7 @@ For ten years prior to joining Insight, I was in academia teaching math, statist
     <item>
       <title>Selected Publications</title>
       <link>/home/publications_selected/</link>
-      <pubDate>Mon, 01 Jan 2018 00:00:00 -0700</pubDate>
+      <pubDate>Mon, 01 Jan 2018 00:00:00 -0800</pubDate>
       
       <guid>/home/publications_selected/</guid>
       <description></description>
@@ -53,7 +52,7 @@ For ten years prior to joining Insight, I was in academia teaching math, statist
     <item>
       <title>Tags</title>
       <link>/home/tags/</link>
-      <pubDate>Wed, 20 Sep 2017 00:00:00 -0600</pubDate>
+      <pubDate>Wed, 20 Sep 2017 00:00:00 -0700</pubDate>
       
       <guid>/home/tags/</guid>
       <description></description>
@@ -62,7 +61,7 @@ For ten years prior to joining Insight, I was in academia teaching math, statist
     <item>
       <title>Recent Publications</title>
       <link>/home/publications/</link>
-      <pubDate>Thu, 28 Dec 2017 00:00:00 -0700</pubDate>
+      <pubDate>Thu, 28 Dec 2017 00:00:00 -0800</pubDate>
       
       <guid>/home/publications/</guid>
       <description></description>
