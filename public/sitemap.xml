@@ -229,9 +229,8 @@
     
     <url>
     
-      <loc>/tags/d3.js/</loc>
+      <loc>/post/2018-12-27-sankey/</loc>
       <lastmod>2018-12-27T00:00:00+00:00</lastmod>
-      <priority>0</priority>
     </url>
     
   
@@ -239,8 +238,9 @@
     
     <url>
     
-      <loc>/post/2018-12-27-sankey/</loc>
+      <loc>/tags/d3.js/</loc>
       <lastmod>2018-12-27T00:00:00+00:00</lastmod>
+      <priority>0</priority>
     </url>
     
   
@@ -737,7 +737,7 @@
     <url>
     
       <loc>/talk/stat-b/</loc>
-      <lastmod>2017-10-22T00:00:00-06:00</lastmod>
+      <lastmod>2017-10-22T00:00:00-07:00</lastmod>
     </url>
     
   
@@ -746,7 +746,7 @@
     <url>
     
       <loc>/tags/bayesian/</loc>
-      <lastmod>2017-10-22T00:00:00-06:00</lastmod>
+      <lastmod>2017-10-22T00:00:00-07:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -756,7 +756,7 @@
     <url>
     
       <loc>/tags/maps/</loc>
-      <lastmod>2017-10-22T00:00:00-06:00</lastmod>
+      <lastmod>2017-10-22T00:00:00-07:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -766,7 +766,7 @@
     <url>
     
       <loc>/publication_types/2/</loc>
-      <lastmod>2017-03-01T00:00:00-07:00</lastmod>
+      <lastmod>2017-03-01T00:00:00-08:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -776,7 +776,7 @@
     <url>
     
       <loc>/publication/infinite-cubics/</loc>
-      <lastmod>2017-03-01T00:00:00-07:00</lastmod>
+      <lastmod>2017-03-01T00:00:00-08:00</lastmod>
     </url>
     
   
@@ -785,7 +785,7 @@
     <url>
     
       <loc>/publication_types/</loc>
-      <lastmod>2017-03-01T00:00:00-07:00</lastmod>
+      <lastmod>2017-03-01T00:00:00-08:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -822,7 +822,7 @@
     <url>
     
       <loc>/talk/jmm-2015/</loc>
-      <lastmod>2015-01-11T00:00:00-07:00</lastmod>
+      <lastmod>2015-01-11T00:00:00-08:00</lastmod>
     </url>
     
   
@@ -831,7 +831,7 @@
     <url>
     
       <loc>/tags/jmm/</loc>
-      <lastmod>2015-01-11T00:00:00-07:00</lastmod>
+      <lastmod>2015-01-11T00:00:00-08:00</lastmod>
       <priority>0</priority>
     </url>
     

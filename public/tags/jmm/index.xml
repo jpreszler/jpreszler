@@ -7,7 +7,7 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2017 Jason Preszler</copyright>
-    <lastBuildDate>Sun, 11 Jan 2015 00:00:00 -0700</lastBuildDate>
+    <lastBuildDate>Sun, 11 Jan 2015 00:00:00 -0800</lastBuildDate>
     
 	<atom:link href="/tags/jmm/index.xml" rel="self" type="application/rss+xml" />
     
@@ -15,7 +15,7 @@
     <item>
       <title>An Infinite Family of Cubic Polynomials with Depth 1 Emergent Reducibility</title>
       <link>/talk/jmm-2015/</link>
-      <pubDate>Sun, 11 Jan 2015 00:00:00 -0700</pubDate>
+      <pubDate>Sun, 11 Jan 2015 00:00:00 -0800</pubDate>
       
       <guid>/talk/jmm-2015/</guid>
       <description></description>
