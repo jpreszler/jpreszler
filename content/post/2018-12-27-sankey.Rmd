@@ -80,12 +80,15 @@ nodeDFTemp <- mutate(nodes, nid = node.id-1, id =
 This post is about a type of visualization the will hopefully help see how students "flow" through college. The data is an anonymized selection of Math and Math-Computer Science majors at the College of Idaho, and for simplicity we'll only be using the math and computer science courses. Out goal is to produce the following `Sankey Diagram`, which is really just a graph (in the discrete math sense - nodes connected by edges) where the edges are scaled by weight, in this case the number of students taking course A then B will be reflected in the width of the link between A and B. The `sankeyNetwork` command also adjust the node layout to minimize edge crossing and have a general "left to right" aspect.
 
 ```{r, message=FALSE, error=FALSE}
-sankeyNetwork(Links = edgeDFTemp, Nodes = nodeDFTemp, Source = "source", 
+sn <- sankeyNetwork(Links = edgeDFTemp, Nodes = nodeDFTemp, Source = "source", 
               Target = "target", Value = "value", NodeID = "id", 
               nodeWidth = 20, fontSize = 8, units = "students")
+
+htmlwidgets::onRender(sn, 'document.getElementsByTagName("svg")[0].setAttribute("viewBox", "")')
+
 ```
 
-##The Data
+## The Data
 Following general practice, let's first look at the data that we'll be using. I've said this is some anonymized student data consisting of an `id` (hashed, not actual student id's), a course prefix and number `crs`, and a standardized year value `std.year`. This `std.year` variable indicates when a student is taking the course during their "college career" with `0.0` meaning first fall semester, `1.4` meaning spring of their second year. The first digit is basically the number of years of college completed ($0,1,2,$ or $3$) and the second codes the semester type ($0$ is fall, $2$ is winter, $4$ is spring and $6$ is summer). These are numeric so I could do arithmetic and standardize things. The point is to help us see students taking a course like `CSC-150` (Intro to CS) in their freshman versus junior years, how they got there, and what they do next.
 
 Now that you understand the variables, here's a glimpse of the data (and the packages I need for the post):
@@ -129,7 +132,7 @@ There is one thing we can do to make things a little cleaner. The MAT-28x intro 
 students$crs <- str_replace(students$crs, "MAT-28[:digit:]{1}", "MAT-28X")
 ```
 
-##Building Nodes and Edges
+## Building Nodes and Edges
 The `sankeyNetwork` command, like most `networkD3` commands, needs to be given a graph (nodes and edges). Unfortunately, it's not smart enough to build it from our `students` data frame, we need to build it. 
 
 The nodes are easier, so we'll start there. We want an `id` for each node that combines the `crs` and `std.year` variables, so I'll keep those and make a new `id` column (note this will lose all student info).
@@ -194,7 +197,7 @@ edgeDF %>% head() %>% knitr::kable()
 
 Now we have `r nrow(edgeDF)` edges, with the desired weights for the sankey diagram.
 
-##Making the Diagram
+## Making the Diagram
 Now we just call `sankeyNetwork` and we're done right? No, because we have data in R that we have to send to JavaScript to do the plotting so there's a little book-keeping left to do. First, we need numeric node id's and we need those id's in the edge data.
 
 ```{r}
@@ -220,7 +223,9 @@ nodeDFTemp <- mutate(nodes, nid = node.id-1, id =
                                             str_replace(id, "\\.2", "W"),
                                             str_c(id, "FA")))))
 
-sankeyNetwork(Links = edgeDFTemp, Nodes = nodeDFTemp, Source = "source", 
+sn2 <- sankeyNetwork(Links = edgeDFTemp, Nodes = nodeDFTemp, Source = "source", 
               Target = "target", Value = "value", NodeID = "id", 
               nodeWidth = 20, fontSize = 8, units = "students")
+htmlwidgets::onRender(sn2, 'document.getElementsByTagName("svg")[2].setAttribute("viewBox", "")')
+
 ```
