@@ -6,6 +6,8 @@ output: html_document
 tags: ["R", "networkD3", "d3.js", "curriculum"]
 ---
 
+**Update 7/23/2019** Various package updates have created problems with showing more than one javascript plot on a post. I've added calls to `htlwidgets::onRender` to get at least one plot displayed. I may revisit this, but the interaction between hugo, blogdown, and various javascript libraries (chorddiag, networkD3, D3, data tables, etc) is more than I'm able to dive into at the moment.
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message=FALSE, error = FALSE)
 library(dplyr)
