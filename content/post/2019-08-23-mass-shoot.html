@@ -1,0 +1,192 @@
+---
+title: "Mass Shooting Changepoint"
+author: "Jason Preszler"
+date: 2019-08-23
+output_document: html_document
+tags: ["Python", "Bayesian", "pymc3", "changepoint", "Poisson"]
+---
+
+
+
+<p>Every time there’s news about a mass shooting I feel like doing some type of data analysis about gun violence. With the shootings in Dayton and El Paso, as well as news of several likely shootings being prevented, I thought I would actually follow through with some analysis. Having been a senior in high school (in California) when the Columbine shooting took place, and also living in Salt Lake during the Trolley Square shooting I’ve seen the impacts of these tragedies and feel as though they are happening more frequently. This seemed like a natural thing to quantify: have mass shooting become more common or more severe?</p>
+<div id="data-exploration" class="section level2">
+<h2>Data Exploration</h2>
+<p>Mother Jones maintains a dataset on <a href="https://www.motherjones.com/politics/2012/12/mass-shootings-mother-jones-full-data/">mass shootings</a>, and there are many other datasets related to gun violence in general. I’m going to focus on the mass shooting data for this post. First, we’ll load the standard python packages and read in the data:</p>
+<pre class="python"><code>import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+sns.set_style(&#39;ticks&#39;)
+sns.set_context(&quot;paper&quot;)
+
+ms = pd.read_csv(&#39;../../static/files/MJ-mass-shoot.csv&#39;, parse_dates=[2])
+ms.info()</code></pre>
+<pre><code>## &lt;class &#39;pandas.core.frame.DataFrame&#39;&gt;
+## RangeIndex: 114 entries, 0 to 113
+## Data columns (total 24 columns):
+## case                                114 non-null object
+## location                            114 non-null object
+## date                                114 non-null datetime64[ns]
+## summary                             114 non-null object
+## fatalities                          114 non-null int64
+## injured                             114 non-null int64
+## total_victims                       114 non-null int64
+## location.1                          114 non-null object
+## age_of_shooter                      114 non-null int64
+## prior_signs_mental_health_issues    114 non-null object
+## mental_health_details               114 non-null object
+## weapons_obtained_legally            114 non-null object
+## where_obtained                      114 non-null object
+## weapon_type                         114 non-null object
+## weapon_details                      114 non-null object
+## race                                114 non-null object
+## gender                              114 non-null object
+## sources                             114 non-null object
+## mental_health_sources               114 non-null object
+## sources_additional_age              114 non-null object
+## latitude                            114 non-null float64
+## longitude                           114 non-null float64
+## type                                114 non-null object
+## year                                114 non-null int64
+## dtypes: datetime64[ns](1), float64(2), int64(5), object(16)
+## memory usage: 21.5+ KB</code></pre>
+<p>In my transition from R to Python, I’ve missed the basic variable info of RStudio and the <code>info()</code> call on a pandas dataframe at least gives the basic type data for each variable.</p>
+<p>I’m interested in frequency and severity of these shootings, so let’s first look at fatalities over time:</p>
+<pre class="python"><code>ms.plot(x=&#39;date&#39;, y=&#39;fatalities&#39;)</code></pre>
+<p><img src="/post/2019-08-23-mass-shoot_files/figure-html/unnamed-chunk-1-1.png" /><!-- -->
+I would have also looked at injuries, but the Las Vegas shooting of 2017 makes a plot of both unreadable. The above plot does indicate both a frequency and severity increase.</p>
+<p>To investigate change over time, I’m going to group the data by year and aggregate some of the features.</p>
+<pre class="python"><code>annualized = pd.DataFrame(ms.groupby(&#39;year&#39;).case.agg(&#39;count&#39;))
+annualized.columns = [&#39;count&#39;]
+annualized[&#39;total_fatalities&#39;] = ms.groupby(&#39;year&#39;).fatalities.agg(&#39;sum&#39;)
+annualized[&#39;total_injuries&#39;] = ms.groupby(&#39;year&#39;).injured.agg(&#39;sum&#39;)
+annualized[&#39;total_victims&#39;] = ms.groupby(&#39;year&#39;).total_victims.agg(&#39;sum&#39;)
+annualized[&#39;fatalities_per_shooting&#39;] = annualized.total_fatalities/annualized[&#39;count&#39;]
+annualized[&#39;mean_fatality_rate&#39;] = annualized[&#39;fatalities_per_shooting&#39;]/annualized[&#39;total_victims&#39;]
+annualized[&#39;mean_shooter_age&#39;] = ms.groupby(&#39;year&#39;).age_of_shooter.agg(&#39;mean&#39;)
+annualized.head()</code></pre>
+<pre><code>##       count  total_fatalities  ...  mean_fatality_rate  mean_shooter_age
+## year                           ...                                      
+## 1982      1                 8  ...            0.727273              51.0
+## 1984      2                28  ...            0.291667              40.0
+## 1986      1                15  ...            0.714286              44.0
+## 1987      1                 6  ...            0.300000              59.0
+## 1988      1                 7  ...            0.636364              39.0
+## 
+## [5 rows x 7 columns]</code></pre>
+<p>With this dataframe, I can now look at some of the aggregated data.</p>
+<pre class="python"><code>annualized = annualized.reset_index()
+fig = plt.figure()
+ax1 = fig.add_subplot(121)
+annualized.plot(x=&#39;year&#39;, y=[&#39;total_fatalities&#39;, &#39;mean_shooter_age&#39;, &#39;fatalities_per_shooting&#39;], ax=ax1)
+ax2 = fig.add_subplot(122)
+annualized.plot(x=&#39;year&#39;, y=&#39;count&#39;, ax=ax2)
+plt.show()</code></pre>
+<p><img src="/post/2019-08-23-mass-shoot_files/figure-html/unnamed-chunk-3-1.png" /><!-- -->
+The relatively flat <code>fatalities_per_shooting</code> line seems to indicate that the severity increase is largely coming from an increase in the number of mass shootings as opposed to each shooting being more severe (some type of upward trend). The <code>count</code> graph is separate because of it’s much smaller scale, but it’s shape and pattern look very similar to the <code>total_fatalities</code> line. The <code>count</code> graph makes it seem that the frequency of mass shootings has increased. Before getting into any serious analysis, let’s make sure that we have data for each year:</p>
+<pre class="python"><code>print(set(range(1982, 2020)).difference(set(annualized.year)))
+
+#fill in the 3 years with no shootings</code></pre>
+<pre><code>## {1985, 2002, 1983}</code></pre>
+<pre class="python"><code>no_shoot = pd.DataFrame({&#39;year&#39;:[1983, 1985, 2002]})
+annualized = annualized.merge(no_shoot, on=&#39;year&#39;, how=&#39;outer&#39;)
+annualized = annualized.reset_index(drop=True).fillna(0)
+annualized = annualized.sort_values(&#39;year&#39;)</code></pre>
+</div>
+<div id="change-point-introduction" class="section level2">
+<h2>Change Point Introduction</h2>
+<p>It seems fairly reasonable to assume that the number of mass shootings in the US in a year should be Poisson distributed. The Poisson distribution models “small” count data over time or space and has been used to describe deaths from horse-kick in the Prussian Cavalry, the number of tornadoes in a year, the number of wrongful convictions in a year (Poisson’s original use of the distribution), the number of visitors to a website, or aphids on a leaf. It is characterized by a single rate parameter that describes how frequently these events occur “on average”. If mass shootings have become more frequent, then there would a rate at which they occurred for a period of time, followed by a new rate for another period of time. This change is a “change point” and we would like to (a) determine if a change point took place (and when) and (b) what the rates before and after the change point are.</p>
+<p>Prior to 2010, the count of mass shooting graph seems like the same Poisson rate is likely driving things, so it’s reasonable to look for a single change point. To find the change point and estimate the rates on either side, I’m going to use a Bayesian model and <a href="https://docs.pymc.io">pymc3</a>, which I developed some familiarity with when developing my <a href="https://github.com/jpreszler/realallocator_full">Insight project</a>. There are also numerous examples of this type of model looking at coal mine accident data.</p>
+</div>
+<div id="mass-shooting-model" class="section level2">
+<h2>Mass Shooting Model</h2>
+<p>Building a Bayesian model for change points requires a prior on when the changepoint is, priors on the rate before and after, and a Poisson likelihood using these rates and observed data. In pymc3, this is done as follows:</p>
+<pre class="python"><code>import pymc3 as pm
+
+with pm.Model() as cpm:
+    T = pm.Uniform(&#39;changepoint&#39;, 1982, 2019)
+    rates = pm.HalfNormal(&#39;rate&#39;, sd=5, shape=2)
+    idx = (annualized[&#39;year&#39;].values &gt; T)*1
+    count_obs = pm.Poisson(&#39;count_obs&#39;, mu=rates[idx], observed=annualized[&#39;count&#39;].values)
+    step =  pm.Slice()
+    trace = pm.sample(step=step, cores=4, progressbar=False, random_state=57)</code></pre>
+<p>Here, <span class="math inline">\(T\)</span> is the possible change point, uniformly distributed over interval from 1982 to 2019. Each rate is assumed to have the same shape, the positive half of a normal distribution with mean 0 and standard deviation 5. The <code>shape=2</code> parameter creates a length 2 array of rates. The <code>idx</code> variable is an index for the <code>rates</code> array, either 0 or 1 depending on whether data is from before or after the change point. The likelihood is build by the <code>count_obs</code> variable and the next two lines build the posterior distribution via a <code>Slice</code> step-sampler (as opposed to the default <code>NUTS</code>).</p>
+</div>
+<div id="model-diagnostics" class="section level2">
+<h2>Model Diagnostics</h2>
+<p>Whenever you do MCMC, you need to check convergence. The two simplest ways in pymc3 are (a) a traceplot and (b) posterior summary. The traceplot plots the trace object that was just created. Each of the MCMC chains graphed should show similar structure on the left and we should not see patterns or autocorrelation in the “fuzzy caterpillars” on the right.</p>
+<pre class="python"><code>pm.traceplot(trace)</code></pre>
+<pre><code>## array([[&lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f1d0b38b650&gt;,
+##         &lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f1d0b2d5590&gt;],
+##        [&lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f1d0b386a90&gt;,
+##         &lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f1d0b293b50&gt;]],
+##       dtype=object)</code></pre>
+<pre class="python"><code>plt.show()</code></pre>
+<p><img src="/post/2019-08-23-mass-shoot_files/figure-html/unnamed-chunk-7-1.png" /><!-- --></p>
+<p>The posterior summary provides means, standard deviations, and high density intervals for each variable in our posterior, as well as an <code>Rhat</code> value (which should be close to 1 for convergence). This provides both some diagnostic info, and the start our our inference from the posterior sample.</p>
+<pre class="python"><code>trace_summ = pm.summary(trace)</code></pre>
+<pre><code>## /usr/lib/python3.7/site-packages/pymc3/stats.py:982: FutureWarning: The join_axes-keyword is deprecated. Use .reindex or .reindex_like on the result to achieve the same functionality.
+##   axis=1, join_axes=[dforg.index])</code></pre>
+<pre class="r"><code>library(reticulate)
+library(knitr)
+kable(py$trace_summ)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">mc_error</th>
+<th align="right">hpd_2.5</th>
+<th align="right">hpd_97.5</th>
+<th align="right">n_eff</th>
+<th align="right">Rhat</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>changepoint</td>
+<td align="right">2011.059494</td>
+<td align="right">1.2092832</td>
+<td align="right">0.0457195</td>
+<td align="right">2008.164755</td>
+<td align="right">2012.932666</td>
+<td align="right">609.7080</td>
+<td align="right">0.9996231</td>
+</tr>
+<tr class="even">
+<td>rate__0</td>
+<td align="right">1.846692</td>
+<td align="right">0.2601122</td>
+<td align="right">0.0061951</td>
+<td align="right">1.359687</td>
+<td align="right">2.378156</td>
+<td align="right">1525.4227</td>
+<td align="right">1.0014459</td>
+</tr>
+<tr class="odd">
+<td>rate__1</td>
+<td align="right">7.124691</td>
+<td align="right">0.9997964</td>
+<td align="right">0.0290114</td>
+<td align="right">5.195520</td>
+<td align="right">9.104845</td>
+<td align="right">968.0959</td>
+<td align="right">0.9998388</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="results" class="section level2">
+<h2>Results</h2>
+<p>The above summary shows the change point was likely in early 2011, and the rate before was just under 2 mass shootings per year to about 7 after. The high probability density intervals (Bayesian analogs of confidence intervals) show that there is a <span class="math inline">\(95\%\)</span> probability the change point is between early 2010 to late 2012, early rate is between <span class="math inline">\(1.39\)</span> and <span class="math inline">\(2.37\)</span> and the late rate is between <span class="math inline">\(5.2\)</span> and <span class="math inline">\(8.86\)</span>. The interpretation of these is more direct, and positive, than the frequentist confidence interval. PyMC3 also provides several ways to visualize the posteriors and I like the <code>plot_posterior</code> function:</p>
+<pre class="python"><code>pm.plots.plot_posterior(trace)</code></pre>
+<pre><code>## array([&lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f1d0b2bcb10&gt;,
+##        &lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f1d0b202490&gt;,
+##        &lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f1d0aaf7c10&gt;],
+##       dtype=object)</code></pre>
+<pre class="python"><code>plt.show()</code></pre>
+<p><img src="/post/2019-08-23-mass-shoot_files/figure-html/unnamed-chunk-10-1.png" /><!-- --></p>
+<p>The skewness of the <code>changepoint</code> posterior means the mean is lightly lower than the MAP value, but early to mid-2011 is most likely the point in time the rate change took place. Considering the convergence and clear difference of the rates (<span class="math inline">\(\sim 2\)</span> to <span class="math inline">\(\sim 7\)</span>) it seems that a major change has taken place. Explaining why, and especially identifying underlying sociological causes of this change is important research that I’m sure people are investigating. Hopefully it doesn’t just rather dust in academic journals.</p>
+</div>

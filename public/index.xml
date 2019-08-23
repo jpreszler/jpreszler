@@ -6,8 +6,202 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2017 Jason Preszler</copyright>
-    <lastBuildDate>Sat, 18 May 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 23 Aug 2019 00:00:00 +0000</lastBuildDate>
     <atom:link href="/" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Mass Shooting Changepoint</title>
+      <link>/post/2019-08-23-mass-shoot/</link>
+      <pubDate>Fri, 23 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2019-08-23-mass-shoot/</guid>
+      <description>
+
+
+&lt;p&gt;Every time there’s news about a mass shooting I feel like doing some type of data analysis about gun violence. With the shootings in Dayton and El Paso, as well as news of several likely shootings being prevented, I thought I would actually follow through with some analysis. Having been a senior in high school (in California) when the Columbine shooting took place, and also living in Salt Lake during the Trolley Square shooting I’ve seen the impacts of these tragedies and feel as though they are happening more frequently. This seemed like a natural thing to quantify: have mass shooting become more common or more severe?&lt;/p&gt;
+&lt;div id=&#34;data-exploration&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Data Exploration&lt;/h2&gt;
+&lt;p&gt;Mother Jones maintains a dataset on &lt;a href=&#34;https://www.motherjones.com/politics/2012/12/mass-shootings-mother-jones-full-data/&#34;&gt;mass shootings&lt;/a&gt;, and there are many other datasets related to gun violence in general. I’m going to focus on the mass shooting data for this post. First, we’ll load the standard python packages and read in the data:&lt;/p&gt;
+&lt;pre class=&#34;python&#34;&gt;&lt;code&gt;import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+sns.set_style(&amp;#39;ticks&amp;#39;)
+sns.set_context(&amp;quot;paper&amp;quot;)
+
+ms = pd.read_csv(&amp;#39;../../static/files/MJ-mass-shoot.csv&amp;#39;, parse_dates=[2])
+ms.info()&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## &amp;lt;class &amp;#39;pandas.core.frame.DataFrame&amp;#39;&amp;gt;
+## RangeIndex: 114 entries, 0 to 113
+## Data columns (total 24 columns):
+## case                                114 non-null object
+## location                            114 non-null object
+## date                                114 non-null datetime64[ns]
+## summary                             114 non-null object
+## fatalities                          114 non-null int64
+## injured                             114 non-null int64
+## total_victims                       114 non-null int64
+## location.1                          114 non-null object
+## age_of_shooter                      114 non-null int64
+## prior_signs_mental_health_issues    114 non-null object
+## mental_health_details               114 non-null object
+## weapons_obtained_legally            114 non-null object
+## where_obtained                      114 non-null object
+## weapon_type                         114 non-null object
+## weapon_details                      114 non-null object
+## race                                114 non-null object
+## gender                              114 non-null object
+## sources                             114 non-null object
+## mental_health_sources               114 non-null object
+## sources_additional_age              114 non-null object
+## latitude                            114 non-null float64
+## longitude                           114 non-null float64
+## type                                114 non-null object
+## year                                114 non-null int64
+## dtypes: datetime64[ns](1), float64(2), int64(5), object(16)
+## memory usage: 21.5+ KB&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;In my transition from R to Python, I’ve missed the basic variable info of RStudio and the &lt;code&gt;info()&lt;/code&gt; call on a pandas dataframe at least gives the basic type data for each variable.&lt;/p&gt;
+&lt;p&gt;I’m interested in frequency and severity of these shootings, so let’s first look at fatalities over time:&lt;/p&gt;
+&lt;pre class=&#34;python&#34;&gt;&lt;code&gt;ms.plot(x=&amp;#39;date&amp;#39;, y=&amp;#39;fatalities&amp;#39;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-08-23-mass-shoot_files/figure-html/unnamed-chunk-1-1.png&#34; /&gt;&lt;!-- --&gt;
+I would have also looked at injuries, but the Las Vegas shooting of 2017 makes a plot of both unreadable. The above plot does indicate both a frequency and severity increase.&lt;/p&gt;
+&lt;p&gt;To investigate change over time, I’m going to group the data by year and aggregate some of the features.&lt;/p&gt;
+&lt;pre class=&#34;python&#34;&gt;&lt;code&gt;annualized = pd.DataFrame(ms.groupby(&amp;#39;year&amp;#39;).case.agg(&amp;#39;count&amp;#39;))
+annualized.columns = [&amp;#39;count&amp;#39;]
+annualized[&amp;#39;total_fatalities&amp;#39;] = ms.groupby(&amp;#39;year&amp;#39;).fatalities.agg(&amp;#39;sum&amp;#39;)
+annualized[&amp;#39;total_injuries&amp;#39;] = ms.groupby(&amp;#39;year&amp;#39;).injured.agg(&amp;#39;sum&amp;#39;)
+annualized[&amp;#39;total_victims&amp;#39;] = ms.groupby(&amp;#39;year&amp;#39;).total_victims.agg(&amp;#39;sum&amp;#39;)
+annualized[&amp;#39;fatalities_per_shooting&amp;#39;] = annualized.total_fatalities/annualized[&amp;#39;count&amp;#39;]
+annualized[&amp;#39;mean_fatality_rate&amp;#39;] = annualized[&amp;#39;fatalities_per_shooting&amp;#39;]/annualized[&amp;#39;total_victims&amp;#39;]
+annualized[&amp;#39;mean_shooter_age&amp;#39;] = ms.groupby(&amp;#39;year&amp;#39;).age_of_shooter.agg(&amp;#39;mean&amp;#39;)
+annualized.head()&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##       count  total_fatalities  ...  mean_fatality_rate  mean_shooter_age
+## year                           ...                                      
+## 1982      1                 8  ...            0.727273              51.0
+## 1984      2                28  ...            0.291667              40.0
+## 1986      1                15  ...            0.714286              44.0
+## 1987      1                 6  ...            0.300000              59.0
+## 1988      1                 7  ...            0.636364              39.0
+## 
+## [5 rows x 7 columns]&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;With this dataframe, I can now look at some of the aggregated data.&lt;/p&gt;
+&lt;pre class=&#34;python&#34;&gt;&lt;code&gt;annualized = annualized.reset_index()
+fig = plt.figure()
+ax1 = fig.add_subplot(121)
+annualized.plot(x=&amp;#39;year&amp;#39;, y=[&amp;#39;total_fatalities&amp;#39;, &amp;#39;mean_shooter_age&amp;#39;, &amp;#39;fatalities_per_shooting&amp;#39;], ax=ax1)
+ax2 = fig.add_subplot(122)
+annualized.plot(x=&amp;#39;year&amp;#39;, y=&amp;#39;count&amp;#39;, ax=ax2)
+plt.show()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-08-23-mass-shoot_files/figure-html/unnamed-chunk-3-1.png&#34; /&gt;&lt;!-- --&gt;
+The relatively flat &lt;code&gt;fatalities_per_shooting&lt;/code&gt; line seems to indicate that the severity increase is largely coming from an increase in the number of mass shootings as opposed to each shooting being more severe (some type of upward trend). The &lt;code&gt;count&lt;/code&gt; graph is separate because of it’s much smaller scale, but it’s shape and pattern look very similar to the &lt;code&gt;total_fatalities&lt;/code&gt; line. The &lt;code&gt;count&lt;/code&gt; graph makes it seem that the frequency of mass shootings has increased. Before getting into any serious analysis, let’s make sure that we have data for each year:&lt;/p&gt;
+&lt;pre class=&#34;python&#34;&gt;&lt;code&gt;print(set(range(1982, 2020)).difference(set(annualized.year)))
+
+#fill in the 3 years with no shootings&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## {1985, 2002, 1983}&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;python&#34;&gt;&lt;code&gt;no_shoot = pd.DataFrame({&amp;#39;year&amp;#39;:[1983, 1985, 2002]})
+annualized = annualized.merge(no_shoot, on=&amp;#39;year&amp;#39;, how=&amp;#39;outer&amp;#39;)
+annualized = annualized.reset_index(drop=True).fillna(0)
+annualized = annualized.sort_values(&amp;#39;year&amp;#39;)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;change-point-introduction&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Change Point Introduction&lt;/h2&gt;
+&lt;p&gt;It seems fairly reasonable to assume that the number of mass shootings in the US in a year should be Poisson distributed. The Poisson distribution models “small” count data over time or space and has been used to describe deaths from horse-kick in the Prussian Cavalry, the number of tornadoes in a year, the number of wrongful convictions in a year (Poisson’s original use of the distribution), the number of visitors to a website, or aphids on a leaf. It is characterized by a single rate parameter that describes how frequently these events occur “on average”. If mass shootings have become more frequent, then there would a rate at which they occurred for a period of time, followed by a new rate for another period of time. This change is a “change point” and we would like to (a) determine if a change point took place (and when) and (b) what the rates before and after the change point are.&lt;/p&gt;
+&lt;p&gt;Prior to 2010, the count of mass shooting graph seems like the same Poisson rate is likely driving things, so it’s reasonable to look for a single change point. To find the change point and estimate the rates on either side, I’m going to use a Bayesian model and &lt;a href=&#34;https://docs.pymc.io&#34;&gt;pymc3&lt;/a&gt;, which I developed some familiarity with when developing my &lt;a href=&#34;https://github.com/jpreszler/realallocator_full&#34;&gt;Insight project&lt;/a&gt;. There are also numerous examples of this type of model looking at coal mine accident data.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;mass-shooting-model&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Mass Shooting Model&lt;/h2&gt;
+&lt;p&gt;Building a Bayesian model for change points requires a prior on when the changepoint is, priors on the rate before and after, and a Poisson likelihood using these rates and observed data. In pymc3, this is done as follows:&lt;/p&gt;
+&lt;pre class=&#34;python&#34;&gt;&lt;code&gt;import pymc3 as pm
+
+with pm.Model() as cpm:
+    T = pm.Uniform(&amp;#39;changepoint&amp;#39;, 1982, 2019)
+    rates = pm.HalfNormal(&amp;#39;rate&amp;#39;, sd=5, shape=2)
+    idx = (annualized[&amp;#39;year&amp;#39;].values &amp;gt; T)*1
+    count_obs = pm.Poisson(&amp;#39;count_obs&amp;#39;, mu=rates[idx], observed=annualized[&amp;#39;count&amp;#39;].values)
+    step =  pm.Slice()
+    trace = pm.sample(step=step, cores=4, progressbar=False, random_state=57)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Here, &lt;span class=&#34;math inline&#34;&gt;\(T\)&lt;/span&gt; is the possible change point, uniformly distributed over interval from 1982 to 2019. Each rate is assumed to have the same shape, the positive half of a normal distribution with mean 0 and standard deviation 5. The &lt;code&gt;shape=2&lt;/code&gt; parameter creates a length 2 array of rates. The &lt;code&gt;idx&lt;/code&gt; variable is an index for the &lt;code&gt;rates&lt;/code&gt; array, either 0 or 1 depending on whether data is from before or after the change point. The likelihood is build by the &lt;code&gt;count_obs&lt;/code&gt; variable and the next two lines build the posterior distribution via a &lt;code&gt;Slice&lt;/code&gt; step-sampler (as opposed to the default &lt;code&gt;NUTS&lt;/code&gt;).&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;model-diagnostics&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Model Diagnostics&lt;/h2&gt;
+&lt;p&gt;Whenever you do MCMC, you need to check convergence. The two simplest ways in pymc3 are (a) a traceplot and (b) posterior summary. The traceplot plots the trace object that was just created. Each of the MCMC chains graphed should show similar structure on the left and we should not see patterns or autocorrelation in the “fuzzy caterpillars” on the right.&lt;/p&gt;
+&lt;pre class=&#34;python&#34;&gt;&lt;code&gt;pm.traceplot(trace)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## array([[&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f1d0b38b650&amp;gt;,
+##         &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f1d0b2d5590&amp;gt;],
+##        [&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f1d0b386a90&amp;gt;,
+##         &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f1d0b293b50&amp;gt;]],
+##       dtype=object)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;python&#34;&gt;&lt;code&gt;plt.show()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-08-23-mass-shoot_files/figure-html/unnamed-chunk-7-1.png&#34; /&gt;&lt;!-- --&gt;&lt;/p&gt;
+&lt;p&gt;The posterior summary provides means, standard deviations, and high density intervals for each variable in our posterior, as well as an &lt;code&gt;Rhat&lt;/code&gt; value (which should be close to 1 for convergence). This provides both some diagnostic info, and the start our our inference from the posterior sample.&lt;/p&gt;
+&lt;pre class=&#34;python&#34;&gt;&lt;code&gt;trace_summ = pm.summary(trace)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## /usr/lib/python3.7/site-packages/pymc3/stats.py:982: FutureWarning: The join_axes-keyword is deprecated. Use .reindex or .reindex_like on the result to achieve the same functionality.
+##   axis=1, join_axes=[dforg.index])&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(reticulate)
+library(knitr)
+kable(py$trace_summ)&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th&gt;&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;mean&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;sd&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;mc_error&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;hpd_2.5&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;hpd_97.5&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;n_eff&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;Rhat&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td&gt;changepoint&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2011.059494&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.2092832&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0457195&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2008.164755&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2012.932666&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;609.7080&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.9996231&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td&gt;rate__0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.846692&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.2601122&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0061951&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.359687&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2.378156&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1525.4227&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.0014459&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td&gt;rate__1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;7.124691&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.9997964&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0290114&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5.195520&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;9.104845&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;968.0959&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.9998388&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div id=&#34;results&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Results&lt;/h2&gt;
+&lt;p&gt;The above summary shows the change point was likely in early 2011, and the rate before was just under 2 mass shootings per year to about 7 after. The high probability density intervals (Bayesian analogs of confidence intervals) show that there is a &lt;span class=&#34;math inline&#34;&gt;\(95\%\)&lt;/span&gt; probability the change point is between early 2010 to late 2012, early rate is between &lt;span class=&#34;math inline&#34;&gt;\(1.39\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(2.37\)&lt;/span&gt; and the late rate is between &lt;span class=&#34;math inline&#34;&gt;\(5.2\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(8.86\)&lt;/span&gt;. The interpretation of these is more direct, and positive, than the frequentist confidence interval. PyMC3 also provides several ways to visualize the posteriors and I like the &lt;code&gt;plot_posterior&lt;/code&gt; function:&lt;/p&gt;
+&lt;pre class=&#34;python&#34;&gt;&lt;code&gt;pm.plots.plot_posterior(trace)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## array([&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f1d0b2bcb10&amp;gt;,
+##        &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f1d0b202490&amp;gt;,
+##        &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f1d0aaf7c10&amp;gt;],
+##       dtype=object)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;python&#34;&gt;&lt;code&gt;plt.show()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-08-23-mass-shoot_files/figure-html/unnamed-chunk-10-1.png&#34; /&gt;&lt;!-- --&gt;&lt;/p&gt;
+&lt;p&gt;The skewness of the &lt;code&gt;changepoint&lt;/code&gt; posterior means the mean is lightly lower than the MAP value, but early to mid-2011 is most likely the point in time the rate change took place. Considering the convergence and clear difference of the rates (&lt;span class=&#34;math inline&#34;&gt;\(\sim 2\)&lt;/span&gt; to &lt;span class=&#34;math inline&#34;&gt;\(\sim 7\)&lt;/span&gt;) it seems that a major change has taken place. Explaining why, and especially identifying underlying sociological causes of this change is important research that I’m sure people are investigating. Hopefully it doesn’t just rather dust in academic journals.&lt;/p&gt;
+&lt;/div&gt;
+</description>
+    </item>
     
     <item>
       <title>Pythonic SQL with SQLAlchemy</title>
@@ -39820,238 +40014,6 @@ enrollSummary %&amp;gt;% datatable(rownames = FALSE, filter = &amp;quot;top&amp;
 &lt;div id=&#34;htmlwidget-1&#34; style=&#34;width:100%;height:550px;&#34; class=&#34;widgetframe html-widget&#34;&gt;&lt;/div&gt;
 &lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-1&#34;&gt;{&#34;x&#34;:{&#34;url&#34;:&#34;/post/2018-06-28-DT_files/figure-html//widgets/widget_widget.html&#34;,&#34;options&#34;:{&#34;xdomain&#34;:&#34;*&#34;,&#34;allowfullscreen&#34;:false,&#34;lazyload&#34;:false}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
 &lt;p&gt;As typical in R, &lt;code&gt;rownames=FALSE&lt;/code&gt; prevents row indices from being displayed, and &lt;code&gt;filter=&amp;quot;top&amp;quot;&lt;/code&gt; puts the filter capabilities at the top of each column. I’ve also customized the items per page so the table would fit inside the iFrame (from frameWidget). You can do a lot more customization if you want, even going all the way to custom javaScript/html/css for specific parts of the table. Now there’s no excuse for passing around spreadsheets or for having huge unreadable tables.&lt;/p&gt;
-&lt;/div&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Maps Majors in Neo4J</title>
-      <link>/post/2018-06-18-neo4j-majors/</link>
-      <pubDate>Mon, 18 Jun 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/post/2018-06-18-neo4j-majors/</guid>
-      <description>
-&lt;script src=&#34;/rmarkdown-libs/htmlwidgets/htmlwidgets.js&#34;&gt;&lt;/script&gt;
-&lt;link href=&#34;/rmarkdown-libs/vis/vis.css&#34; rel=&#34;stylesheet&#34; /&gt;
-&lt;script src=&#34;/rmarkdown-libs/vis/vis.min.js&#34;&gt;&lt;/script&gt;
-&lt;script src=&#34;/rmarkdown-libs/visNetwork-binding/visNetwork.js&#34;&gt;&lt;/script&gt;
-
-
-&lt;p&gt;&lt;strong&gt;UPDATE (6/20/2018)&lt;/strong&gt; &lt;em&gt;The cypher query for Table 3 only used components with “optional” courses so the capstone and topics compnents of the Math/CS major weren’t included in table 3.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;UPDATE (6/19/2018)&lt;/strong&gt; &lt;em&gt;The original version of this post used incorrectly loaded data that caused to “Core” of every major to have the same classes attached to it. This was noticed by my colleague Dave Rosoff and has been corrected.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;My &lt;a href=&#34;http://jpreszler.rbind.io/post/2018-06-16-neo4j-demo/&#34;&gt;last post&lt;/a&gt; some basic queries that return tabular data as well as graph data using about minors attached to the MAPS (MAth and Physical Sciences) department at the College of Idaho. I thought it would be nice to show something similar for the majors as well. So similar in fact that the biggest change is replacing “minor” with “major”.&lt;/p&gt;
-&lt;div id=&#34;connect-to-the-db&#34; class=&#34;section level2&#34;&gt;
-&lt;h2&gt;Connect to the DB&lt;/h2&gt;
-&lt;p&gt;A neo4j database needs to be running locally with data in it. We can connect to it in R via:&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(RNeo4j)
-
-#data is already loaded into database
-gdb &amp;lt;- startGraph(&amp;quot;http://localhost:7474/db/data&amp;quot;, user=&amp;quot;neo4j&amp;quot;, 
-                  password = &amp;quot;maps&amp;quot;) #only the password is DB specific here&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Note the last comment. The default user is &lt;em&gt;neo4j&lt;/em&gt; and the port and path are all defaults. Only the password is mine, and since this is a local DB with no sensitive info, I’m not concerned about revealing the password in a blog post, or trying to pick a secure password.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div id=&#34;basic-counting&#34; class=&#34;section level2&#34;&gt;
-&lt;h2&gt;Basic Counting&lt;/h2&gt;
-&lt;p&gt;We’ll start with some basic counting of courses and major structure. For each major, we list the number of courses required by that major. This count only includes specific courses required such as &lt;em&gt;MAT-175&lt;/em&gt;, if the major requires either &lt;em&gt;MAT-175&lt;/em&gt; or &lt;em&gt;MAT-275&lt;/em&gt; that is an option group (or component) counted later.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;query &amp;lt;- &amp;#39;MATCH (c:Course)-[:Satisfies{type:&amp;quot;required&amp;quot;}]-&amp;gt;(mc:Component{name:&amp;quot;Core&amp;quot;})-[:Part_Of]-&amp;gt;(m:Major) 
-RETURN m.name AS Major, count(c) AS NumberClasses, sum(toInt(c.minCredits)) AS CreditMin&amp;#39;
-gq &amp;lt;- cypher(gdb,query) %&amp;gt;% as.data.frame()
-
-kable(arrange(gq, Major, desc(NumberClasses)), caption = &amp;quot;Number of courses required for each major&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;table&gt;
-&lt;caption&gt;&lt;span id=&#34;tab:requiredCourse&#34;&gt;Table 1: &lt;/span&gt;Number of courses required for each major&lt;/caption&gt;
-&lt;thead&gt;
-&lt;tr class=&#34;header&#34;&gt;
-&lt;th align=&#34;left&#34;&gt;Major&lt;/th&gt;
-&lt;th align=&#34;right&#34;&gt;NumberClasses&lt;/th&gt;
-&lt;th align=&#34;right&#34;&gt;CreditMin&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr class=&#34;odd&#34;&gt;
-&lt;td align=&#34;left&#34;&gt;Math/CS&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;6&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;16&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr class=&#34;even&#34;&gt;
-&lt;td align=&#34;left&#34;&gt;Math/Physics&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;6&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;20&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr class=&#34;odd&#34;&gt;
-&lt;td align=&#34;left&#34;&gt;Mathematics&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;7&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;20&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;p&gt;Next we look at the number of “option groups” or components for each major. These are the number of groups of courses from which a selection of credits or courses must be completed. We then look at the number of courses and minimum credits available for each option group in each major.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;query &amp;lt;- &amp;#39;MATCH (c:Component)-[p:Part_Of]-&amp;gt;(m:Major) WHERE c.name&amp;lt;&amp;gt;&amp;quot;Core&amp;quot;
-RETURN m.name AS Major, c.name AS OptName&amp;#39;
-gq &amp;lt;- cypher(gdb,query) %&amp;gt;% as.data.frame()
-
-gq &amp;lt;- group_by(gq, Major) %&amp;gt;% summarise(Number.Option.Groups = n_distinct(OptName))
-kable(arrange(gq, Major, desc(Number.Option.Groups)), caption = &amp;quot;Number of Option Groups required for each major&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;table&gt;
-&lt;caption&gt;&lt;span id=&#34;tab:optGroups&#34;&gt;Table 2: &lt;/span&gt;Number of Option Groups required for each major&lt;/caption&gt;
-&lt;thead&gt;
-&lt;tr class=&#34;header&#34;&gt;
-&lt;th align=&#34;left&#34;&gt;Major&lt;/th&gt;
-&lt;th align=&#34;right&#34;&gt;Number.Option.Groups&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr class=&#34;odd&#34;&gt;
-&lt;td align=&#34;left&#34;&gt;Math/CS&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;5&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr class=&#34;even&#34;&gt;
-&lt;td align=&#34;left&#34;&gt;Math/Physics&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr class=&#34;odd&#34;&gt;
-&lt;td align=&#34;left&#34;&gt;Mathematics&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;query &amp;lt;- &amp;#39;MATCH (c:Course)-[s:Satisfies]-&amp;gt;(comp:Component)-[p:Part_Of]-&amp;gt;(m:Major) WHERE comp.name&amp;lt;&amp;gt;&amp;quot;Core&amp;quot; 
-RETURN m.name AS Major, comp.name AS Component, count(c) AS NumberClasses, sum(toInt(c.minCredits)) AS CreditMin&amp;#39;
-
-gq &amp;lt;- cypher(gdb,query) %&amp;gt;% as.data.frame()
-
-kable(arrange(gq, Major, Component, desc(NumberClasses)), caption = &amp;quot;Number of courses for each option group of each major&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;table&gt;
-&lt;caption&gt;&lt;span id=&#34;tab:optCourse&#34;&gt;Table 3: &lt;/span&gt;Number of courses for each option group of each major&lt;/caption&gt;
-&lt;thead&gt;
-&lt;tr class=&#34;header&#34;&gt;
-&lt;th align=&#34;left&#34;&gt;Major&lt;/th&gt;
-&lt;th align=&#34;left&#34;&gt;Component&lt;/th&gt;
-&lt;th align=&#34;right&#34;&gt;NumberClasses&lt;/th&gt;
-&lt;th align=&#34;right&#34;&gt;CreditMin&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr class=&#34;odd&#34;&gt;
-&lt;td align=&#34;left&#34;&gt;Math/CS&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;Advanced&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;12&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr class=&#34;even&#34;&gt;
-&lt;td align=&#34;left&#34;&gt;Math/CS&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;Calculus&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;8&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr class=&#34;odd&#34;&gt;
-&lt;td align=&#34;left&#34;&gt;Math/CS&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;Capstone&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;12&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr class=&#34;even&#34;&gt;
-&lt;td align=&#34;left&#34;&gt;Math/CS&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;Intermediate&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;6&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;24&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr class=&#34;odd&#34;&gt;
-&lt;td align=&#34;left&#34;&gt;Math/CS&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;Topics&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;4&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr class=&#34;even&#34;&gt;
-&lt;td align=&#34;left&#34;&gt;Math/Physics&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;Elective&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;17&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;68&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr class=&#34;odd&#34;&gt;
-&lt;td align=&#34;left&#34;&gt;Math/Physics&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;Independent-Study&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;4&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;16&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr class=&#34;even&#34;&gt;
-&lt;td align=&#34;left&#34;&gt;Math/Physics&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;Upper-Physics&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;4&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;16&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr class=&#34;odd&#34;&gt;
-&lt;td align=&#34;left&#34;&gt;Mathematics&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;Axiom&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;4&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;16&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr class=&#34;even&#34;&gt;
-&lt;td align=&#34;left&#34;&gt;Mathematics&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;Elective&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;11&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;44&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr class=&#34;odd&#34;&gt;
-&lt;td align=&#34;left&#34;&gt;Mathematics&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;Independent-Study&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;4&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;/div&gt;
-&lt;div id=&#34;major-visuals&#34; class=&#34;section level1&#34;&gt;
-&lt;h1&gt;Major Visuals&lt;/h1&gt;
-&lt;p&gt;Now let’s use graphs to visualize the majors in the MAPS department. I’m going to look at each major separately for now. What follows is the same function from the last post, except with “minor” replaced with “major”. VisNetork requires a dataframe of nodes and edges as input which we gather from separate queries - one for each type of node/edge.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(visNetwork)
-majorVis &amp;lt;- function(majorName){
-  
-  MajorNodeQ &amp;lt;- paste0(&amp;#39;MATCH (m:Major {name:&amp;quot;&amp;#39;,majorName,&amp;#39;&amp;quot;}) 
-                       RETURN m.name AS id, m.name AS label, LABELS(m)[0] AS group&amp;#39;)
-
-  ComponentNodeQ &amp;lt;- paste0(&amp;#39;MATCH (c:Component)-[:Part_Of]-&amp;gt;(m:Major{name:&amp;quot;&amp;#39;, majorName,&amp;#39;&amp;quot;}) 
-                           RETURN c.name AS id, c.name AS label, LABELS(c)[0] AS group&amp;#39;)
-
-  CourseNodeQ &amp;lt;- paste0(&amp;#39;MATCH (c:Course)-[:Satisfies]-&amp;gt;(:Component)-[:Part_Of]-&amp;gt;(m:Major{name:&amp;quot;&amp;#39;,majorName,&amp;#39;&amp;quot;}) 
-                        RETURN c.id AS id, c.id AS label, LABELS(c)[0] AS group&amp;#39;)
-
-  nodes &amp;lt;- rbind.data.frame(cypher(gdb, MajorNodeQ), 
-                            cypher(gdb, CourseNodeQ))
-  nodes &amp;lt;- rbind.data.frame(nodes, cypher(gdb, ComponentNodeQ))
-  nodes &amp;lt;- nodes[!duplicated(nodes),]
-
-  edgeSatQ &amp;lt;- paste0(&amp;#39;MATCH (c:Course)-[r:Satisfies]-&amp;gt;(co:Component)-[:Part_Of]-&amp;gt;(m:Major {name:&amp;quot;&amp;#39;,majorName,&amp;#39;&amp;quot;}) 
-                     RETURN c.id AS from, co.name AS to, TYPE(r) AS label&amp;#39;)
-
-  edgePOQ &amp;lt;- paste0(&amp;#39;MATCH (c:Component)-[r:Part_Of]-&amp;gt;(m:Major {name:&amp;quot;&amp;#39;,majorName,&amp;#39;&amp;quot;}) 
-                    RETURN c.name AS from, m.name AS to, TYPE(r) AS label&amp;#39;)
-
-  edges &amp;lt;- rbind.data.frame(cypher(gdb, edgeSatQ),cypher(gdb, edgePOQ))
-
-  visNetwork(nodes, edges)
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Next we’ll call this function for each of the majors in MAPS. VisNetwork produces JavaScript graphs, so these may take some time to load. Also, you can drag nodes and edges around some (visNetwork bounces them back unless they move “enough”) as well as zoom in and out.&lt;/p&gt;
-&lt;div id=&#34;mathematics&#34; class=&#34;section level2&#34;&gt;
-&lt;h2&gt;Mathematics&lt;/h2&gt;
-&lt;div id=&#34;htmlwidget-1&#34; style=&#34;width:672px;height:480px;&#34; class=&#34;visNetwork html-widget&#34;&gt;&lt;/div&gt;
-&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-1&#34;&gt;{&#34;x&#34;:{&#34;nodes&#34;:{&#34;id&#34;:[&#34;Mathematics&#34;,&#34;MAT494&#34;,&#34;MAT451&#34;,&#34;MAT441&#34;,&#34;MAT461&#34;,&#34;MAT372&#34;,&#34;MAT370&#34;,&#34;MAT431&#34;,&#34;MAT399T&#34;,&#34;MAT312&#34;,&#34;MAT311&#34;,&#34;MAT361&#34;,&#34;MAT352&#34;,&#34;Colloquium&#34;,&#34;PHY271&#34;,&#34;PHY271L&#34;,&#34;Proofs&#34;,&#34;CSC150&#34;,&#34;MAT175&#34;,&#34;MAT275&#34;,&#34;Independent-Study&#34;,&#34;Elective&#34;,&#34;Axiom&#34;,&#34;Core&#34;],&#34;label&#34;:[&#34;Mathematics&#34;,&#34;MAT494&#34;,&#34;MAT451&#34;,&#34;MAT441&#34;,&#34;MAT461&#34;,&#34;MAT372&#34;,&#34;MAT370&#34;,&#34;MAT431&#34;,&#34;MAT399T&#34;,&#34;MAT312&#34;,&#34;MAT311&#34;,&#34;MAT361&#34;,&#34;MAT352&#34;,&#34;Colloquium&#34;,&#34;PHY271&#34;,&#34;PHY271L&#34;,&#34;Proofs&#34;,&#34;CSC150&#34;,&#34;MAT175&#34;,&#34;MAT275&#34;,&#34;Independent-Study&#34;,&#34;Elective&#34;,&#34;Axiom&#34;,&#34;Core&#34;],&#34;group&#34;:[&#34;Major&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;]},&#34;edges&#34;:{&#34;from&#34;:[&#34;MAT494&#34;,&#34;MAT451&#34;,&#34;MAT441&#34;,&#34;MAT461&#34;,&#34;MAT372&#34;,&#34;MAT370&#34;,&#34;MAT431&#34;,&#34;MAT399T&#34;,&#34;MAT312&#34;,&#34;MAT311&#34;,&#34;MAT361&#34;,&#34;MAT352&#34;,&#34;MAT461&#34;,&#34;MAT441&#34;,&#34;MAT451&#34;,&#34;MAT431&#34;,&#34;Colloquium&#34;,&#34;PHY271&#34;,&#34;PHY271L&#34;,&#34;Proofs&#34;,&#34;CSC150&#34;,&#34;MAT175&#34;,&#34;MAT275&#34;,&#34;Independent-Study&#34;,&#34;Elective&#34;,&#34;Axiom&#34;,&#34;Core&#34;],&#34;to&#34;:[&#34;Independent-Study&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Axiom&#34;,&#34;Axiom&#34;,&#34;Axiom&#34;,&#34;Axiom&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Mathematics&#34;,&#34;Mathematics&#34;,&#34;Mathematics&#34;,&#34;Mathematics&#34;],&#34;label&#34;:[&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;]},&#34;nodesToDataframe&#34;:true,&#34;edgesToDataframe&#34;:true,&#34;options&#34;:{&#34;width&#34;:&#34;100%&#34;,&#34;height&#34;:&#34;100%&#34;,&#34;nodes&#34;:{&#34;shape&#34;:&#34;dot&#34;},&#34;manipulation&#34;:{&#34;enabled&#34;:false}},&#34;groups&#34;:[&#34;Major&#34;,&#34;Course&#34;,&#34;Component&#34;],&#34;width&#34;:null,&#34;height&#34;:null,&#34;idselection&#34;:{&#34;enabled&#34;:false},&#34;byselection&#34;:{&#34;enabled&#34;:false},&#34;main&#34;:null,&#34;submain&#34;:null,&#34;footer&#34;:null,&#34;background&#34;:&#34;rgba(0, 0, 0, 0)&#34;},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
-&lt;/div&gt;
-&lt;div id=&#34;mathcomputer-science&#34; class=&#34;section level2&#34;&gt;
-&lt;h2&gt;Math/Computer Science&lt;/h2&gt;
-&lt;div id=&#34;htmlwidget-2&#34; style=&#34;width:672px;height:480px;&#34; class=&#34;visNetwork html-widget&#34;&gt;&lt;/div&gt;
-&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-2&#34;&gt;{&#34;x&#34;:{&#34;nodes&#34;:{&#34;id&#34;:[&#34;Math/CS&#34;,&#34;CSC482&#34;,&#34;CSC481&#34;,&#34;CSC480&#34;,&#34;CSC490&#34;,&#34;CSC455&#34;,&#34;CSC350&#34;,&#34;CSC497&#34;,&#34;PHY230L&#34;,&#34;PHY230&#34;,&#34;MAT361&#34;,&#34;MAT252&#34;,&#34;CSC340&#34;,&#34;CSC270&#34;,&#34;MAT275&#34;,&#34;MAT175&#34;,&#34;CSC150&#34;,&#34;CSC152&#34;,&#34;CSC160&#34;,&#34;CSC235&#34;,&#34;SPE101&#34;,&#34;Proofs&#34;,&#34;Capstone&#34;,&#34;Topics&#34;,&#34;Advanced&#34;,&#34;Intermediate&#34;,&#34;Calculus&#34;,&#34;Core&#34;],&#34;label&#34;:[&#34;Math/CS&#34;,&#34;CSC482&#34;,&#34;CSC481&#34;,&#34;CSC480&#34;,&#34;CSC490&#34;,&#34;CSC455&#34;,&#34;CSC350&#34;,&#34;CSC497&#34;,&#34;PHY230L&#34;,&#34;PHY230&#34;,&#34;MAT361&#34;,&#34;MAT252&#34;,&#34;CSC340&#34;,&#34;CSC270&#34;,&#34;MAT275&#34;,&#34;MAT175&#34;,&#34;CSC150&#34;,&#34;CSC152&#34;,&#34;CSC160&#34;,&#34;CSC235&#34;,&#34;SPE101&#34;,&#34;Proofs&#34;,&#34;Capstone&#34;,&#34;Topics&#34;,&#34;Advanced&#34;,&#34;Intermediate&#34;,&#34;Calculus&#34;,&#34;Core&#34;],&#34;group&#34;:[&#34;Major&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;]},&#34;edges&#34;:{&#34;from&#34;:[&#34;CSC482&#34;,&#34;CSC481&#34;,&#34;CSC480&#34;,&#34;CSC490&#34;,&#34;CSC455&#34;,&#34;CSC350&#34;,&#34;CSC497&#34;,&#34;PHY230L&#34;,&#34;PHY230&#34;,&#34;MAT361&#34;,&#34;MAT252&#34;,&#34;CSC340&#34;,&#34;CSC270&#34;,&#34;MAT275&#34;,&#34;MAT175&#34;,&#34;CSC150&#34;,&#34;CSC152&#34;,&#34;CSC160&#34;,&#34;CSC235&#34;,&#34;SPE101&#34;,&#34;Proofs&#34;,&#34;Capstone&#34;,&#34;Topics&#34;,&#34;Advanced&#34;,&#34;Intermediate&#34;,&#34;Calculus&#34;,&#34;Core&#34;],&#34;to&#34;:[&#34;Capstone&#34;,&#34;Capstone&#34;,&#34;Capstone&#34;,&#34;Topics&#34;,&#34;Advanced&#34;,&#34;Advanced&#34;,&#34;Advanced&#34;,&#34;Intermediate&#34;,&#34;Intermediate&#34;,&#34;Intermediate&#34;,&#34;Intermediate&#34;,&#34;Intermediate&#34;,&#34;Intermediate&#34;,&#34;Calculus&#34;,&#34;Calculus&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Math/CS&#34;,&#34;Math/CS&#34;,&#34;Math/CS&#34;,&#34;Math/CS&#34;,&#34;Math/CS&#34;,&#34;Math/CS&#34;],&#34;label&#34;:[&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;]},&#34;nodesToDataframe&#34;:true,&#34;edgesToDataframe&#34;:true,&#34;options&#34;:{&#34;width&#34;:&#34;100%&#34;,&#34;height&#34;:&#34;100%&#34;,&#34;nodes&#34;:{&#34;shape&#34;:&#34;dot&#34;},&#34;manipulation&#34;:{&#34;enabled&#34;:false}},&#34;groups&#34;:[&#34;Major&#34;,&#34;Course&#34;,&#34;Component&#34;],&#34;width&#34;:null,&#34;height&#34;:null,&#34;idselection&#34;:{&#34;enabled&#34;:false},&#34;byselection&#34;:{&#34;enabled&#34;:false},&#34;main&#34;:null,&#34;submain&#34;:null,&#34;footer&#34;:null,&#34;background&#34;:&#34;rgba(0, 0, 0, 0)&#34;},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
-&lt;/div&gt;
-&lt;div id=&#34;mathphysics&#34; class=&#34;section level2&#34;&gt;
-&lt;h2&gt;Math/Physics&lt;/h2&gt;
-&lt;div id=&#34;htmlwidget-3&#34; style=&#34;width:672px;height:480px;&#34; class=&#34;visNetwork html-widget&#34;&gt;&lt;/div&gt;
-&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-3&#34;&gt;{&#34;x&#34;:{&#34;nodes&#34;:{&#34;id&#34;:[&#34;Math/Physics&#34;,&#34;MAT494&#34;,&#34;PHY497&#34;,&#34;MAT497&#34;,&#34;PHY494&#34;,&#34;MAT461&#34;,&#34;PHY301&#34;,&#34;PHY313&#34;,&#34;PHY330&#34;,&#34;PHY399T&#34;,&#34;PHY400&#34;,&#34;PHY450&#34;,&#34;MAT352&#34;,&#34;MAT361&#34;,&#34;MAT370&#34;,&#34;MAT372&#34;,&#34;MAT399T&#34;,&#34;MAT431&#34;,&#34;MAT441&#34;,&#34;MAT451&#34;,&#34;MAT312&#34;,&#34;MAT311&#34;,&#34;Colloquium&#34;,&#34;PHY271L&#34;,&#34;MAT275&#34;,&#34;MAT175&#34;,&#34;PHY271&#34;,&#34;CSC150&#34;,&#34;Independent-Study&#34;,&#34;Elective&#34;,&#34;Upper-Physics&#34;,&#34;Core&#34;],&#34;label&#34;:[&#34;Math/Physics&#34;,&#34;MAT494&#34;,&#34;PHY497&#34;,&#34;MAT497&#34;,&#34;PHY494&#34;,&#34;MAT461&#34;,&#34;PHY301&#34;,&#34;PHY313&#34;,&#34;PHY330&#34;,&#34;PHY399T&#34;,&#34;PHY400&#34;,&#34;PHY450&#34;,&#34;MAT352&#34;,&#34;MAT361&#34;,&#34;MAT370&#34;,&#34;MAT372&#34;,&#34;MAT399T&#34;,&#34;MAT431&#34;,&#34;MAT441&#34;,&#34;MAT451&#34;,&#34;MAT312&#34;,&#34;MAT311&#34;,&#34;Colloquium&#34;,&#34;PHY271L&#34;,&#34;MAT275&#34;,&#34;MAT175&#34;,&#34;PHY271&#34;,&#34;CSC150&#34;,&#34;Independent-Study&#34;,&#34;Elective&#34;,&#34;Upper-Physics&#34;,&#34;Core&#34;],&#34;group&#34;:[&#34;Major&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Course&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;,&#34;Component&#34;]},&#34;edges&#34;:{&#34;from&#34;:[&#34;MAT494&#34;,&#34;PHY497&#34;,&#34;MAT497&#34;,&#34;PHY494&#34;,&#34;MAT461&#34;,&#34;PHY301&#34;,&#34;PHY313&#34;,&#34;PHY330&#34;,&#34;PHY399T&#34;,&#34;PHY400&#34;,&#34;PHY450&#34;,&#34;MAT352&#34;,&#34;MAT361&#34;,&#34;MAT370&#34;,&#34;MAT372&#34;,&#34;MAT399T&#34;,&#34;MAT431&#34;,&#34;MAT441&#34;,&#34;MAT451&#34;,&#34;MAT312&#34;,&#34;MAT311&#34;,&#34;PHY313&#34;,&#34;PHY301&#34;,&#34;PHY400&#34;,&#34;PHY330&#34;,&#34;Colloquium&#34;,&#34;PHY271L&#34;,&#34;MAT275&#34;,&#34;MAT175&#34;,&#34;PHY271&#34;,&#34;CSC150&#34;,&#34;Independent-Study&#34;,&#34;Elective&#34;,&#34;Upper-Physics&#34;,&#34;Core&#34;],&#34;to&#34;:[&#34;Independent-Study&#34;,&#34;Independent-Study&#34;,&#34;Independent-Study&#34;,&#34;Independent-Study&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Elective&#34;,&#34;Upper-Physics&#34;,&#34;Upper-Physics&#34;,&#34;Upper-Physics&#34;,&#34;Upper-Physics&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Core&#34;,&#34;Math/Physics&#34;,&#34;Math/Physics&#34;,&#34;Math/Physics&#34;,&#34;Math/Physics&#34;],&#34;label&#34;:[&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Satisfies&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;,&#34;Part_Of&#34;]},&#34;nodesToDataframe&#34;:true,&#34;edgesToDataframe&#34;:true,&#34;options&#34;:{&#34;width&#34;:&#34;100%&#34;,&#34;height&#34;:&#34;100%&#34;,&#34;nodes&#34;:{&#34;shape&#34;:&#34;dot&#34;},&#34;manipulation&#34;:{&#34;enabled&#34;:false}},&#34;groups&#34;:[&#34;Major&#34;,&#34;Course&#34;,&#34;Component&#34;],&#34;width&#34;:null,&#34;height&#34;:null,&#34;idselection&#34;:{&#34;enabled&#34;:false},&#34;byselection&#34;:{&#34;enabled&#34;:false},&#34;main&#34;:null,&#34;submain&#34;:null,&#34;footer&#34;:null,&#34;background&#34;:&#34;rgba(0, 0, 0, 0)&#34;},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
-&lt;/div&gt;
-&lt;div id=&#34;summary-and-next-steps&#34; class=&#34;section level2&#34;&gt;
-&lt;h2&gt;Summary and Next Steps&lt;/h2&gt;
-&lt;p&gt;The similarity between majors and minors - in terms of the code required to produce similar results - is a good indictation that our model and data are loaded into the DB in a nice, consistent manner. The big change is that mmajors have a “Core” component of required classes while minors have a “req” comonpent with usually 1 or two classes.&lt;/p&gt;
-&lt;p&gt;Next, I would like to add two pieces to the data model: instructors and frequency nodes to represent who teaches certain courses and when courses are regularly offered. These will allow some of the big goals of this analysis to be performed: how will a faculty leave impact majors and minors and can we give students a timeline/flowchart of how they should progress through a major or minor. There’s also the issue of prerequisites and other dependencies, which are inconsistantly entered in the catalog so parsing to incorporate into the DB is not as straightforward as one would hope.&lt;/p&gt;
-&lt;/div&gt;
 &lt;/div&gt;
 </description>
     </item>
