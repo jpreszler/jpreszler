@@ -13,15 +13,6 @@
     
     
     <item>
-      <title>Bayesian</title>
-      <link>/tags/bayesian/</link>
-      <pubDate>Fri, 23 Aug 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/bayesian/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>Poisson</title>
       <link>/tags/poisson/</link>
       <pubDate>Fri, 23 Aug 2019 00:00:00 +0000</pubDate>
@@ -36,6 +27,15 @@
       <pubDate>Fri, 23 Aug 2019 00:00:00 +0000</pubDate>
       
       <guid>/tags/python/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>bayesian</title>
+      <link>/tags/bayesian/</link>
+      <pubDate>Fri, 23 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/bayesian/</guid>
       <description></description>
     </item>
     
@@ -193,7 +193,7 @@
     </item>
     
     <item>
-      <title>D3.js</title>
+      <title>d3.js</title>
       <link>/tags/d3.js/</link>
       <pubDate>Thu, 27 Dec 2018 00:00:00 +0000</pubDate>
       

@@ -4,16 +4,6 @@
     
     <url>
     
-      <loc>/tags/bayesian/</loc>
-      <lastmod>2019-08-23T00:00:00+00:00</lastmod>
-      <priority>0</priority>
-    </url>
-    
-  
-    
-    
-    <url>
-    
       <loc>/</loc>
       <lastmod>2019-08-23T00:00:00+00:00</lastmod>
       <priority>0</priority>
@@ -54,6 +44,16 @@
     <url>
     
       <loc>/tags/</loc>
+      <lastmod>2019-08-23T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/bayesian/</loc>
       <lastmod>2019-08-23T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
@@ -278,9 +278,8 @@
     
     <url>
     
-      <loc>/tags/d3.js/</loc>
+      <loc>/post/2018-12-27-sankey/</loc>
       <lastmod>2018-12-27T00:00:00+00:00</lastmod>
-      <priority>0</priority>
     </url>
     
   
@@ -288,8 +287,9 @@
     
     <url>
     
-      <loc>/post/2018-12-27-sankey/</loc>
+      <loc>/tags/d3.js/</loc>
       <lastmod>2018-12-27T00:00:00+00:00</lastmod>
+      <priority>0</priority>
     </url>
     
   
