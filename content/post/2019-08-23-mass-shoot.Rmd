@@ -29,6 +29,8 @@ In my transition from R to Python, I've missed the basic variable info of RStudi
 I'm interested in frequency and severity of these shootings, so let's first look at fatalities over time:
 ```{python}
 ms.plot(x='date', y='fatalities')
+plt.ylabel('Fatalities')
+plt.title('Mass Shooting Fatalities')
 ```
 I would have also looked at injuries, but the Las Vegas shooting of 2017 makes a plot of both unreadable. The above plot does indicate both a frequency and severity increase.
 
@@ -50,9 +52,11 @@ With this dataframe, I can now look at some of the aggregated data.
 annualized = annualized.reset_index()
 fig = plt.figure()
 ax1 = fig.add_subplot(121)
-annualized.plot(x='year', y=['total_fatalities', 'mean_shooter_age', 'fatalities_per_shooting'], ax=ax1)
+annualized.plot(x='year', y=['total_fatalities', 'fatalities_per_shooting'], ax=ax1)
+ax1.set_ylabel('Fatalities')
 ax2 = fig.add_subplot(122)
 annualized.plot(x='year', y='count', ax=ax2)
+ax2.set_ylabel('Number of Shootings')
 plt.show()
 ```
 The relatively flat `fatalities_per_shooting` line seems to indicate that the severity increase is largely coming from an increase in the number of mass shootings as opposed to each shooting being more severe (some type of upward trend). The `count` graph is separate because of it's much smaller scale, but it's shape and pattern look very similar to the `total_fatalities` line. The `count` graph makes it seem that the frequency of mass shootings has increased. Before getting into any serious analysis, let's make sure that we have data for each year:

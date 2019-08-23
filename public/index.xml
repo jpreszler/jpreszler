@@ -63,7 +63,9 @@ ms.info()&lt;/code&gt;&lt;/pre&gt;
 ## memory usage: 21.5+ KB&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;In my transition from R to Python, I’ve missed the basic variable info of RStudio and the &lt;code&gt;info()&lt;/code&gt; call on a pandas dataframe at least gives the basic type data for each variable.&lt;/p&gt;
 &lt;p&gt;I’m interested in frequency and severity of these shootings, so let’s first look at fatalities over time:&lt;/p&gt;
-&lt;pre class=&#34;python&#34;&gt;&lt;code&gt;ms.plot(x=&amp;#39;date&amp;#39;, y=&amp;#39;fatalities&amp;#39;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;python&#34;&gt;&lt;code&gt;ms.plot(x=&amp;#39;date&amp;#39;, y=&amp;#39;fatalities&amp;#39;)
+plt.ylabel(&amp;#39;Fatalities&amp;#39;)
+plt.title(&amp;#39;Mass Shooting Fatalities&amp;#39;)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2019-08-23-mass-shoot_files/figure-html/unnamed-chunk-1-1.png&#34; /&gt;&lt;!-- --&gt;
 I would have also looked at injuries, but the Las Vegas shooting of 2017 makes a plot of both unreadable. The above plot does indicate both a frequency and severity increase.&lt;/p&gt;
 &lt;p&gt;To investigate change over time, I’m going to group the data by year and aggregate some of the features.&lt;/p&gt;
@@ -89,9 +91,11 @@ annualized.head()&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;python&#34;&gt;&lt;code&gt;annualized = annualized.reset_index()
 fig = plt.figure()
 ax1 = fig.add_subplot(121)
-annualized.plot(x=&amp;#39;year&amp;#39;, y=[&amp;#39;total_fatalities&amp;#39;, &amp;#39;mean_shooter_age&amp;#39;, &amp;#39;fatalities_per_shooting&amp;#39;], ax=ax1)
+annualized.plot(x=&amp;#39;year&amp;#39;, y=[&amp;#39;total_fatalities&amp;#39;, &amp;#39;fatalities_per_shooting&amp;#39;], ax=ax1)
+ax1.set_ylabel(&amp;#39;Fatalities&amp;#39;)
 ax2 = fig.add_subplot(122)
 annualized.plot(x=&amp;#39;year&amp;#39;, y=&amp;#39;count&amp;#39;, ax=ax2)
+ax2.set_ylabel(&amp;#39;Number of Shootings&amp;#39;)
 plt.show()&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2019-08-23-mass-shoot_files/figure-html/unnamed-chunk-3-1.png&#34; /&gt;&lt;!-- --&gt;
 The relatively flat &lt;code&gt;fatalities_per_shooting&lt;/code&gt; line seems to indicate that the severity increase is largely coming from an increase in the number of mass shootings as opposed to each shooting being more severe (some type of upward trend). The &lt;code&gt;count&lt;/code&gt; graph is separate because of it’s much smaller scale, but it’s shape and pattern look very similar to the &lt;code&gt;total_fatalities&lt;/code&gt; line. The &lt;code&gt;count&lt;/code&gt; graph makes it seem that the frequency of mass shootings has increased. Before getting into any serious analysis, let’s make sure that we have data for each year:&lt;/p&gt;
@@ -127,10 +131,10 @@ with pm.Model() as cpm:
 &lt;h2&gt;Model Diagnostics&lt;/h2&gt;
 &lt;p&gt;Whenever you do MCMC, you need to check convergence. The two simplest ways in pymc3 are (a) a traceplot and (b) posterior summary. The traceplot plots the trace object that was just created. Each of the MCMC chains graphed should show similar structure on the left and we should not see patterns or autocorrelation in the “fuzzy caterpillars” on the right.&lt;/p&gt;
 &lt;pre class=&#34;python&#34;&gt;&lt;code&gt;pm.traceplot(trace)&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## array([[&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f1d0b38b650&amp;gt;,
-##         &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f1d0b2d5590&amp;gt;],
-##        [&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f1d0b386a90&amp;gt;,
-##         &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f1d0b293b50&amp;gt;]],
+&lt;pre&gt;&lt;code&gt;## array([[&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f372eefa190&amp;gt;,
+##         &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f372ee4f450&amp;gt;],
+##        [&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f372ee7fe90&amp;gt;,
+##         &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f372ee0ca10&amp;gt;]],
 ##       dtype=object)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;python&#34;&gt;&lt;code&gt;plt.show()&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2019-08-23-mass-shoot_files/figure-html/unnamed-chunk-7-1.png&#34; /&gt;&lt;!-- --&gt;&lt;/p&gt;
@@ -157,33 +161,33 @@ kable(py$trace_summ)&lt;/code&gt;&lt;/pre&gt;
 &lt;tbody&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td&gt;changepoint&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;2011.059494&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;1.2092832&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;0.0457195&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;2008.164755&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;2012.932666&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;609.7080&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;0.9996231&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2011.148295&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.1784383&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0490107&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2009.995179&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2014.808750&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;469.4743&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.0012466&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;even&#34;&gt;
 &lt;td&gt;rate__0&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;1.846692&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;0.2601122&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;0.0061951&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;1.359687&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;2.378156&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;1525.4227&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;1.0014459&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.844826&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.2490664&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0062827&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.380820&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2.339726&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1534.3652&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.9994486&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr class=&#34;odd&#34;&gt;
 &lt;td&gt;rate__1&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;7.124691&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;0.9997964&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;0.0290114&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;5.195520&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;9.104845&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;968.0959&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;0.9998388&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;7.201112&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.9717701&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0288860&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5.332041&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;9.067021&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1163.6754&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.9994642&lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
@@ -192,9 +196,9 @@ kable(py$trace_summ)&lt;/code&gt;&lt;/pre&gt;
 &lt;h2&gt;Results&lt;/h2&gt;
 &lt;p&gt;The above summary shows the change point was likely in early 2011, and the rate before was just under 2 mass shootings per year to about 7 after. The high probability density intervals (Bayesian analogs of confidence intervals) show that there is a &lt;span class=&#34;math inline&#34;&gt;\(95\%\)&lt;/span&gt; probability the change point is between early 2010 to late 2012, early rate is between &lt;span class=&#34;math inline&#34;&gt;\(1.39\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(2.37\)&lt;/span&gt; and the late rate is between &lt;span class=&#34;math inline&#34;&gt;\(5.2\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(8.86\)&lt;/span&gt;. The interpretation of these is more direct, and positive, than the frequentist confidence interval. PyMC3 also provides several ways to visualize the posteriors and I like the &lt;code&gt;plot_posterior&lt;/code&gt; function:&lt;/p&gt;
 &lt;pre class=&#34;python&#34;&gt;&lt;code&gt;pm.plots.plot_posterior(trace)&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## array([&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f1d0b2bcb10&amp;gt;,
-##        &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f1d0b202490&amp;gt;,
-##        &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f1d0aaf7c10&amp;gt;],
+&lt;pre&gt;&lt;code&gt;## array([&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f37322f2ed0&amp;gt;,
+##        &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f372ed7ac10&amp;gt;,
+##        &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f372e672510&amp;gt;],
 ##       dtype=object)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;python&#34;&gt;&lt;code&gt;plt.show()&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2019-08-23-mass-shoot_files/figure-html/unnamed-chunk-10-1.png&#34; /&gt;&lt;!-- --&gt;&lt;/p&gt;
