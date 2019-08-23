@@ -15,13 +15,13 @@ weight = 60
 
 +++
 
-I am teaching the following courses at The College of Idaho:
+I have taught the following courses in the past:
 
-- CSC150: Intro. to Computer Science
-- MAT125: Intro. to Statistics and Data Analysis
-- MAT399T: An Intro. to Diophantine Equations
-- MAT370: Geometry
-- CSC270: Applied Databases
-- MAT494: Machine Learning in Number Theory
-- MAT494: Bayesian Data Analysis
-- MAT???: Time Series Modeling
+- Intro. to Computer Science
+- Intro. to Statistics and Data Analysis
+- Calculus I, II, III
+- Non-Euclidean Geometry
+- Applied Databases
+- Algorithms
+- Multiple Regression Analysis
+- Computer Architecture

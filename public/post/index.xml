@@ -13,6 +13,15 @@
     
     
     <item>
+      <title>Mass Shooting Changepoint</title>
+      <link>/post/2019-08-23-mass-shoot/</link>
+      <pubDate>Fri, 23 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2019-08-23-mass-shoot/</guid>
+      <description>Every time there’s news about a mass shooting I feel like doing some type of data analysis about gun violence. With the shootings in Dayton and El Paso, as well as news of several likely shootings being prevented, I thought I would actually follow through with some analysis. Having been a senior in high school (in California) when the Columbine shooting took place, and also living in Salt Lake during the Trolley Square shooting I’ve seen the impacts of these tragedies and feel as though they are happening more frequently.</description>
+    </item>
+    
+    <item>
       <title>Pythonic SQL with SQLAlchemy</title>
       <link>/post/2019-05-18-pysql/</link>
       <pubDate>Sat, 18 May 2019 00:00:00 +0000</pubDate>
