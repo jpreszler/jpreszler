@@ -6,7 +6,7 @@ output: html_document
 tags: ["R", "chorddiag", "curriculum", "D3.js"]
 ---
 
-```{r setup, include=FALSE}
+```{r setup,include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 
 library(dplyr)

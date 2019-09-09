@@ -13,6 +13,15 @@
     
     
     <item>
+      <title>Poisson Process Simulation</title>
+      <link>/post/2019-09-09-poisson-simulation/</link>
+      <pubDate>Mon, 09 Sep 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2019-09-09-poisson-simulation/</guid>
+      <description>While continuing to work through BDA3, and decided to revisit some of the earlier exercises that I had done in R. Problem 9 of chapter 1 asks to simulate a medical clinic with 3 doctors, patients arriving according to an exponential distribution with rate 10 minutes between 9AM and 4PM and each patient needing an appointment length uniformly distributed between 5 and 10 minutes. We are interested in things like the number of patients seen, average wait time, number of patients who had to wait, and when the clinic closes based on 1 simulated day and 100 simulated days (with intervals of each aggregation).</description>
+    </item>
+    
+    <item>
       <title>Mass Shooting Changepoint</title>
       <link>/post/2019-08-23-mass-shoot/</link>
       <pubDate>Fri, 23 Aug 2019 00:00:00 +0000</pubDate>

@@ -1,0 +1,132 @@
+---
+title: "Poisson Process Simulation"
+author: "Jason Preszler"
+date: 2019-09-09
+tags: ["Python", "simulation", "poisson"]
+output: html_document
+---
+
+
+
+<p>While continuing to work through BDA3, and decided to revisit some of the earlier exercises that I had done in <code>R</code>. Problem 9 of chapter 1 asks to simulate a medical clinic with 3 doctors, patients arriving according to an exponential distribution with rate 10 minutes between 9AM and 4PM and each patient needing an appointment length uniformly distributed between 5 and 10 minutes. We are interested in things like the number of patients seen, average wait time, number of patients who had to wait, and when the clinic closes based on 1 simulated day and 100 simulated days (with intervals of each aggregation). These questions are pretty simple if you can simulate the process. I had done this in <code>R</code> long ago, and recall a solution similar to <a href="https://www.r-bloggers.com/bda3-chapter-1-exercise-9/">Brian Callander’s</a>, (I can’t find my own, probably done on an old work computer). Brian’s solution shows how easy it is to generate fairly complex data in R, but doesn’t use any date/time structure.</p>
+<p>I decided this would be a good thing to construct a python solution for, and made a general <a href="../../static/queSimClass.py"><code>QueueSimulator</code> class</a> since this seems like a problem that may need to be simulated often due to the diversity of Poisson processes one can encounter. First, I’ll present an overview of the class, then show it’s use to solve this particular problem.</p>
+<div id="queuesimulator" class="section level2">
+<h2>QueueSimulator</h2>
+<div id="constructor" class="section level3">
+<h3>Constructor</h3>
+<p>First off, dependencies. This class loads <code>numpy</code>, <code>pandas</code>, <code>datetime</code>, and <code>scipy.stats</code> for fairly obvious reasons. Next, our <code>__init__</code> function with header: <code>def __init__(self, numQueues, rate, start_hour, end_hour, appt_low, appt_high):</code>. This initializes the data storage for the class and needs the basic info to set-up the simulation. Here’s the docstring for parameter descriptions:</p>
+<pre class="python"><code>&quot;&quot;&quot;
+Arguments
+------
+numQueues: integer number of queues to handle arrivals
+rate: float, &#39;scale&#39; parameter of exponential distribution, time between arrivals
+start_hour: integer 0:24, hour of day that arrivals can start
+end_hour: integer 0:24, hour of day that arrivals stop (no arrivals after, last arrival may be before)
+appt_low: integer, lower bound of number of minutes needed to process an arrival
+appt_high: integer, upper bound of number of minutes needed to process an arrival
+
+Description
+------
+This class will simulate a Poisson process where items arrive between &#39;start_hour&#39; and &#39;end_hour&#39;,
+with an item arriving every &#39;rate&#39; minutes on average. Each arrival requires between &#39;appt_low&#39;
+and &#39;appt_high&#39; minutes to be processed (uniformly random) and there are &#39;numQueues&#39; available
+to process the arrivals.
+
+Example
+-----
+&#39;simulation = QueueSimulator(3, 10, 9, 16, 5, 21)&#39;
+can be thought of as a clinic with 3 doctors, patients arriving every 10 minutes (exponentially dist.)
+between 9AM and 4PM, and each patient requires an appointment between 5 and 20 minutes (uniformly dist.).
+The appointment length is a property of each patient, and varies accordingly.
+
+Calling &#39;simulation.run_simulation(1)&#39; will simulate one day at the clinic. Results stored in the
+dataframe &#39;simulation.results&#39;
+&quot;&quot;&quot;</code></pre>
+<p>To actually accomplish this set-up, there are a few details worth getting into. To work with datetime objects directly, I wanted to minimize work for the user so they just provide <code>start_hour</code> and <code>end_hour</code> as integers, the constructor then runs:</p>
+<pre class="python"><code>self.start = datetime.datetime.combine(datetime.date.today(), datetime.time(start_hour,0,0))
+self.end = datetime.datetime.combine(datetime.date.today(), datetime.time(end_hour,0,0))</code></pre>
+<p>This creates a <code>time</code> object from the hours, then combines with today’s date to result in a full <code>datetime</code> object. This was necessary for later use with time arithmetic and <code>timedelta</code> objects which need a full <code>datetime</code> not just a time.</p>
+<p>The next issue is that we don’t know how many patients will come each day so we create an <code>expected_count</code> attribute which gives an upper bound of how many patients to simulate arriving. It’s an upper bound because we want to have enough coming in that when we cut-off at the <code>end_hour</code> we haven’t already run out of patients. Here’s the main use of <code>scipy.stats</code>:</p>
+<pre class="python"><code>minutes_for_new_items = (end_hour-start_hour)*60 #minutes new patients seen
+time_between_items = rate #exponential dist. time parameter
+self.expected_count = int(np.ceil(stats.poisson.ppf(.9999, minutes_for_new_items/time_between_items)))</code></pre>
+<p>Lastly, we need the queues to handle patients (i.e. the doctors) which uses the <code>datetime.datetime.combine</code> tactic from the start and end time, as well as a list comprehension. This results in a list of when each doctor is available next. Initially this is the <code>start_hour</code> and will be updated as we run the simulation.</p>
+<pre class="python"><code>self.ques = [datetime.datetime.combine(datetime.datetime.today(), datetime.time(start_hour,0,0)) for i in range(0, self.numQueues)]</code></pre>
+<p>Everything else is just initializing class attributes.</p>
+</div>
+<div id="run-simulation" class="section level3">
+<h3>Run Simulation</h3>
+<p>The other ‘public’ method is <code>run_simulation</code> which will populate a <code>results</code> attribute dataframe with one row per ‘day’ we simulate, the number of days is the only parameter (default is 1). The results dataframe has the info we need to answer the problems questions. This is primarily a driver function that loops over the number of simulations, resetting the doctors queues, generating a single day of results, aggregating the single run and merging into the <code>results</code> dataframe. The helper functions are: <code>__single_sim_results(self):</code> which calls <code>__wait_time_update(self, item):</code> on each item that arrives.</p>
+</div>
+<div id="single-simulation" class="section level3">
+<h3>Single Simulation</h3>
+<p>The <code>__single_sim_results</code> function first generates all possible patients, arrival delays between patients (exponentially distributed), and then a list of actual arrival times.</p>
+<pre class="python"><code>itemID = np.arange(0, self.expected_count)
+minutes_to_arrival = np.random.exponential(scale = self.rate, size = self.expected_count)
+arrival_times = [self.start+datetime.timedelta(minutes = i) for i in minutes_to_arrival.cumsum()]</code></pre>
+<p>Next, we construct an <code>arrivals</code> dataframe with one row per patient. This includes generating the appointment length the patient will need, cutting off any who arrive after 4PM, and initializing some other columns:</p>
+<pre class="python"><code>arrivals = pd.DataFrame({
+      &#39;id&#39;:itemID,
+      &#39;min_btwn_arrival&#39;: minutes_to_arrival,
+      &#39;arrival_time&#39;: arrival_times,
+      &#39;appt_length&#39;: np.random.uniform(low=self.appt_low, high=self.appt_high, size=self.expected_count)
+      })
+arrivals = arrivals[arrivals[&#39;arrival_time&#39;]&lt;=self.end]
+arrivals[&#39;appt_length_minutes&#39;] = arrivals.appt_length.apply(lambda x: datetime.timedelta(minutes=x))
+arrivals[&#39;queue&#39;] = np.nan
+arrivals[&#39;wait_time&#39;] = datetime.timedelta(minutes=0)
+arrivals[&#39;appt_start_time&#39;] = arrivals[&#39;arrival_time&#39;]
+arrivals[&#39;appt_end_time&#39;] = arrivals[&#39;arrival_time&#39;]+arrivals[&#39;appt_length_minutes&#39;]</code></pre>
+<p>You’ll notice we set the <code>appt_end_time</code> to the arrival time plus the appointment length. Now we have to update this if the patient has to wait.</p>
+</div>
+<div id="wait-time-update" class="section level3">
+<h3>Wait Time Update</h3>
+<p>The <code>__wait_time_update</code> routine adjusts the patients <code>appt_end_time</code> and the doctors queue of availability. First, we find the next available doctor and assign the patient to them:</p>
+<pre class="python"><code>first_que_avail = self.ques.index(min(self.ques))
+item[&#39;queue&#39;] = first_que_avail</code></pre>
+<p>If <code>min(self.ques)</code> (next time the doctor is available) is earlier or at the patients <code>arrival_time</code>, then we can just change the doctors availability to be at the already created <code>appt_end_time</code> since there is no wait. If there is a wait, we must adjust the <code>appt_start_time</code> and <code>appt_end_time</code> and then update the doctors availability tot he appointment end time.</p>
+<p>We run all the <code>__wait_time_update</code> via a simple <code>apply</code> call in <code>__single_sim_results</code>:</p>
+<pre class="python"><code>arrivals = arrivals.apply(lambda x: self.__wait_time_update(x), axis=1)</code></pre>
+<p>The important thing about this is the <code>axis=1</code> argument, which took a little debugging to fix. The <code>__wait_time_update</code> function must be run on each row, and usually the default (<code>axis=0</code>) accomplishes this when we hand a single column to apply (i.e. <code>df.col_name.apply(lambda x: 2*x)</code> would double the values in <code>col_name</code>). The <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.apply.html">pandas documentation</a> has a nice example, showing that <code>df.apply(func, axis=0)</code> will apply <code>func</code> to each column’s values but <code>df.apply(func, axis=1)</code> applies <code>func</code> to each row’s values. I find this backwards from the usual “axis=1 is columns” standard.</p>
+</div>
+</div>
+<div id="actual-simulation" class="section level2">
+<h2>Actual Simulation</h2>
+<p>Now we can use the class to produce simulated data and examine results. First I’ll import the class and initialize a simulation.</p>
+<pre class="python"><code>from queSimClass import QueueSimulator
+
+first_sim = QueueSimulator(3, 10, 9, 16, 5, 21)</code></pre>
+<p>I’m deviating from the directions a bit here as I’m allowing appointments to be between 5 and 20 minutes (the 21 is because upper bounds aren’t inclusive in python, which is possibly the most standard thing I’ve encountered in the language).</p>
+<p>Here’s the result of simulating one day:</p>
+<pre class="python"><code>first_sim.run_simulation(1)
+print(first_sim.results)</code></pre>
+<pre><code>##   simulation num_items  ...                 close_time last_appt_to_close_minutes
+## 0          0        50  ... 2019-09-09 16:17:33.068984                   17.55115
+## 
+## [1 rows x 6 columns]</code></pre>
+<p>Next, we want data on 100 or 1000 simulated days. Rather than numeric summaries, I’ll make some graphs:</p>
+<pre class="python"><code>first_sim.run_simulation(100)</code></pre>
+<pre><code>## /home/jpreszler/github/jpreszler/content/post/queSimClass.py:112: FutureWarning: Sorting because non-concatenation axis is not aligned. A future version
+## of pandas will change to not sort by default.
+## 
+## To accept the future behavior, pass &#39;sort=False&#39;.
+## 
+## To retain the current behavior and silence the warning, pass &#39;sort=True&#39;.
+## 
+##   self.results = pd.concat([self.results, run_results], ignore_index=True)</code></pre>
+<pre class="python"><code>import matplotlib.pyplot as plt
+import seaborn as sns
+
+sns.distplot(first_sim.results[&#39;wait_count&#39;])</code></pre>
+<p><img src="/post/2019-09-09-poisson-simulation_files/figure-html/unnamed-chunk-11-1.png" /><!-- --></p>
+<p>Generally less than half of all patients have to wait at all, but to see nice graphs of the wait time and close time, we need to get out of datetime format by applying <code>total_seconds</code> and dividing by 60 to convert to minutes.</p>
+<pre class="python"><code>sns.distplot(first_sim.results.avg_wait_time.dt.total_seconds().div(60))</code></pre>
+<p><img src="/post/2019-09-09-poisson-simulation_files/figure-html/unnamed-chunk-12-1.png" /><!-- --></p>
+<p>Similarly, we can plot the distribution of closing times as minutes after 4PM:</p>
+<pre class="python"><code>import datetime
+
+sns.distplot((first_sim.results.close_time-datetime.datetime.combine(datetime.date.today(),datetime.time(16,0,0))).dt.total_seconds().div(60))</code></pre>
+<p><img src="/post/2019-09-09-poisson-simulation_files/figure-html/unnamed-chunk-13-1.png" /><!-- --></p>
+<p>The negative times mean doctors were available to see patients, but no new patients came between the last appointment end and 4PM.</p>
+<p>Next, we should incorporate some realism into our simulation - doctors need some breaks and likely pauses between patients to maintain charts, but I’ll leave that as an exercise to the reader…</p>
+</div>
