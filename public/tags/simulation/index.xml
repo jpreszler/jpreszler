@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Poisson on Jason I. Preszler</title>
-    <link>/tags/poisson/</link>
-    <description>Recent content in Poisson on Jason I. Preszler</description>
+    <title>simulation on Jason I. Preszler</title>
+    <link>/tags/simulation/</link>
+    <description>Recent content in simulation on Jason I. Preszler</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2017 Jason Preszler</copyright>
     <lastBuildDate>Mon, 09 Sep 2019 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="/tags/poisson/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/tags/simulation/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -19,15 +19,6 @@
       
       <guid>/post/2019-09-09-poisson-simulation/</guid>
       <description>While continuing to work through BDA3, and decided to revisit some of the earlier exercises that I had done in R. Problem 9 of chapter 1 asks to simulate a medical clinic with 3 doctors, patients arriving according to an exponential distribution with rate 10 minutes between 9AM and 4PM and each patient needing an appointment length uniformly distributed between 5 and 10 minutes. We are interested in things like the number of patients seen, average wait time, number of patients who had to wait, and when the clinic closes based on 1 simulated day and 100 simulated days (with intervals of each aggregation).</description>
-    </item>
-    
-    <item>
-      <title>Mass Shooting Changepoint</title>
-      <link>/post/2019-08-23-mass-shoot/</link>
-      <pubDate>Fri, 23 Aug 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/post/2019-08-23-mass-shoot/</guid>
-      <description>Every time there’s news about a mass shooting I feel like doing some type of data analysis about gun violence. With the shootings in Dayton and El Paso, as well as news of several likely shootings being prevented, I thought I would actually follow through with some analysis. Having been a senior in high school (in California) when the Columbine shooting took place, and also living in Salt Lake during the Trolley Square shooting I’ve seen the impacts of these tragedies and feel as though they are happening more frequently.</description>
     </item>
     
   </channel>

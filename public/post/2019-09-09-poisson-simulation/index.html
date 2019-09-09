@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="theme" content="hugo-academic">
+  <meta name="generator" content="Hugo 0.55.3" />
+  <meta name="author" content="Jason Preszler">
+  <meta name="description" content="Data Science Fellow">
+
+  
+  <link rel="alternate" hreflang="en-us" href="/post/2019-09-09-poisson-simulation/">
+
+  
+  
+
+
+  
+
+  
+  
+  
+  
+    
+  
+  
+    
+    
+      
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+      
+    
+  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha512-6MXa8B6uaO18Hid6blRMetEIoPqHf7Ux1tnyIQdpt9qI5OACx7C+O3IVTr98vwGnlcg0LOLa02i9Y1HpVhlfiw==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.1/css/academicons.min.css" integrity="sha512-NThgw3XKQ1absAahW6to7Ey42uycrVvfNfyjqcFNgCmOCQ5AR4AO0SiXrN+8ZtYeappp56lk1WtvjVmEa+VR6A==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha512-SfTiTlX6kk+qitfevl/7LibUOeJWlt9rbyDn92a1DqWOw9vWG2MFoays0sgObmWazO5BQPiFucnnEAjpAB+/Sw==" crossorigin="anonymous">
+  
+  
+  
+  
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Montserrat:400,700%7cRoboto:400,400italic,700%7cRoboto&#43;Mono">
+  
+  <link rel="stylesheet" href="/styles.css">
+  
+
+  
+    <script>
+      window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+      ga('create', 'UA-111748163-1', 'auto');
+      ga('require', 'eventTracker');
+      ga('require', 'outboundLinkTracker');
+      ga('require', 'urlChangeTracker');
+      ga('send', 'pageview');
+    </script>
+    <script async src="//www.google-analytics.com/analytics.js"></script>
+    
+    <script async src="https://cdnjs.cloudflare.com/ajax/libs/autotrack/2.4.1/autotrack.js" integrity="sha512-HUmooslVKj4m6OBu0OgzjXXr+QuFYy/k7eLI5jdeEy/F4RSgMn6XRWRGkFi5IFaFgy7uFTkegp3Z0XnJf3Jq+g==" crossorigin="anonymous"></script>
+    
+  
+
+  
+  <link rel="alternate" href="/index.xml" type="application/rss+xml" title="Jason I. Preszler">
+  <link rel="feed" href="/index.xml" type="application/rss+xml" title="Jason I. Preszler">
+  
+
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="/post/2019-09-09-poisson-simulation/">
+
+  <meta property="twitter:card" content="summary_large_image">
+  
+  <meta property="og:site_name" content="Jason I. Preszler">
+  <meta property="og:url" content="/post/2019-09-09-poisson-simulation/">
+  <meta property="og:title" content="Poisson Process Simulation | Jason I. Preszler">
+  <meta property="og:description" content="">
+  <meta property="og:locale" content="en-us">
+  
+  <meta property="article:published_time" content="2019-09-09T00:00:00&#43;00:00">
+  
+  <meta property="article:modified_time" content="2019-09-09T00:00:00&#43;00:00">
+  
+
+  
+
+  <title>Poisson Process Simulation | Jason I. Preszler</title>
+
+</head>
+<body id="top" data-spy="scroll" data-target="#toc" data-offset="71" >
+
+<nav class="navbar navbar-default navbar-fixed-top" id="navbar-main">
+  <div class="container">
+
+    
+    <div class="navbar-header">
+      
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+              data-target=".navbar-collapse" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      
+      <a class="navbar-brand" href="/">Jason I. Preszler</a>
+    </div>
+
+    
+    <div class="collapse navbar-collapse">
+
+      
+      
+      <ul class="nav navbar-nav navbar-right">
+        
+
+        
+
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#about">
+            
+            <span>Home</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#posts">
+            
+            <span>Posts</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#publications">
+            
+            <span>Publications</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#talks">
+            
+            <span>Talks</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#projects">
+            
+            <span>Projects</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#contact">
+            
+            <span>Contact</span>
+            
+          </a>
+        </li>
+
+        
+        
+      
+
+      
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+<article class="article" itemscope itemtype="http://schema.org/Article">
+
+  
+
+
+  <div class="article-container">
+    <div class="article-inner">
+      <h1 itemprop="name">Poisson Process Simulation</h1>
+
+      
+
+<div class="article-metadata">
+
+  <span class="article-date">
+    
+    <time datetime="2019-09-09 00:00:00 &#43;0000 UTC" itemprop="datePublished">
+      Sep 9, 2019
+    </time>
+  </span>
+
+  
+
+  
+  
+
+  
+
+  
+  
+<div class="share-box" aria-hidden="true">
+  <ul class="share">
+    <li>
+      <a class="twitter"
+         href="https://twitter.com/intent/tweet?text=Poisson%20Process%20Simulation&amp;url=%2fpost%2f2019-09-09-poisson-simulation%2f"
+         target="_blank" rel="noopener">
+        <i class="fa fa-twitter"></i>
+      </a>
+    </li>
+    <li>
+      <a class="facebook"
+         href="https://www.facebook.com/sharer.php?u=%2fpost%2f2019-09-09-poisson-simulation%2f"
+         target="_blank" rel="noopener">
+        <i class="fa fa-facebook"></i>
+      </a>
+    </li>
+    <li>
+      <a class="linkedin"
+         href="https://www.linkedin.com/shareArticle?mini=true&amp;url=%2fpost%2f2019-09-09-poisson-simulation%2f&amp;title=Poisson%20Process%20Simulation"
+         target="_blank" rel="noopener">
+        <i class="fa fa-linkedin"></i>
+      </a>
+    </li>
+    <li>
+      <a class="weibo"
+         href="http://service.weibo.com/share/share.php?url=%2fpost%2f2019-09-09-poisson-simulation%2f&amp;title=Poisson%20Process%20Simulation"
+         target="_blank" rel="noopener">
+        <i class="fa fa-weibo"></i>
+      </a>
+    </li>
+    <li>
+      <a class="email"
+         href="mailto:?subject=Poisson%20Process%20Simulation&amp;body=%2fpost%2f2019-09-09-poisson-simulation%2f">
+        <i class="fa fa-envelope"></i>
+      </a>
+    </li>
+  </ul>
+</div>
+
+
+  
+
+</div>
+
+
+      <div class="article-style" itemprop="articleBody">
+        
+
+
+<p>While continuing to work through BDA3, and decided to revisit some of the earlier exercises that I had done in <code>R</code>. Problem 9 of chapter 1 asks to simulate a medical clinic with 3 doctors, patients arriving according to an exponential distribution with rate 10 minutes between 9AM and 4PM and each patient needing an appointment length uniformly distributed between 5 and 10 minutes. We are interested in things like the number of patients seen, average wait time, number of patients who had to wait, and when the clinic closes based on 1 simulated day and 100 simulated days (with intervals of each aggregation). These questions are pretty simple if you can simulate the process. I had done this in <code>R</code> long ago, and recall a solution similar to <a href="https://www.r-bloggers.com/bda3-chapter-1-exercise-9/">Brian Callander’s</a>, (I can’t find my own, probably done on an old work computer). Brian’s solution shows how easy it is to generate fairly complex data in R, but doesn’t use any date/time structure.</p>
+<p>I decided this would be a good thing to construct a python solution for, and made a general <a href="../../static/queSimClass.py"><code>QueueSimulator</code> class</a> since this seems like a problem that may need to be simulated often due to the diversity of Poisson processes one can encounter. First, I’ll present an overview of the class, then show it’s use to solve this particular problem.</p>
+<div id="queuesimulator" class="section level2">
+<h2>QueueSimulator</h2>
+<div id="constructor" class="section level3">
+<h3>Constructor</h3>
+<p>First off, dependencies. This class loads <code>numpy</code>, <code>pandas</code>, <code>datetime</code>, and <code>scipy.stats</code> for fairly obvious reasons. Next, our <code>__init__</code> function with header: <code>def __init__(self, numQueues, rate, start_hour, end_hour, appt_low, appt_high):</code>. This initializes the data storage for the class and needs the basic info to set-up the simulation. Here’s the docstring for parameter descriptions:</p>
+<pre class="python"><code>&quot;&quot;&quot;
+Arguments
+------
+numQueues: integer number of queues to handle arrivals
+rate: float, &#39;scale&#39; parameter of exponential distribution, time between arrivals
+start_hour: integer 0:24, hour of day that arrivals can start
+end_hour: integer 0:24, hour of day that arrivals stop (no arrivals after, last arrival may be before)
+appt_low: integer, lower bound of number of minutes needed to process an arrival
+appt_high: integer, upper bound of number of minutes needed to process an arrival
+
+Description
+------
+This class will simulate a Poisson process where items arrive between &#39;start_hour&#39; and &#39;end_hour&#39;,
+with an item arriving every &#39;rate&#39; minutes on average. Each arrival requires between &#39;appt_low&#39;
+and &#39;appt_high&#39; minutes to be processed (uniformly random) and there are &#39;numQueues&#39; available
+to process the arrivals.
+
+Example
+-----
+&#39;simulation = QueueSimulator(3, 10, 9, 16, 5, 21)&#39;
+can be thought of as a clinic with 3 doctors, patients arriving every 10 minutes (exponentially dist.)
+between 9AM and 4PM, and each patient requires an appointment between 5 and 20 minutes (uniformly dist.).
+The appointment length is a property of each patient, and varies accordingly.
+
+Calling &#39;simulation.run_simulation(1)&#39; will simulate one day at the clinic. Results stored in the
+dataframe &#39;simulation.results&#39;
+&quot;&quot;&quot;</code></pre>
+<p>To actually accomplish this set-up, there are a few details worth getting into. To work with datetime objects directly, I wanted to minimize work for the user so they just provide <code>start_hour</code> and <code>end_hour</code> as integers, the constructor then runs:</p>
+<pre class="python"><code>self.start = datetime.datetime.combine(datetime.date.today(), datetime.time(start_hour,0,0))
+self.end = datetime.datetime.combine(datetime.date.today(), datetime.time(end_hour,0,0))</code></pre>
+<p>This creates a <code>time</code> object from the hours, then combines with today’s date to result in a full <code>datetime</code> object. This was necessary for later use with time arithmetic and <code>timedelta</code> objects which need a full <code>datetime</code> not just a time.</p>
+<p>The next issue is that we don’t know how many patients will come each day so we create an <code>expected_count</code> attribute which gives an upper bound of how many patients to simulate arriving. It’s an upper bound because we want to have enough coming in that when we cut-off at the <code>end_hour</code> we haven’t already run out of patients. Here’s the main use of <code>scipy.stats</code>:</p>
+<pre class="python"><code>minutes_for_new_items = (end_hour-start_hour)*60 #minutes new patients seen
+time_between_items = rate #exponential dist. time parameter
+self.expected_count = int(np.ceil(stats.poisson.ppf(.9999, minutes_for_new_items/time_between_items)))</code></pre>
+<p>Lastly, we need the queues to handle patients (i.e. the doctors) which uses the <code>datetime.datetime.combine</code> tactic from the start and end time, as well as a list comprehension. This results in a list of when each doctor is available next. Initially this is the <code>start_hour</code> and will be updated as we run the simulation.</p>
+<pre class="python"><code>self.ques = [datetime.datetime.combine(datetime.datetime.today(), datetime.time(start_hour,0,0)) for i in range(0, self.numQueues)]</code></pre>
+<p>Everything else is just initializing class attributes.</p>
+</div>
+<div id="run-simulation" class="section level3">
+<h3>Run Simulation</h3>
+<p>The other ‘public’ method is <code>run_simulation</code> which will populate a <code>results</code> attribute dataframe with one row per ‘day’ we simulate, the number of days is the only parameter (default is 1). The results dataframe has the info we need to answer the problems questions. This is primarily a driver function that loops over the number of simulations, resetting the doctors queues, generating a single day of results, aggregating the single run and merging into the <code>results</code> dataframe. The helper functions are: <code>__single_sim_results(self):</code> which calls <code>__wait_time_update(self, item):</code> on each item that arrives.</p>
+</div>
+<div id="single-simulation" class="section level3">
+<h3>Single Simulation</h3>
+<p>The <code>__single_sim_results</code> function first generates all possible patients, arrival delays between patients (exponentially distributed), and then a list of actual arrival times.</p>
+<pre class="python"><code>itemID = np.arange(0, self.expected_count)
+minutes_to_arrival = np.random.exponential(scale = self.rate, size = self.expected_count)
+arrival_times = [self.start+datetime.timedelta(minutes = i) for i in minutes_to_arrival.cumsum()]</code></pre>
+<p>Next, we construct an <code>arrivals</code> dataframe with one row per patient. This includes generating the appointment length the patient will need, cutting off any who arrive after 4PM, and initializing some other columns:</p>
+<pre class="python"><code>arrivals = pd.DataFrame({
+      &#39;id&#39;:itemID,
+      &#39;min_btwn_arrival&#39;: minutes_to_arrival,
+      &#39;arrival_time&#39;: arrival_times,
+      &#39;appt_length&#39;: np.random.uniform(low=self.appt_low, high=self.appt_high, size=self.expected_count)
+      })
+arrivals = arrivals[arrivals[&#39;arrival_time&#39;]&lt;=self.end]
+arrivals[&#39;appt_length_minutes&#39;] = arrivals.appt_length.apply(lambda x: datetime.timedelta(minutes=x))
+arrivals[&#39;queue&#39;] = np.nan
+arrivals[&#39;wait_time&#39;] = datetime.timedelta(minutes=0)
+arrivals[&#39;appt_start_time&#39;] = arrivals[&#39;arrival_time&#39;]
+arrivals[&#39;appt_end_time&#39;] = arrivals[&#39;arrival_time&#39;]+arrivals[&#39;appt_length_minutes&#39;]</code></pre>
+<p>You’ll notice we set the <code>appt_end_time</code> to the arrival time plus the appointment length. Now we have to update this if the patient has to wait.</p>
+</div>
+<div id="wait-time-update" class="section level3">
+<h3>Wait Time Update</h3>
+<p>The <code>__wait_time_update</code> routine adjusts the patients <code>appt_end_time</code> and the doctors queue of availability. First, we find the next available doctor and assign the patient to them:</p>
+<pre class="python"><code>first_que_avail = self.ques.index(min(self.ques))
+item[&#39;queue&#39;] = first_que_avail</code></pre>
+<p>If <code>min(self.ques)</code> (next time the doctor is available) is earlier or at the patients <code>arrival_time</code>, then we can just change the doctors availability to be at the already created <code>appt_end_time</code> since there is no wait. If there is a wait, we must adjust the <code>appt_start_time</code> and <code>appt_end_time</code> and then update the doctors availability tot he appointment end time.</p>
+<p>We run all the <code>__wait_time_update</code> via a simple <code>apply</code> call in <code>__single_sim_results</code>:</p>
+<pre class="python"><code>arrivals = arrivals.apply(lambda x: self.__wait_time_update(x), axis=1)</code></pre>
+<p>The important thing about this is the <code>axis=1</code> argument, which took a little debugging to fix. The <code>__wait_time_update</code> function must be run on each row, and usually the default (<code>axis=0</code>) accomplishes this when we hand a single column to apply (i.e. <code>df.col_name.apply(lambda x: 2*x)</code> would double the values in <code>col_name</code>). The <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.apply.html">pandas documentation</a> has a nice example, showing that <code>df.apply(func, axis=0)</code> will apply <code>func</code> to each column’s values but <code>df.apply(func, axis=1)</code> applies <code>func</code> to each row’s values. I find this backwards from the usual “axis=1 is columns” standard.</p>
+</div>
+</div>
+<div id="actual-simulation" class="section level2">
+<h2>Actual Simulation</h2>
+<p>Now we can use the class to produce simulated data and examine results. First I’ll import the class and initialize a simulation.</p>
+<pre class="python"><code>from queSimClass import QueueSimulator
+
+first_sim = QueueSimulator(3, 10, 9, 16, 5, 21)</code></pre>
+<p>I’m deviating from the directions a bit here as I’m allowing appointments to be between 5 and 20 minutes (the 21 is because upper bounds aren’t inclusive in python, which is possibly the most standard thing I’ve encountered in the language).</p>
+<p>Here’s the result of simulating one day:</p>
+<pre class="python"><code>first_sim.run_simulation(1)
+print(first_sim.results)</code></pre>
+<pre><code>##   simulation num_items  ...                 close_time last_appt_to_close_minutes
+## 0          0        50  ... 2019-09-09 16:17:33.068984                   17.55115
+## 
+## [1 rows x 6 columns]</code></pre>
+<p>Next, we want data on 100 or 1000 simulated days. Rather than numeric summaries, I’ll make some graphs:</p>
+<pre class="python"><code>first_sim.run_simulation(100)</code></pre>
+<pre><code>## /home/jpreszler/github/jpreszler/content/post/queSimClass.py:112: FutureWarning: Sorting because non-concatenation axis is not aligned. A future version
+## of pandas will change to not sort by default.
+## 
+## To accept the future behavior, pass &#39;sort=False&#39;.
+## 
+## To retain the current behavior and silence the warning, pass &#39;sort=True&#39;.
+## 
+##   self.results = pd.concat([self.results, run_results], ignore_index=True)</code></pre>
+<pre class="python"><code>import matplotlib.pyplot as plt
+import seaborn as sns
+
+sns.distplot(first_sim.results[&#39;wait_count&#39;])</code></pre>
+<p><img src="/post/2019-09-09-poisson-simulation_files/figure-html/unnamed-chunk-11-1.png" /><!-- --></p>
+<p>Generally less than half of all patients have to wait at all, but to see nice graphs of the wait time and close time, we need to get out of datetime format by applying <code>total_seconds</code> and dividing by 60 to convert to minutes.</p>
+<pre class="python"><code>sns.distplot(first_sim.results.avg_wait_time.dt.total_seconds().div(60))</code></pre>
+<p><img src="/post/2019-09-09-poisson-simulation_files/figure-html/unnamed-chunk-12-1.png" /><!-- --></p>
+<p>Similarly, we can plot the distribution of closing times as minutes after 4PM:</p>
+<pre class="python"><code>import datetime
+
+sns.distplot((first_sim.results.close_time-datetime.datetime.combine(datetime.date.today(),datetime.time(16,0,0))).dt.total_seconds().div(60))</code></pre>
+<p><img src="/post/2019-09-09-poisson-simulation_files/figure-html/unnamed-chunk-13-1.png" /><!-- --></p>
+<p>The negative times mean doctors were available to see patients, but no new patients came between the last appointment end and 4PM.</p>
+<p>Next, we should incorporate some realism into our simulation - doctors need some breaks and likely pauses between patients to maintain charts, but I’ll leave that as an exercise to the reader…</p>
+</div>
+
+      </div>
+
+      
+
+
+<div class="article-tags">
+  
+  <a class="btn btn-primary btn-outline" href="/tags/python">Python</a>
+  
+  <a class="btn btn-primary btn-outline" href="/tags/simulation">simulation</a>
+  
+  <a class="btn btn-primary btn-outline" href="/tags/poisson">poisson</a>
+  
+</div>
+
+
+
+    </div>
+  </div>
+
+</article>
+
+
+
+<div class="article-container article-widget">
+  <div class="hr-light"></div>
+  <h3>Related</h3>
+  <ul>
+    
+    <li><a href="/post/2019-08-23-mass-shoot/">Mass Shooting Changepoint</a></li>
+    
+    <li><a href="/post/2019-05-18-pysql/">Pythonic SQL with SQLAlchemy</a></li>
+    
+    <li><a href="/post/2019-04-21-pyscrape/">Python Web Scraping</a></li>
+    
+    <li><a href="/post/2019-03-18-matplotlib-map/">Mapping with an 800 Pound Gorilla</a></li>
+    
+    <li><a href="/post/2019-02-23-em-1/">Expectation-Maximization</a></li>
+    
+  </ul>
+</div>
+
+
+
+
+<div class="article-container">
+  
+
+</div>
+
+<footer class="site-footer">
+  <div class="container">
+    <p class="powered-by">
+
+      &copy; 2017 Jason Preszler &middot; 
+
+      Powered by the
+      <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+      <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+      <span class="pull-right" aria-hidden="true">
+        <a href="#" id="back_to_top">
+          <span class="button_icon">
+            <i class="fa fa-chevron-up fa-2x"></i>
+          </span>
+        </a>
+      </span>
+
+    </p>
+  </div>
+</footer>
+
+
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close btn-large" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Cite</h4>
+      </div>
+      <div>
+        <pre><code class="modal-body tex"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-primary btn-outline js-copy-cite" href="#" target="_blank">
+          <i class="fa fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-primary btn-outline js-download-cite" href="#" target="_blank">
+          <i class="fa fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+    
+
+    
+
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" integrity="sha512-3P8rXCuGJdNZOnUx/03c1jOTnMn3rP63nBip5gOP2qmUh5YAdVAvFZ1E+QLZZbC1rtMrQb+mah3AfYW11RUrWA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.3/imagesloaded.pkgd.min.js" integrity="sha512-umsR78NN0D23AzgoZ11K7raBD+R6hqKojyBZs1w8WvYlsI+QuKRGBx3LFCwhatzBunCjDuJpDHwxD13sLMbpRA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha512-iztkobsvnjKfAtTNdHkGVjAYTrrtlC7mGp/54c40wowO7LhURYl3gVzzcEqGl/qKXQltJ2HwMrdLcNUdo+N/RQ==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.4/isotope.pkgd.min.js" integrity="sha512-VDBOIlDbuC4VWxGJNmuFRQ0Li0SKkDpmGyuhAG5LTDLd/dJ/S0WMVxriR2Y+CyPL5gzjpN4f/6iqWVBJlht0tQ==" crossorigin="anonymous"></script>
+    
+    
+    <script src="/js/hugo-academic.js"></script>
+    
+
+    
+    
+      
+      
+      <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+      
+
+      
+      <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+      
+      <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/python.min.js"></script>
+      
+      <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/c.min.js"></script>
+      
+      <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/sql.min.js"></script>
+      
+
+      
+
+      <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({ tex2jax: { inlineMath: [['$','$'], ['\\(','\\)']] } });
+    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_CHTML" integrity="sha512-tOav5w1OjvsSJzePRtt2uQPFwBoHt1VZcUq8l8nm5284LEKE9FSJBQryzMBzHxY5P0zRdNqEcpLIRVYFNgu1jw==" crossorigin="anonymous"></script>
+    
+    
+
+  </body>
+</html>
+
