@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="theme" content="hugo-academic">
+  <meta name="generator" content="Hugo 0.55.3" />
+  <meta name="author" content="Jason Preszler">
+  <meta name="description" content="Data Science Fellow">
+
+  
+  <link rel="alternate" hreflang="en-us" href="/post/2019-09-19-elevation/">
+
+  
+  
+
+
+  
+
+  
+  
+  
+  
+    
+  
+  
+    
+    
+      
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+      
+    
+  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha512-6MXa8B6uaO18Hid6blRMetEIoPqHf7Ux1tnyIQdpt9qI5OACx7C+O3IVTr98vwGnlcg0LOLa02i9Y1HpVhlfiw==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.1/css/academicons.min.css" integrity="sha512-NThgw3XKQ1absAahW6to7Ey42uycrVvfNfyjqcFNgCmOCQ5AR4AO0SiXrN+8ZtYeappp56lk1WtvjVmEa+VR6A==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha512-SfTiTlX6kk+qitfevl/7LibUOeJWlt9rbyDn92a1DqWOw9vWG2MFoays0sgObmWazO5BQPiFucnnEAjpAB+/Sw==" crossorigin="anonymous">
+  
+  
+  
+  
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Montserrat:400,700%7cRoboto:400,400italic,700%7cRoboto&#43;Mono">
+  
+  <link rel="stylesheet" href="/styles.css">
+  
+
+  
+    <script>
+      window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+      ga('create', 'UA-111748163-1', 'auto');
+      ga('require', 'eventTracker');
+      ga('require', 'outboundLinkTracker');
+      ga('require', 'urlChangeTracker');
+      ga('send', 'pageview');
+    </script>
+    <script async src="//www.google-analytics.com/analytics.js"></script>
+    
+    <script async src="https://cdnjs.cloudflare.com/ajax/libs/autotrack/2.4.1/autotrack.js" integrity="sha512-HUmooslVKj4m6OBu0OgzjXXr+QuFYy/k7eLI5jdeEy/F4RSgMn6XRWRGkFi5IFaFgy7uFTkegp3Z0XnJf3Jq+g==" crossorigin="anonymous"></script>
+    
+  
+
+  
+  <link rel="alternate" href="/index.xml" type="application/rss+xml" title="Jason I. Preszler">
+  <link rel="feed" href="/index.xml" type="application/rss+xml" title="Jason I. Preszler">
+  
+
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="/post/2019-09-19-elevation/">
+
+  <meta property="twitter:card" content="summary_large_image">
+  
+  <meta property="og:site_name" content="Jason I. Preszler">
+  <meta property="og:url" content="/post/2019-09-19-elevation/">
+  <meta property="og:title" content="Rise Above the Noise | Jason I. Preszler">
+  <meta property="og:description" content="">
+  <meta property="og:locale" content="en-us">
+  
+  <meta property="article:published_time" content="2019-09-18T00:00:00&#43;00:00">
+  
+  <meta property="article:modified_time" content="2019-09-18T00:00:00&#43;00:00">
+  
+
+  
+
+  <title>Rise Above the Noise | Jason I. Preszler</title>
+
+</head>
+<body id="top" data-spy="scroll" data-target="#toc" data-offset="71" >
+
+<nav class="navbar navbar-default navbar-fixed-top" id="navbar-main">
+  <div class="container">
+
+    
+    <div class="navbar-header">
+      
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+              data-target=".navbar-collapse" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      
+      <a class="navbar-brand" href="/">Jason I. Preszler</a>
+    </div>
+
+    
+    <div class="collapse navbar-collapse">
+
+      
+      
+      <ul class="nav navbar-nav navbar-right">
+        
+
+        
+
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#about">
+            
+            <span>Home</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#posts">
+            
+            <span>Posts</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#publications">
+            
+            <span>Publications</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#talks">
+            
+            <span>Talks</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#projects">
+            
+            <span>Projects</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#contact">
+            
+            <span>Contact</span>
+            
+          </a>
+        </li>
+
+        
+        
+      
+
+      
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+<article class="article" itemscope itemtype="http://schema.org/Article">
+
+  
+
+
+  <div class="article-container">
+    <div class="article-inner">
+      <h1 itemprop="name">Rise Above the Noise</h1>
+
+      
+
+<div class="article-metadata">
+
+  <span class="article-date">
+    
+    <time datetime="2019-09-18 00:00:00 &#43;0000 UTC" itemprop="datePublished">
+      Sep 18, 2019
+    </time>
+  </span>
+
+  
+
+  
+  
+
+  
+
+  
+  
+<div class="share-box" aria-hidden="true">
+  <ul class="share">
+    <li>
+      <a class="twitter"
+         href="https://twitter.com/intent/tweet?text=Rise%20Above%20the%20Noise&amp;url=%2fpost%2f2019-09-19-elevation%2f"
+         target="_blank" rel="noopener">
+        <i class="fa fa-twitter"></i>
+      </a>
+    </li>
+    <li>
+      <a class="facebook"
+         href="https://www.facebook.com/sharer.php?u=%2fpost%2f2019-09-19-elevation%2f"
+         target="_blank" rel="noopener">
+        <i class="fa fa-facebook"></i>
+      </a>
+    </li>
+    <li>
+      <a class="linkedin"
+         href="https://www.linkedin.com/shareArticle?mini=true&amp;url=%2fpost%2f2019-09-19-elevation%2f&amp;title=Rise%20Above%20the%20Noise"
+         target="_blank" rel="noopener">
+        <i class="fa fa-linkedin"></i>
+      </a>
+    </li>
+    <li>
+      <a class="weibo"
+         href="http://service.weibo.com/share/share.php?url=%2fpost%2f2019-09-19-elevation%2f&amp;title=Rise%20Above%20the%20Noise"
+         target="_blank" rel="noopener">
+        <i class="fa fa-weibo"></i>
+      </a>
+    </li>
+    <li>
+      <a class="email"
+         href="mailto:?subject=Rise%20Above%20the%20Noise&amp;body=%2fpost%2f2019-09-19-elevation%2f">
+        <i class="fa fa-envelope"></i>
+      </a>
+    </li>
+  </ul>
+</div>
+
+
+  
+
+</div>
+
+
+      <div class="article-style" itemprop="articleBody">
+        
+
+
+<p>I’ve done some analysis of my gps running data <a href="">before</a>, but mostly just some mapping. I’ve always wanted to bring in some more sophisticated analysis such as identifying runs with similar geographic features (e.g. track workouts) or identifying, categorizing, and comparing hills. To really get into either of these things, I first needed good elevation data which isn’t provided by my forerunner 220. In this post I’ll show some of the problems with the elevation data coming from my garmin 220, how to get elevation data from the RaceMap API (and compare a few other elevation api’s), and then examine how good the new elevation data is.</p>
+<p>First, let’s load the running data and standard libraries.</p>
+<pre class="python"><code>import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+pts = pd.read_csv(&#39;../../static/files/points.csv&#39;)
+pts.info()</code></pre>
+<pre><code>## &lt;class &#39;pandas.core.frame.DataFrame&#39;&gt;
+## RangeIndex: 60920 entries, 0 to 60919
+## Data columns (total 8 columns):
+## Unnamed: 0    60920 non-null int64
+## @lat          60920 non-null float64
+## @lon          60920 non-null float64
+## ele           60920 non-null float64
+## time          60920 non-null object
+## speed         60920 non-null float64
+## pointID       60920 non-null int64
+## runID         60920 non-null object
+## dtypes: float64(4), int64(2), object(2)
+## memory usage: 3.7+ MB</code></pre>
+<div id="forerunner-elevation-issues" class="section level2">
+<h2>Forerunner Elevation Issues</h2>
+<p>When I first looked into the elevation data off my garmin, two big issues jumped out and made me question how reliable it was:</p>
+<ol style="list-style-type: decimal">
+<li>‘fake’ hills - large (30 to 60 meter) drops and returns to elevation over a less than a minute.</li>
+<li>disconnected loops - the start and end elevation of runs being dramatically off (20+ meters).</li>
+</ol>
+<p>There is also a lot of general noise and at low elevation (near sea level) it often appears that I’m under water. Here are a few examples.</p>
+<div id="o81129" class="section level3">
+<h3>76O81129</h3>
+<p>This run took place in Boise, and over a fairly flat area. Here’s the elevation profile and a lon/lat plot.</p>
+<pre class="python"><code>sevensix = pts[pts[&#39;runID&#39;]==&#39;76O81129&#39;]
+fig, ax = plt.subplots(1,2)
+sevensix.plot(&#39;pointID&#39;, &#39;ele&#39;, ax=ax[0])
+ax[0].set_title(&#39;Elevation Profile 76O81129&#39;)
+ax[0].set_ylabel(&#39;Elevation (m)&#39;)
+sevensix.plot(&#39;@lon&#39;, &#39;@lat&#39;, ax=ax[1], legend=False)
+ax[1].set_title(&#39;Lon/Lat Map 76O81129&#39;)
+plt.tight_layout()
+plt.show()</code></pre>
+<p><img src="/post/2019-09-19-elevation_files/figure-html/unnamed-chunk-2-1.png" /><!-- -->
+The start of the elevation profile shows the ‘fake hill’ type of problem of approximately 50 meters! Furthermore, the map clearly shows what appears to be a track (see the oval?) but the elevation profile fails to show a long nearly flat segment.</p>
+</div>
+<div id="b2312" class="section level3">
+<h3>638B2312</h3>
+<p>This run was an out and back along the beach in the Outer Banks. This is very flat near the shoreline. Here’s the elevation profile and a lon/lat plot.</p>
+<pre class="python"><code>sixthree = pts[pts[&#39;runID&#39;]==&#39;638B2312&#39;]
+fig, ax = plt.subplots(1,2)
+sixthree.plot(&#39;pointID&#39;, &#39;ele&#39;, ax=ax[0])
+ax[0].set_title(&#39;Elevation Profile 638B2312&#39;)
+ax[0].set_ylabel(&#39;Elevation (m)&#39;)
+sixthree.plot(&#39;@lon&#39;, &#39;@lat&#39;, ax=ax[1], legend=False)
+ax[1].set_title(&#39;Lon/Lat Map 638B2312&#39;)
+plt.tight_layout()
+plt.show()</code></pre>
+<p><img src="/post/2019-09-19-elevation_files/figure-html/unnamed-chunk-3-1.png" /><!-- -->
+The mean elevation of the first 5 points is <code>{python sixthree.ele[0:5].mean()}</code> meters, while the last 5 points is <code>{python sixthree.ele[-5:-1].mean()}</code> meters. So we ended 5 meters lower than we started. The garmin records data at 6 second intervals, so these are two 30 second average elevations. In reality the elevation wasn’t changing and I was at sea level, both values should be nearly 0 with much less variation then we’re seeing.</p>
+</div>
+</div>
+<div id="elevation-apis-to-the-rescue" class="section level2">
+<h2>Elevation API’s to the Rescue</h2>
+<p>Some time ago, I had heard the Google maps had an elevation api that would give you the elevation of a given lat/lon pair. This seemed like a good way to get reliable elevation data, however Google’s elevation api is no longer free. So I began looking for a replacement, which is apparently a popular thing. I found a number of possibilities, with the two most promising being <a href="http://elevation-api.io">elevation-api.io</a> and <a href="https://racemap.com">racemap</a>.</p>
+<p>Elevation-api.io is simple, but to get the resolution I needed it would have cost money. The costs are low, and I could have gotten elevations for all my points for a few dollars at most, but I wanted to find a free version if possible. If nothing free could be found, this is what I would use though.</p>
+<p>Racemap came through with a free api at good resolution. Like elevation-api.io, it works with simple get or post queries from json arrays of latitude and longitude. After a little experimentation, I wrote the following <a href="https://github.com/jpreszler/runalytics/blob/master/RM-elevation.py">script</a></p>
+<pre class="python"><code>import numpy as np
+import pandas as pd
+import requests
+
+def get_good_elevation(run_id):
+    rmurl = &#39;https://elevation.racemap.com/api&#39;
+    runll = pts[pts[&#39;runID&#39;]==run_id][[&#39;@lat&#39;,&#39;@lon&#39;]].to_json(orient=&#39;values&#39;)
+    post_resp = requests.post(url=rmurl, data=runll)
+
+    return(post_resp.json())
+
+
+if __name__ == &#39;__main__&#39;:
+    pts = pd.read_csv(&#39;data/points.csv&#39;)
+    elevDF = pd.DataFrame(columns=[&#39;runID&#39;, &#39;pointID&#39;, &#39;RMelev&#39;])
+    for rid in pts.runID.unique():
+        runDF = pts[pts[&#39;runID&#39;]==rid][[&#39;runID&#39;,&#39;pointID&#39;]]
+        runDF[&#39;RMelev&#39;] = get_good_elevation(rid)
+        elevDF = pd.concat([elevDF, runDF], axis=0)
+
+    elevDF.to_csv(&#39;data/pt-elevation.csv&#39;)</code></pre>
+<p>It’s pretty self explanatory, with the only interesting thing being pandas <code>.to_json(orient='values')</code>. This dataframe method converts the dataframe to a json object. The <code>values</code> orientation makes the object and array of arrays, where each inner array is a row of the dataframe. That is, it converts the latitude and longitude columns into an array of points. Everything else if just subsetting, making the post request, merging results together. I’m making the post request for each run because there’s a payload limit of around 10,000 points and I have 60,000. Making the code work for a single run seemed to be the most modular approach.</p>
+</div>
+<div id="great-elevation" class="section level2">
+<h2>Great Elevation?</h2>
+<p>At this point, we’ve seen problems in the Garmin data and found free data online that fixes the problem. Well, let’s not be too quick to trust everything we find on the internet.</p>
+<p>Here are the two earlier runs, but not with the racemap elevation in the elevation profile:</p>
+<pre class="python"><code>elev = pd.read_csv(&#39;../../static/files/pt-elevation.csv&#39;)
+ptelev = pd.merge(pts, elev, how=&#39;inner&#39;, on=[&#39;runID&#39;, &#39;pointID&#39;])
+
+sevensix = ptelev[ptelev[&#39;runID&#39;]==&#39;76O81129&#39;]
+fig, ax = plt.subplots(1,2)
+sevensix.plot(&#39;pointID&#39;, [&#39;ele&#39;, &#39;RMelev&#39;], ax=ax[0])
+ax[0].set_title(&#39;Elevation Profile 76O81129&#39;)
+ax[0].set_ylabel(&#39;Elevation (m)&#39;)
+sevensix.plot(&#39;@lon&#39;, &#39;@lat&#39;, ax=ax[1], legend=False)
+ax[1].set_title(&#39;Lon/Lat Map 76O81129&#39;)
+plt.tight_layout()
+plt.show()</code></pre>
+<p><img src="/post/2019-09-19-elevation_files/figure-html/unnamed-chunk-5-1.png" /><!-- --></p>
+<pre class="python"><code>sixthree = ptelev[ptelev[&#39;runID&#39;]==&#39;638B2312&#39;]
+fig, ax = plt.subplots(1,2)
+sixthree.plot(&#39;pointID&#39;, [&#39;ele&#39;, &#39;RMelev&#39;], ax=ax[0])
+ax[0].set_title(&#39;Elevation Profile 638B2312&#39;)
+ax[0].set_ylabel(&#39;Elevation (m)&#39;)
+sixthree.plot(&#39;@lon&#39;, &#39;@lat&#39;, ax=ax[1], legend=False)
+ax[1].set_title(&#39;Lon/Lat Map 638B2312&#39;)
+plt.tight_layout()
+plt.show()</code></pre>
+<p><img src="/post/2019-09-19-elevation_files/figure-html/unnamed-chunk-6-1.png" /><!-- --></p>
+<p>Both seem to be substantial improvements: no crazy hills, no running under water, and in the first it even looks like there’s a track towards the end!</p>
+<p>Looking at the elevation profiles for all runs, most get smoothed out with obvious problems fixed by the racemap elevation data. However, some runs have clear anomalies or look like totally different runs.</p>
+<p>For example, run <code>63L63409</code> seems like the two sets of elevation data correspond to almost completely different paths:</p>
+<pre class="python"><code>sixL = ptelev[ptelev[&#39;runID&#39;]==&#39;63L63409&#39;]
+fig, ax = plt.subplots(1,2)
+sixL.plot(&#39;pointID&#39;, [&#39;ele&#39;, &#39;RMelev&#39;], ax=ax[0])
+ax[0].set_title(&#39;Elevation Profile 63L63409&#39;)
+ax[0].set_ylabel(&#39;Elevation (m)&#39;)
+sixL.plot(&#39;@lon&#39;, &#39;@lat&#39;, ax=ax[1], legend=False)
+ax[1].set_title(&#39;Lon/Lat Map 63L63409&#39;)
+plt.tight_layout()
+plt.show()</code></pre>
+<p><img src="/post/2019-09-19-elevation_files/figure-html/unnamed-chunk-7-1.png" /><!-- -->
+This is a run from Chicago while I was at a conference. It’s mostly along the Lake Front trail (flat) with the horizontal stretch being the Navy Pier. Even the big differences seem to support the racemap data.</p>
+<p>Another example, run <code>53GB3110</code> has the largest average absolute difference between the garmin and racemap elevation data. Looking at the map and profile, it’s clear why (but only if you no Tacoma geography like I do!):</p>
+<pre class="python"><code>fivethree = ptelev[ptelev[&#39;runID&#39;]==&#39;53GB3110&#39;]
+fig, ax = plt.subplots(1,2)
+fivethree.plot(&#39;pointID&#39;, [&#39;ele&#39;, &#39;RMelev&#39;], ax=ax[0])
+ax[0].set_title(&#39;Elevation Profile 53GB3110&#39;)
+ax[0].set_ylabel(&#39;Elevation (m)&#39;)
+fivethree.plot(&#39;@lon&#39;, &#39;@lat&#39;, ax=ax[1], legend=False)
+ax[1].set_title(&#39;Lon/Lat Map 53GB3110&#39;)
+plt.tight_layout()
+plt.show()</code></pre>
+<p><img src="/post/2019-09-19-elevation_files/figure-html/unnamed-chunk-8-1.png" /><!-- -->
+The huge differences where racemap flattens to 0 elevation is the Tacoma Narrows Bridge. While racemap fixes the beginning of the run nicely, and smooths everything, the garmin is given a better measurement of the elevation while on the bridge. This possess a big challenge going forward - usually the racemap elevation is best, but at least sometimes I’ll need the original garmin. Can we make a smart system that knows when to use each? That’s one goal of <code>Runalytics</code>.</p>
+</div>
+
+      </div>
+
+      
+
+
+<div class="article-tags">
+  
+  <a class="btn btn-primary btn-outline" href="/tags/python">Python</a>
+  
+  <a class="btn btn-primary btn-outline" href="/tags/gps">gps</a>
+  
+  <a class="btn btn-primary btn-outline" href="/tags/running">running</a>
+  
+  <a class="btn btn-primary btn-outline" href="/tags/api">api</a>
+  
+  <a class="btn btn-primary btn-outline" href="/tags/pandas">pandas</a>
+  
+  <a class="btn btn-primary btn-outline" href="/tags/matplotlib">matplotlib</a>
+  
+  <a class="btn btn-primary btn-outline" href="/tags/garmin">garmin</a>
+  
+  <a class="btn btn-primary btn-outline" href="/tags/forerunner">forerunner</a>
+  
+  <a class="btn btn-primary btn-outline" href="/tags/runalytics">runalytics</a>
+  
+</div>
+
+
+
+    </div>
+  </div>
+
+</article>
+
+
+
+<div class="article-container article-widget">
+  <div class="hr-light"></div>
+  <h3>Related</h3>
+  <ul>
+    
+    <li><a href="/post/2019-02-23-em-1/">Expectation-Maximization</a></li>
+    
+    <li><a href="/post/2019-03-18-matplotlib-map/">Mapping with an 800 Pound Gorilla</a></li>
+    
+    <li><a href="/post/2019-09-09-poisson-simulation/">Poisson Process Simulation</a></li>
+    
+    <li><a href="/post/2019-08-23-mass-shoot/">Mass Shooting Changepoint</a></li>
+    
+    <li><a href="/post/2019-05-18-pysql/">Pythonic SQL with SQLAlchemy</a></li>
+    
+  </ul>
+</div>
+
+
+
+
+<div class="article-container">
+  
+
+</div>
+
+<footer class="site-footer">
+  <div class="container">
+    <p class="powered-by">
+
+      &copy; 2017 Jason Preszler &middot; 
+
+      Powered by the
+      <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+      <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+      <span class="pull-right" aria-hidden="true">
+        <a href="#" id="back_to_top">
+          <span class="button_icon">
+            <i class="fa fa-chevron-up fa-2x"></i>
+          </span>
+        </a>
+      </span>
+
+    </p>
+  </div>
+</footer>
+
+
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close btn-large" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Cite</h4>
+      </div>
+      <div>
+        <pre><code class="modal-body tex"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-primary btn-outline js-copy-cite" href="#" target="_blank">
+          <i class="fa fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-primary btn-outline js-download-cite" href="#" target="_blank">
+          <i class="fa fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+    
+
+    
+
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" integrity="sha512-3P8rXCuGJdNZOnUx/03c1jOTnMn3rP63nBip5gOP2qmUh5YAdVAvFZ1E+QLZZbC1rtMrQb+mah3AfYW11RUrWA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.3/imagesloaded.pkgd.min.js" integrity="sha512-umsR78NN0D23AzgoZ11K7raBD+R6hqKojyBZs1w8WvYlsI+QuKRGBx3LFCwhatzBunCjDuJpDHwxD13sLMbpRA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha512-iztkobsvnjKfAtTNdHkGVjAYTrrtlC7mGp/54c40wowO7LhURYl3gVzzcEqGl/qKXQltJ2HwMrdLcNUdo+N/RQ==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.4/isotope.pkgd.min.js" integrity="sha512-VDBOIlDbuC4VWxGJNmuFRQ0Li0SKkDpmGyuhAG5LTDLd/dJ/S0WMVxriR2Y+CyPL5gzjpN4f/6iqWVBJlht0tQ==" crossorigin="anonymous"></script>
+    
+    
+    <script src="/js/hugo-academic.js"></script>
+    
+
+    
+    
+      
+      
+      <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+      
+
+      
+      <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+      
+      <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/python.min.js"></script>
+      
+      <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/c.min.js"></script>
+      
+      <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/sql.min.js"></script>
+      
+
+      
+
+      <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({ tex2jax: { inlineMath: [['$','$'], ['\\(','\\)']] } });
+    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_CHTML" integrity="sha512-tOav5w1OjvsSJzePRtt2uQPFwBoHt1VZcUq8l8nm5284LEKE9FSJBQryzMBzHxY5P0zRdNqEcpLIRVYFNgu1jw==" crossorigin="anonymous"></script>
+    
+    
+
+  </body>
+</html>
+

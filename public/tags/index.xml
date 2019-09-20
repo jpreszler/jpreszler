@@ -7,7 +7,7 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2017 Jason Preszler</copyright>
-    <lastBuildDate>Mon, 09 Sep 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 18 Sep 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
     
@@ -15,14 +15,86 @@
     <item>
       <title>Python</title>
       <link>/tags/python/</link>
-      <pubDate>Mon, 09 Sep 2019 00:00:00 +0000</pubDate>
+      <pubDate>Wed, 18 Sep 2019 00:00:00 +0000</pubDate>
       
       <guid>/tags/python/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>poisson</title>
+      <title>api</title>
+      <link>/tags/api/</link>
+      <pubDate>Wed, 18 Sep 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/api/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>forerunner</title>
+      <link>/tags/forerunner/</link>
+      <pubDate>Wed, 18 Sep 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/forerunner/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>garmin</title>
+      <link>/tags/garmin/</link>
+      <pubDate>Wed, 18 Sep 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/garmin/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>gps</title>
+      <link>/tags/gps/</link>
+      <pubDate>Wed, 18 Sep 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/gps/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>matplotlib</title>
+      <link>/tags/matplotlib/</link>
+      <pubDate>Wed, 18 Sep 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/matplotlib/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>pandas</title>
+      <link>/tags/pandas/</link>
+      <pubDate>Wed, 18 Sep 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/pandas/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>runalytics</title>
+      <link>/tags/runalytics/</link>
+      <pubDate>Wed, 18 Sep 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/runalytics/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>running</title>
+      <link>/tags/running/</link>
+      <pubDate>Wed, 18 Sep 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/running/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Poisson</title>
       <link>/tags/poisson/</link>
       <pubDate>Mon, 09 Sep 2019 00:00:00 +0000</pubDate>
       
@@ -40,7 +112,7 @@
     </item>
     
     <item>
-      <title>Bayesian</title>
+      <title>bayesian</title>
       <link>/tags/bayesian/</link>
       <pubDate>Fri, 23 Aug 2019 00:00:00 +0000</pubDate>
       
@@ -112,15 +184,6 @@
     </item>
     
     <item>
-      <title>matplotlib</title>
-      <link>/tags/matplotlib/</link>
-      <pubDate>Mon, 18 Mar 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/matplotlib/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>EM</title>
       <link>/tags/em/</link>
       <pubDate>Sat, 23 Feb 2019 00:00:00 +0000</pubDate>
@@ -144,15 +207,6 @@
       <pubDate>Sat, 23 Feb 2019 00:00:00 +0000</pubDate>
       
       <guid>/tags/clustering/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>pandas</title>
-      <link>/tags/pandas/</link>
-      <pubDate>Sat, 23 Feb 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/pandas/</guid>
       <description></description>
     </item>
     
