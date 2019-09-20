@@ -76,7 +76,7 @@ ax[1].set_title(&amp;#39;Lon/Lat Map 638B2312&amp;#39;)
 plt.tight_layout()
 plt.show()&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2019-09-19-elevation_files/figure-html/unnamed-chunk-3-1.png&#34; /&gt;&lt;!-- --&gt;
-The mean elevation of the first 5 points is &lt;code&gt;{python sixthree.ele[0:5].mean()}&lt;/code&gt; meters, while the last 5 points is &lt;code&gt;{python sixthree.ele[-5:-1].mean()}&lt;/code&gt; meters. So we ended 5 meters lower than we started. The garmin records data at 6 second intervals, so these are two 30 second average elevations. In reality the elevation wasn’t changing and I was at sea level, both values should be nearly 0 with much less variation then we’re seeing.&lt;/p&gt;
+The mean elevation of the first 5 points is &lt;span class=&#34;math inline&#34;&gt;\(-5.8\)&lt;/span&gt; meters, while the last 5 points is &lt;span class=&#34;math inline&#34;&gt;\(-10.9\)&lt;/span&gt; meters. So we ended 5 meters lower than we started. The garmin records data at 6 second intervals, so these are two 30 second average elevations. In reality the elevation wasn’t changing and I was at sea level, both values should be nearly 0 with much less variation then we’re seeing.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;div id=&#34;elevation-apis-to-the-rescue&#34; class=&#34;section level2&#34;&gt;
