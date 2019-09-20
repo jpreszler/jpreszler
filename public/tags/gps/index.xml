@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>gps on Jason I. Preszler</title>
+    <link>/tags/gps/</link>
+    <description>Recent content in gps on Jason I. Preszler</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; 2017 Jason Preszler</copyright>
+    <lastBuildDate>Wed, 18 Sep 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/gps/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Rise Above the Noise</title>
+      <link>/post/2019-09-19-elevation/</link>
+      <pubDate>Wed, 18 Sep 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2019-09-19-elevation/</guid>
+      <description>I’ve done some analysis of my gps running data before, but mostly just some mapping. I’ve always wanted to bring in some more sophisticated analysis such as identifying runs with similar geographic features (e.g. track workouts) or identifying, categorizing, and comparing hills. To really get into either of these things, I first needed good elevation data which isn’t provided by my forerunner 220. In this post I’ll show some of the problems with the elevation data coming from my garmin 220, how to get elevation data from the RaceMap API (and compare a few other elevation api’s), and then examine how good the new elevation data is.</description>
+    </item>
+    
+  </channel>
+</rss>
