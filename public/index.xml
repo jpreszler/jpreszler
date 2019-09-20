@@ -148,7 +148,7 @@ plt.tight_layout()
 plt.show()&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2019-09-19-elevation_files/figure-html/unnamed-chunk-7-1.png&#34; /&gt;&lt;!-- --&gt;
 This is a run from Chicago while I was at a conference. It’s mostly along the Lake Front trail (flat) with the horizontal stretch being the Navy Pier. Even the big differences seem to support the racemap data.&lt;/p&gt;
-&lt;p&gt;Another example, run &lt;code&gt;53GB3110&lt;/code&gt; has the largest average absolute difference between the garmin and racemap elevation data. Looking at the map and profile, it’s clear why (but only if you no Tacoma geography like I do!):&lt;/p&gt;
+&lt;p&gt;Another example, run &lt;code&gt;53GB3110&lt;/code&gt; has the largest average absolute difference between the garmin and racemap elevation data. Looking at the map and profile, it’s clear why (but only if you know Tacoma geography like I do!):&lt;/p&gt;
 &lt;pre class=&#34;python&#34;&gt;&lt;code&gt;fivethree = ptelev[ptelev[&amp;#39;runID&amp;#39;]==&amp;#39;53GB3110&amp;#39;]
 fig, ax = plt.subplots(1,2)
 fivethree.plot(&amp;#39;pointID&amp;#39;, [&amp;#39;ele&amp;#39;, &amp;#39;RMelev&amp;#39;], ax=ax[0])
