@@ -89,7 +89,7 @@ if __name__ == '__main__':
     elevDF.to_csv('data/pt-elevation.csv')
 ```
 
-It's pretty self explanatory, with the only interesting thing being pandas `.to_json(orient='values')`. This dataframe method converts the dataframe to a json object. The `values` orientation makes the object and array of arrays, where each inner array is a row of the dataframe. That is, it converts the latitude and longitude columns into an array of points. Everything else if just subsetting, making the post request, merging results together. I'm making the post request for each run because there's a payload limit of around 10,000 points and I have 60,000. Making the code work for a single run seemed to be the most modular approach.
+It's pretty self explanatory, with the only interesting thing being pandas `.to_json(orient='values')`. This dataframe method converts the dataframe to a json object. The `values` orientation makes the object an array of arrays, where each inner array is a row of the dataframe. That is, it converts the latitude and longitude columns into an array of points. Everything else is just subsetting, making the post request, merging results together. I'm making the post request for each run because there's a payload limit of around 10,000 points and I have 60,000. Making the code work for a single run seemed to be the most modular approach, but I could do it in far fewer requests.
 
 ## Great Elevation?
 
