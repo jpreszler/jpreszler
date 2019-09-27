@@ -1,0 +1,31 @@
+---
+title: 'When Traceplots go Bad'
+author: 'Jason Preszler'
+date: 2019-09-27
+output: html_document
+tags:['Python', 'Bayesian', 'pymc3']
+---
+
+One of the first things I learned studying abstract mathematics was that having non-examples were as important as examples of abstract structure. For instance, the definition of a group and some examples of groups it really only part of the picture - having examples of sets that satisfy all but one of the requirements to be a group allows you to see how the pieces fit together and lays a foundation for more solid intuition for further study.
+
+When you start doing probabilistic programming or Bayesian modeling, you quickly encounter traceplots as a major diagnostic tool. However, neither Stan or PyMC3 provide good documentation about how to read them or what problems to look out for - at best you get vague references to fuzzy caterpillars. If your well versed in the theory of MCMC sampling you may not need such a practical guide to what a bad traceplots looks like, but as these tools become more popular and building Bayesian models becomes easier I think there's a need for more non-examples of models - or examples of bad traceplots. Hopefully some find this useful.
+
+Before we get started, I want to re-iterate the often repeated advice about Bayesian modeling: if diagnostics show problems, it's often a problem with the model, not a simple change of settings in something like PyMC3 or Stan. Carefully think about your model and be open to reformulation.
+
+## Related Resources
+
+There are some excellent resources about MCMC sampling and it's problems. Michael Bettencourt has an excellent [paper](https://arxiv.org/pdf/1701.02434.pdf), but it's not for the mathematically averse. There is an example notebook (using the 8 schools data) in the [PyMC3 docs](https://docs.pymc.io/notebooks/Diagnosing_biased_Inference_with_Divergences.html) about diagnosing biases with divergence (it also has links to an original Stan version). Additionally, Thomas Wiecki has a post about [non-centered heirarchical models](https://twiecki.io/blog/2017/02/08/bayesian-hierchical-non-centered/) and model reparameterization that includes this: **I have seen plenty of traces with terrible convergences but this one might look fine to the unassuming eye.** It is this remark, coupled with questions I've received about traceplots from non-MCMC experts that largely motivates this post.
+
+George Ho also has an excellent [Bayesian Modeling Cookbook](https://eigenfoo.xyz/bayesian-modelling-cookbook/) abouth modeling diagnostics especially in PyMC3. However, he lacks examples of bad, or problematic traceplots but does at least tell you what to look out for and some possible solutions.
+
+## How Bayesian Models Go Bad
+
+Before getting into bad traceplots (and other diagnostics), let's start with an overview of how things can go wrong with Bayesian models. First, your MCMC sampling can fail to converge, or diverge, which is a very bad thing. Second, our chains can converge, but fail to adequately explore the parameter space. This is often harder to detect and will be more of the focus of this post.
+
+To get an idea of diverenge, think of the standard normal distribution. If you wanted to sample from a population that had such a distribution, you would want most of you samples to be between -2 and 2 (i.e. 2 standard deviations from the mean) - this is what is often called the 'typical set'. Having most of your sample data in this range would allow you to clearly see the normal distribution. MCMC is a procedure that allows us to draw samples and refine how the next sample is drawn. If we start with a value far from the typical set, our next draw should get closer to the typical set, and so on. This is why there is a 'burn-in' in MCMC sampling, we have to start at a random place and run our sampling until we (hopefully) get into the typical set, then the part of the chains we care about should be exploring the typical set. With a 1-dimensional normal distribution, this is easy and fast. But complex models may have a typical set that exists as a low dimensional space inside a much larger ambient space - Bettencourt's images of a 2-d loop in a plane is an easy visual and the smallest case where things get interesting. If we start far from the loop, we have to burn-in or tune our chains long enough that they at least find the loop. Divergence is failing to find the loop. If PyMC3 gives warnings about diverging chains, the simplest thing to try is increase the `tune` value, but if you have a bad model this can't do much.
+
+Failing to explore the parameter space can be harder to spot, and where the traceplot is really useful. Here the chains get into the typical set, but either don't get enough draws there (don't sample 5 items if you want a good picture), miss an interesting feature with a 'small' entrance, or get stuck at some type of singularity.
+
+# The Model
+
+To see examples of bad traceplots, we need a model. A decent one happens to be a small variation on the [baseball batting average example]. This tries to use data from the first part of the season to estimate batting performance for players of the rest of the season, and showed (among other things) that early season performance isn't a great indicator of overall performance. My variation is looking at soccer penalty kicks. Rather than being interested in early estimates of season performance, I wanted to have a way of addressing the question of 'Should player X be taking a penalty?' or 'Player x has missed 2 of 4 recent penalties, so shouldn't someone else be taking them?' (if you follow soccer, 'player X' was most recently Paul Pogba - but the same dialog occurs whenever a high profile player fails to score a penalty).  
