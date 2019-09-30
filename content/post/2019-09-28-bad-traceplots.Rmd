@@ -22,10 +22,138 @@ George Ho also has an excellent [Bayesian Modeling Cookbook](https://eigenfoo.xy
 
 Before getting into bad traceplots (and other diagnostics), let's start with an overview of how things can go wrong with Bayesian models. First, your MCMC sampling can fail to converge, or diverge, which is a very bad thing. Second, our chains can converge, but fail to adequately explore the parameter space. This is often harder to detect and will be more of the focus of this post.
 
-To get an idea of diverenge, think of the standard normal distribution. If you wanted to sample from a population that had such a distribution, you would want most of you samples to be between -2 and 2 (i.e. 2 standard deviations from the mean) - this is what is often called the 'typical set'. Having most of your sample data in this range would allow you to clearly see the normal distribution. MCMC is a procedure that allows us to draw samples and refine how the next sample is drawn. If we start with a value far from the typical set, our next draw should get closer to the typical set, and so on. This is why there is a 'burn-in' in MCMC sampling, we have to start at a random place and run our sampling until we (hopefully) get into the typical set, then the part of the chains we care about should be exploring the typical set. With a 1-dimensional normal distribution, this is easy and fast. But complex models may have a typical set that exists as a low dimensional space inside a much larger ambient space - Bettencourt's images of a 2-d loop in a plane is an easy visual and the smallest case where things get interesting. If we start far from the loop, we have to burn-in or tune our chains long enough that they at least find the loop. Divergence is failing to find the loop. If PyMC3 gives warnings about diverging chains, the simplest thing to try is increase the `tune` value, but if you have a bad model this can't do much.
+To get an idea of divergence, think of the standard normal distribution. If you wanted to sample from a population that had such a distribution, you would want most of you samples to be between -2 and 2 (i.e. 2 standard deviations from the mean) - this is what is often called the 'typical set'. Having most of your sample data in this range would allow you to clearly see the normal distribution. In higher dimensions, this is harder to do because the locations with high density (near the mode) that contribute to expectations have very low volume compared to **tails** in every other neighborhood with almost no density. In these higher dimensional settings, the typical set balances the high density/low volume near the mode with the low density/high volume 'tails' of our distribution.
+
+MCMC is a procedure that allows us to draw samples and refine how the next sample is drawn. If we start with a value far from the typical set, our next draw should get closer to the typical set, and so on. This is why there is a 'burn-in' in MCMC sampling, we have to start at a random place and run our sampling until we (hopefully) get into the typical set, then the part of the chains we care about should be exploring the typical set. With a 1-dimensional normal distribution, this is easy and fast. But complex models may have a typical set that exists as a low dimensional space inside a much larger ambient space - Bettencourt's images of a 2-d loop in a plane is an easy visual and the smallest case where things get interesting. If we start far from the loop, we have to burn-in or tune our chains long enough that they at least find the loop. Divergence is failing to find the loop. If PyMC3 gives warnings about diverging chains, the simplest thing to try is increase the `tune` value, but if you have a bad model this can't do much.
 
 Failing to explore the parameter space can be harder to spot, and where the traceplot is really useful. Here the chains get into the typical set, but either don't get enough draws there (don't sample 5 items if you want a good picture), miss an interesting feature with a 'small' entrance, or get stuck at some type of singularity.
 
 # The Model
 
-To see examples of bad traceplots, we need a model. A decent one happens to be a small variation on the [baseball batting average example]. This tries to use data from the first part of the season to estimate batting performance for players of the rest of the season, and showed (among other things) that early season performance isn't a great indicator of overall performance. My variation is looking at soccer penalty kicks. Rather than being interested in early estimates of season performance, I wanted to have a way of addressing the question of 'Should player X be taking a penalty?' or 'Player x has missed 2 of 4 recent penalties, so shouldn't someone else be taking them?' (if you follow soccer, 'player X' was most recently Paul Pogba - but the same dialog occurs whenever a high profile player fails to score a penalty).  
+To see examples of bad traceplots, we need a model. A decent one happens to be a small variation on the [baseball batting average example]. This tries to use data from the first part of the season to estimate batting performance for players of the rest of the season, and showed (among other things) that early season performance isn't a great indicator of overall performance. My variation is looking at soccer penalty kicks. Rather than being interested in early estimates of season performance, I wanted to have a way of addressing the question of 'Should player X be taking a penalty?' or 'Player x has missed all recent penalties, so shouldn't someone else be taking them?' (if you follow soccer, 'player X' was most recently Paul Pogba - but the same dialog occurs whenever a high profile player fails to score a penalty).
+
+Scoring from a penalty should be well modeled by a binomial distribution, which requires a probability of success $\theta$. This value should be a feature of the player, but it influenced by the team and league (i.e. other players in our dataset). Therefore, we put a separate Beta prior on each theta, with Beta determined by both a uniform random $\phi$ that is a factor shared by all players and a Pareto distributed $\kappa$ that represents the variation among all players. This is an example of 'partial pooling'.
+
+```{python pen_mod}
+import pymc3 as pm
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+import theano.tensor as tt
+
+df = pd.read_csv('penalty_data.csv', encoding='latin-1')
+
+score_cnt = df[['Player', 'Scored']].groupby('Player')['Scored'].apply(lambda x: sum(x=='Scored'))
+total = df[['Player','Scored']].groupby('Player')['Scored'].agg(Total='count')
+df2 = pd.concat([score_cnt, total], axis=1).reset_index()
+
+#The PyMC3 part, finally
+N = len(df2)
+
+with pm.Model() as pk_model:
+
+    phi = pm.Uniform('phi', lower=0.0, upper=1.0)
+
+    kappa_log = pm.Exponential('kappa_log', lam=1.5)
+    kappa = pm.Deterministic('kappa', tt.exp(kappa_log))
+
+    thetas = pm.Beta('thetas', alpha=phi*kappa, beta=(1.0-phi)*kappa, shape=N)
+    y = pm.Binomial('y', n=df2['Total'], p=thetas, observed=df2['Scored'])
+
+```
+
+One of our goals is to determine if a player who misses a few penalties is 'anomalous', so we want to add in this new player with no observed successes in 4 attempts.
+
+```{python new_dat}
+with pk_model:
+
+    theta_new = pm.Beta('theta_new', alpha=phi*kappa, beta=(1.0-phi)*kappa)
+    y_new = pm.Binomial('y_new', n=4, p=theta_new, observed=0)
+```
+
+With our model in place, let's move on to the sampling (and the problems).
+
+## Divergences
+
+We build a model (or really just re-purposed one that didn't have problems), so we're all set to do inference and have nothing to worry about. In PyMC3 we'll press the **magic inference button** and ...
+
+```{python divSamp}
+with pk_model:
+    trace = pm.sample(500)
+```
+Uh-oh! Diverging chains!
+
+Whenever chains diverge, don't fall into the trap of trying to justify them away - even one diverging chain among 1000 can be bad. To fix things we can (a) increase tuning, (b) increase `target_accept`, or (c) change our model. The first two are just `sample` parameters, so they're easy but often won't address the real problem (a bad model). Here I'll note the number and percent of diverging chains to see how we improve.
+
+```{python}
+diverging = trace['diverging']
+print('Number of Divergent Chains: {}'.format(diverging.nonzero()[0].size))
+diverging_perc = diverging.nonzero()[0].size / len(trace) * 100
+print('Percentage of Divergent Chains: {:.1f}'.format(diverging_perc))
+```
+
+Since I promised bad traceplots, let's see our first:
+```{python}
+pm.traceplot(trace, var_names=['phi', 'kappa'])
+```
+
+There are definitely variations in the chains for both `phi` and `kappa` (left) rather than the consistent convergence with expect. The 'fuzzy caterpillars' on the right clearly show chains getting stuck (flat, step-function like behavior) for both variables (the blue line of `phi` near the divergences around 100), especially `kappa`.
+
+### More Tuning
+
+Let's rebuild the trace with higher tuning to see if this improves things, I'll report the number and percent of diverging chains as before.
+
+```{python long_tune}
+with pk_model:
+  trace = pm.sample(500, tune=1500)
+
+diverging = trace['diverging']
+print('Number of Divergent Chains: {}'.format(diverging.nonzero()[0].size))
+diverging_perc = diverging.nonzero()[0].size / len(trace) * 100
+print('Percentage of Divergent Chains: {:.1f}'.format(diverging_perc))
+
+pm.traceplot(trace, var_names=['phi', 'kappa'])
+```
+
+Increasing the number of tuning steps shrunk the divergences and improved the traceplots, but didn't eliminate them. Increasing the sample size also gives a slight improvement, but makes problems harder to spot. On to `target_accept`.
+
+### Target Acceptance
+
+By default, PyMC3 uses NUTS which does Hamiltonian Monte Carlo (HMC), which is basically Metropolis-Hastings with some significant performance boosts. In all of these, a sample is drawn and a random decision is made whether to keep or reject the sample. The long-term acceptance rate is integrator step size of the algorithms and places a crucial role in efficiency. High target acceptance means little to no rejection sampling, so you may be very inefficient at exploring your parameter space. The Stan development team (creators of NUTS) showed that anything between $0.6$ and $0.9$ where essentially equivalent to the optimal target acceptance [in this paper, p. 14](https://arxiv.org/pdf/1411.6669.pdf) and then both Stan and PyMC3 decided to use $0.8$ as the default. Having an actual acceptance ratio above the target isn't bad (you'll get a warning in PyMC3, but it's usually not cause for concern), but when we're getting divergences after tuning we can reduce the amount of rejected samples to more thoroughly explore the space. The inefficiency helps keep us from taking too large of steps and diverging out to infinity.
+
+Let's see the impact of $0.9$, before and after increased tuning.
+```{python}
+with pk_model:
+  trace = pm.sample(500, tune=500, target_accept=0.9)
+
+diverging = trace['diverging']
+print('Number of Divergent Chains: {}'.format(diverging.nonzero()[0].size))
+diverging_perc = diverging.nonzero()[0].size / len(trace) * 100
+print('Percentage of Divergent Chains: {:.1f}'.format(diverging_perc))
+
+pm.traceplot(trace, var_names=['phi', 'kappa'])
+```
+
+With increased tuning also:
+
+```{python}
+with pk_model:
+  trace = pm.sample(500, tune=1500, target_accept=0.9)
+
+diverging = trace['diverging']
+print('Number of Divergent Chains: {}'.format(diverging.nonzero()[0].size))
+diverging_perc = diverging.nonzero()[0].size / len(trace) * 100
+print('Percentage of Divergent Chains: {:.1f}'.format(diverging_perc))
+
+pm.traceplot(trace, var_names=['phi', 'kappa'])
+```
+
+Both more tuning and increasing target_accept reduce divergence separately, but the effects don't necessarily combine. Part of this is due to the model/data we have - we're trying to do inference with 1 or 2 observations in many cases.
+
+## Exploratory Failure
+
+When chains diverge, we're told to 'increase target_accept or reparameterize' by the all knowing computer. The task of reparameterization is more involved, but can also us to handle more subtle problems like failing to explore the parameter space. Osvaldo Martin gives a nice overview of what reparameterization means [here](https://stackoverflow.com/a/48215278), with the key idea being to find an equivalent model that's easier to work with computationally - i.e. easier for MCMC to explore. Thomas Wiecki has a nice [blog post](https://twiecki.io/blog/2017/02/08/bayesian-hierchical-non-centered/) showing how subtle exploratory failure can look and how to use a non-centered hierchical model to reparameterize.
+
+# Additional Plots
+
+Besides traceplots, PyMC3 and Arviz can produce a wide variety of plots to visualize Bayesian models. Like traceplots, each focuses on a particular aspect of MCMC sampling or Bayesian inference so they have different uses. A good model should consistently show good plots, but a bad model may have a decent traceplot but bad energy plot. As with exploratory data analysis, don't look at just one plot or one diagnostic feature - especially if you're doing something important like trying to determine penalty kick performance.
