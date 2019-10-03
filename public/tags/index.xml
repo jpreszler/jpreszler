@@ -7,17 +7,35 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2017 Jason Preszler</copyright>
-    <lastBuildDate>Wed, 18 Sep 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 02 Oct 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
+      <title>Bayesian</title>
+      <link>/tags/bayesian/</link>
+      <pubDate>Wed, 02 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/bayesian/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Python</title>
       <link>/tags/python/</link>
-      <pubDate>Wed, 18 Sep 2019 00:00:00 +0000</pubDate>
+      <pubDate>Wed, 02 Oct 2019 00:00:00 +0000</pubDate>
       
       <guid>/tags/python/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>pymc3</title>
+      <link>/tags/pymc3/</link>
+      <pubDate>Wed, 02 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/pymc3/</guid>
       <description></description>
     </item>
     
@@ -112,29 +130,11 @@
     </item>
     
     <item>
-      <title>bayesian</title>
-      <link>/tags/bayesian/</link>
-      <pubDate>Fri, 23 Aug 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/bayesian/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>changepoint</title>
       <link>/tags/changepoint/</link>
       <pubDate>Fri, 23 Aug 2019 00:00:00 +0000</pubDate>
       
       <guid>/tags/changepoint/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>pymc3</title>
-      <link>/tags/pymc3/</link>
-      <pubDate>Fri, 23 Aug 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/pymc3/</guid>
       <description></description>
     </item>
     
@@ -256,7 +256,7 @@
     </item>
     
     <item>
-      <title>d3.js</title>
+      <title>D3.js</title>
       <link>/tags/d3.js/</link>
       <pubDate>Thu, 27 Dec 2018 00:00:00 +0000</pubDate>
       

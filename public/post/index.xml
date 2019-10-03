@@ -13,6 +13,15 @@
     
     
     <item>
+      <title>When Traceplots go Bad</title>
+      <link>/post/2019-09-28-bad-traceplots/</link>
+      <pubDate>Wed, 02 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2019-09-28-bad-traceplots/</guid>
+      <description>One of the first things I learned studying abstract mathematics was that having non-examples were as important as examples of abstract structure. For instance, the definition of a group and some examples of groups it really only part of the picture - having examples of sets that satisfy all but one of the requirements to be a group allows you to see how the pieces fit together and lays a foundation for more solid intuition for further study.</description>
+    </item>
+    
+    <item>
       <title>Rise Above the Noise</title>
       <link>/post/2019-09-19-elevation/</link>
       <pubDate>Wed, 18 Sep 2019 00:00:00 +0000</pubDate>
