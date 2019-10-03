@@ -118,7 +118,7 @@ pm.traceplot(trace, var_names=['phi', 'kappa'])
 plt.show()
 ```
 
-Increasing the number of tuning steps shrunk the divergences and improved the traceplots, but didn't eliminate them. Increasing the sample size also gives a slight improvement, but makes problems harder to spot. On to `target_accept`.
+Increasing the number of tuning steps can shrink the divergences and improve the traceplots, but isn't gauranteed to eliminate them (and can make problems more noticable at times). Increasing the sample size also gives a slight improvement, but makes problems harder to spot. On to `target_accept`.
 
 ### Target Acceptance
 

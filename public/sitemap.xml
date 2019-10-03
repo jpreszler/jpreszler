@@ -4,6 +4,16 @@
     
     <url>
     
+      <loc>/tags/bayesian/</loc>
+      <lastmod>2019-10-02T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/</loc>
       <lastmod>2019-10-02T00:00:00+00:00</lastmod>
       <priority>0</priority>
@@ -36,16 +46,6 @@
     
       <loc>/post/2019-09-28-bad-traceplots/</loc>
       <lastmod>2019-10-02T00:00:00+00:00</lastmod>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/tags/bayesian/</loc>
-      <lastmod>2019-10-02T00:00:00+00:00</lastmod>
-      <priority>0</priority>
     </url>
     
   
@@ -152,8 +152,9 @@
     
     <url>
     
-      <loc>/post/2019-09-09-poisson-simulation/</loc>
+      <loc>/tags/poisson/</loc>
       <lastmod>2019-09-09T00:00:00+00:00</lastmod>
+      <priority>0</priority>
     </url>
     
   
@@ -161,9 +162,8 @@
     
     <url>
     
-      <loc>/tags/poisson/</loc>
+      <loc>/post/2019-09-09-poisson-simulation/</loc>
       <lastmod>2019-09-09T00:00:00+00:00</lastmod>
-      <priority>0</priority>
     </url>
     
   

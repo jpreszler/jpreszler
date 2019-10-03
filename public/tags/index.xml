@@ -13,20 +13,20 @@
     
     
     <item>
+      <title>Bayesian</title>
+      <link>/tags/bayesian/</link>
+      <pubDate>Wed, 02 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/bayesian/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Python</title>
       <link>/tags/python/</link>
       <pubDate>Wed, 02 Oct 2019 00:00:00 +0000</pubDate>
       
       <guid>/tags/python/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>bayesian</title>
-      <link>/tags/bayesian/</link>
-      <pubDate>Wed, 02 Oct 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/bayesian/</guid>
       <description></description>
     </item>
     
@@ -112,7 +112,7 @@
     </item>
     
     <item>
-      <title>poisson</title>
+      <title>Poisson</title>
       <link>/tags/poisson/</link>
       <pubDate>Mon, 09 Sep 2019 00:00:00 +0000</pubDate>
       
