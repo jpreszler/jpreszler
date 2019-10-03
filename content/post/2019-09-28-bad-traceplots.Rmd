@@ -98,7 +98,7 @@ pm.traceplot(trace, var_names=['phi', 'kappa'])
 plt.show()
 ```
 
-There are definitely variations in the chains for both `phi` and `kappa` (left) rather than the consistent convergence with expect. The 'fuzzy caterpillars' on the right clearly show chains getting stuck (flat, step-function like behavior) for both variables (the blue line of `phi` near the divergences around 100), especially `kappa`. There are also 48 distributions for `theta` (one for each player) that we could look at (but this will take a long time to draw, so we won't).
+There are definitely variations in the chains for both `phi` and `kappa` (left) rather than the consistent convergence with expect. The 'fuzzy caterpillars' on the right clearly show chains getting stuck (flat, step-function like behavior) for both variables (the blue line of `phi` near the divergence marks), especially `kappa`. There are also 48 distributions for `theta` (one for each player) that we could look at (but this will take a long time to draw, so we won't).
 
 ### More Tuning
 
