@@ -74,16 +74,16 @@ with pm.Model() as pk_model:
 &lt;p&gt;Whenever chains diverge, don’t fall into the trap of trying to justify them away - even one diverging chain among 1000 can be bad. To fix things we can (a) increase tuning, (b) increase &lt;code&gt;target_accept&lt;/code&gt;, or (c) change our model. The first two are just &lt;code&gt;sample&lt;/code&gt; parameters, so they’re easy but often won’t address the real problem (a bad model or bad data). Here I’ll note the number and percent of diverging chains to see how we improve.&lt;/p&gt;
 &lt;pre class=&#34;python&#34;&gt;&lt;code&gt;diverging = trace[&amp;#39;diverging&amp;#39;]
 print(&amp;#39;Number of Divergent Chains: {}&amp;#39;.format(diverging.nonzero()[0].size))&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Number of Divergent Chains: 25&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Number of Divergent Chains: 18&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;python&#34;&gt;&lt;code&gt;diverging_perc = diverging.nonzero()[0].size / len(trace) * 100
 print(&amp;#39;Percentage of Divergent Chains: {:.1f}&amp;#39;.format(diverging_perc))&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Percentage of Divergent Chains: 5.0&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Percentage of Divergent Chains: 3.6&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;Since I promised bad traceplots, let’s see our first:&lt;/p&gt;
 &lt;pre class=&#34;python&#34;&gt;&lt;code&gt;pm.traceplot(trace, var_names=[&amp;#39;phi&amp;#39;, &amp;#39;kappa&amp;#39;])&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## array([[&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7fa666b29ed0&amp;gt;,
-##         &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7fa66668c150&amp;gt;],
-##        [&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7fa665c0ac10&amp;gt;,
-##         &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7fa665bb1510&amp;gt;]],
+&lt;pre&gt;&lt;code&gt;## array([[&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f9fe72d29d0&amp;gt;,
+##         &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f9fe6f10850&amp;gt;],
+##        [&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f9fe6403710&amp;gt;,
+##         &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f9fe64259d0&amp;gt;]],
 ##       dtype=object)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;python&#34;&gt;&lt;code&gt;plt.show()&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2019-09-28-bad-traceplots_files/figure-html/unnamed-chunk-2-1.png&#34; /&gt;&lt;!-- --&gt;&lt;/p&gt;
@@ -95,15 +95,15 @@ print(&amp;#39;Percentage of Divergent Chains: {:.1f}&amp;#39;.format(diverging_
   trace = pm.sample(500, tune=1500, progressbar=False)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;python&#34;&gt;&lt;code&gt;diverging = trace[&amp;#39;diverging&amp;#39;]
 print(&amp;#39;Number of Divergent Chains: {}&amp;#39;.format(diverging.nonzero()[0].size))&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Number of Divergent Chains: 9&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Number of Divergent Chains: 40&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;python&#34;&gt;&lt;code&gt;diverging_perc = diverging.nonzero()[0].size / len(trace) * 100
 print(&amp;#39;Percentage of Divergent Chains: {:.1f}&amp;#39;.format(diverging_perc))&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Percentage of Divergent Chains: 1.8&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Percentage of Divergent Chains: 8.0&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;python&#34;&gt;&lt;code&gt;pm.traceplot(trace, var_names=[&amp;#39;phi&amp;#39;, &amp;#39;kappa&amp;#39;])&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## array([[&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7fa6665db450&amp;gt;,
-##         &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7fa666bee7d0&amp;gt;],
-##        [&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7fa6653fe190&amp;gt;,
-##         &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7fa666776f10&amp;gt;]],
+&lt;pre&gt;&lt;code&gt;## array([[&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f9fe6e8cb50&amp;gt;,
+##         &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f9fe7424c90&amp;gt;],
+##        [&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f9fe5c72b90&amp;gt;,
+##         &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f9fe7162d10&amp;gt;]],
 ##       dtype=object)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;python&#34;&gt;&lt;code&gt;plt.show()&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2019-09-28-bad-traceplots_files/figure-html/unnamed-chunk-3-1.png&#34; /&gt;&lt;!-- --&gt;&lt;/p&gt;
@@ -118,15 +118,15 @@ print(&amp;#39;Percentage of Divergent Chains: {:.1f}&amp;#39;.format(diverging_
 &lt;pre class=&#34;python&#34;&gt;&lt;code&gt;
 diverging = trace[&amp;#39;diverging&amp;#39;]
 print(&amp;#39;Number of Divergent Chains: {}&amp;#39;.format(diverging.nonzero()[0].size))&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Number of Divergent Chains: 9&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Number of Divergent Chains: 26&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;python&#34;&gt;&lt;code&gt;diverging_perc = diverging.nonzero()[0].size / len(trace) * 100
 print(&amp;#39;Percentage of Divergent Chains: {:.1f}&amp;#39;.format(diverging_perc))&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Percentage of Divergent Chains: 1.8&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Percentage of Divergent Chains: 5.2&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;python&#34;&gt;&lt;code&gt;pm.traceplot(trace, var_names=[&amp;#39;phi&amp;#39;, &amp;#39;kappa&amp;#39;])&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## array([[&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7fa666864c10&amp;gt;,
-##         &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7fa666cccb90&amp;gt;],
-##        [&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7fa66773c510&amp;gt;,
-##         &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7fa665294690&amp;gt;]],
+&lt;pre&gt;&lt;code&gt;## array([[&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f9fe5ad5f10&amp;gt;,
+##         &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f9fe7a15d10&amp;gt;],
+##        [&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f9fe74d9550&amp;gt;,
+##         &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f9fe5a840d0&amp;gt;]],
 ##       dtype=object)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;python&#34;&gt;&lt;code&gt;plt.show()&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2019-09-28-bad-traceplots_files/figure-html/unnamed-chunk-5-1.png&#34; /&gt;&lt;!-- --&gt;&lt;/p&gt;
@@ -135,15 +135,15 @@ print(&amp;#39;Percentage of Divergent Chains: {:.1f}&amp;#39;.format(diverging_
   trace = pm.sample(500, tune=1500, target_accept=0.9, progressbar=False)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;python&#34;&gt;&lt;code&gt;diverging = trace[&amp;#39;diverging&amp;#39;]
 print(&amp;#39;Number of Divergent Chains: {}&amp;#39;.format(diverging.nonzero()[0].size))&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Number of Divergent Chains: 3&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Number of Divergent Chains: 28&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;python&#34;&gt;&lt;code&gt;diverging_perc = diverging.nonzero()[0].size / len(trace) * 100
 print(&amp;#39;Percentage of Divergent Chains: {:.1f}&amp;#39;.format(diverging_perc))&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Percentage of Divergent Chains: 0.6&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Percentage of Divergent Chains: 5.6&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;python&#34;&gt;&lt;code&gt;pm.traceplot(trace, var_names=[&amp;#39;phi&amp;#39;, &amp;#39;kappa&amp;#39;])&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## array([[&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7fa6667ca9d0&amp;gt;,
-##         &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7fa6652fdf90&amp;gt;],
-##        [&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7fa6672fb0d0&amp;gt;,
-##         &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7fa664800e50&amp;gt;]],
+&lt;pre&gt;&lt;code&gt;## array([[&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f9fe507df10&amp;gt;,
+##         &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f9fe5296490&amp;gt;],
+##        [&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f9fe4d797d0&amp;gt;,
+##         &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f9fe5111490&amp;gt;]],
 ##       dtype=object)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;python&#34;&gt;&lt;code&gt;plt.show()&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2019-09-28-bad-traceplots_files/figure-html/unnamed-chunk-7-1.png&#34; /&gt;&lt;!-- --&gt;&lt;/p&gt;
@@ -166,32 +166,32 @@ print(&amp;#39;Percentage of Divergent Chains: {:.1f}&amp;#39;.format(diverging_
     theta_new = pm.Beta(&amp;#39;theta_new&amp;#39;, alpha=phi*kappa, beta=(1.0-phi)*kappa)
     y_new = pm.Binomial(&amp;#39;y_new&amp;#39;, n=2, p=theta_new, observed=0)
 
-    trace2 = pm.sample(500, target_accept=0.9, progressbar=False)&lt;/code&gt;&lt;/pre&gt;
+    trace2 = pm.sample(500, tune=1500, target_accept=0.9, progressbar=False)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;python&#34;&gt;&lt;code&gt;diverging = trace2[&amp;#39;diverging&amp;#39;]
 print(&amp;#39;Number of Divergent Chains: {}&amp;#39;.format(diverging.nonzero()[0].size))&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Number of Divergent Chains: 1&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Number of Divergent Chains: 0&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;python&#34;&gt;&lt;code&gt;diverging_perc = diverging.nonzero()[0].size / len(trace2) * 100
 print(&amp;#39;Percentage of Divergent Chains: {:.1f}&amp;#39;.format(diverging_perc))&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Percentage of Divergent Chains: 0.2&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Percentage of Divergent Chains: 0.0&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;No more divergences. Our traceplot reveals the exploration that we hope from good MCMC sampling without steps, oscillations, pinching, fly-aways, or other signs of problems.&lt;/p&gt;
 &lt;pre class=&#34;python&#34;&gt;&lt;code&gt;pm.traceplot(trace2, var_names=[&amp;#39;phi&amp;#39;, &amp;#39;kappa&amp;#39;])&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## array([[&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7fa666a64390&amp;gt;,
-##         &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7fa6641fc210&amp;gt;],
-##        [&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7fa6643a8950&amp;gt;,
-##         &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7fa6643cdc10&amp;gt;]],
+&lt;pre&gt;&lt;code&gt;## array([[&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f9fe7402910&amp;gt;,
+##         &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f9fe5ab2750&amp;gt;],
+##        [&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f9fe4a13b90&amp;gt;,
+##         &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f9fe49bae10&amp;gt;]],
 ##       dtype=object)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;python&#34;&gt;&lt;code&gt;plt.show()&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2019-09-28-bad-traceplots_files/figure-html/unnamed-chunk-10-1.png&#34; /&gt;&lt;!-- --&gt;&lt;/p&gt;
 &lt;p&gt;Since we know have a model that seems like it works, we can look at the probability of success of our player who has missed his first 2 penalties.&lt;/p&gt;
 &lt;pre class=&#34;python&#34;&gt;&lt;code&gt;pm.traceplot(trace2, var_names=[&amp;#39;theta_new&amp;#39;])&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## array([[&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7fa6677057d0&amp;gt;,
-##         &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7fa66412cd10&amp;gt;]],
+&lt;pre&gt;&lt;code&gt;## array([[&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f9fe4f94cd0&amp;gt;,
+##         &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f9fe48c2750&amp;gt;]],
 ##       dtype=object)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;python&#34;&gt;&lt;code&gt;plt.show()&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2019-09-28-bad-traceplots_files/figure-html/unnamed-chunk-11-1.png&#34; /&gt;&lt;!-- --&gt;&lt;/p&gt;
 &lt;pre class=&#34;python&#34;&gt;&lt;code&gt;pm.plot_posterior(trace2, var_names=[&amp;#39;theta_new&amp;#39;, &amp;#39;phi&amp;#39;])&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## array([&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7fa66424e610&amp;gt;,
-##        &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7fa662b90d90&amp;gt;],
+&lt;pre&gt;&lt;code&gt;## array([&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f9fe48e4150&amp;gt;,
+##        &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f9fe33d9c90&amp;gt;],
 ##       dtype=object)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;python&#34;&gt;&lt;code&gt;plt.show()&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2019-09-28-bad-traceplots_files/figure-html/unnamed-chunk-12-1.png&#34; /&gt;&lt;!-- --&gt;&lt;/p&gt;
